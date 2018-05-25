@@ -53,7 +53,7 @@ type
     FStringListLinha: TStringList;
 
     function AbrirArquivo: string;
-    function VerificarDeveExibirSomentSQL: boolean;
+    function VerificarDeveExibirSomenteSQL: boolean;
     function VerificarLinhaEhSQL: boolean;
     procedure CarregarPreferencias;
     procedure CarregarLog;
@@ -130,7 +130,7 @@ begin
     begin
       FStringListLinha.DelimitedText := FStringListArquivo[lContador];
 
-      if VerificarDeveExibirSomentSQL and (not VerificarLinhaEhSQL) then
+      if VerificarDeveExibirSomenteSQL and (not VerificarLinhaEhSQL) then
         Continue;
 
       ClientDataSet.Append;
@@ -158,8 +158,7 @@ var
 begin
   lPreferencias := TPreferencias.Create;
   try
-    CheckBoxAtualizacaoAutomatica.Checked :=
-      lPreferencias.HabilitarAtualizacaoAutomatica;
+    CheckBoxAtualizacaoAutomatica.Checked := lPreferencias.HabilitarAtualizacaoAutomatica;
     CheckBoxExibirSomenteSQL.Checked := lPreferencias.ExibirSomenteSQL;
     CheckBoxDestacarLinhasErros.Checked := lPreferencias.DestacarLinhasErro;
   finally
@@ -195,7 +194,7 @@ begin
   FStringListLinha.Free;
 end;
 
-function TfMonitor.VerificarDeveExibirSomentSQL: boolean;
+function TfMonitor.VerificarDeveExibirSomenteSQL: boolean;
 begin
   result := CheckBoxExibirSomenteSQL.Checked;
 end;

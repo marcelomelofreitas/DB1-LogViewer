@@ -1,4 +1,7 @@
 *.exe
 *.stat
+*.local
+*.identcache
 !.gitignore
 Win32
+__history
