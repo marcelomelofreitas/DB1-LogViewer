@@ -1,0 +1,4 @@
+*.exe
+*.stat
+!.gitignore
+Win32
