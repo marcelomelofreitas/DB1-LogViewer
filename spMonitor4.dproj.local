@@ -6,10 +6,13 @@
     <Transaction>2018/05/15 11:05:04.000.737,=C:\Users\andre.celestino\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
     <Transaction>2018/05/15 15:53:07.000.220,=C:\Users\andre.celestino\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
     <Transaction>2018/05/18 09:23:45.000.993,=C:\Users\andre.celestino\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>2018/05/18 09:24:26.000.394,C:\Users\andre.celestino\Documents\Embarcadero\Studio\Projects\Unit1.dfm=C:\Git\spMonitor4\View.Monitor.dfm</Transaction>
-    <Transaction>2018/05/18 09:24:26.000.394,C:\Users\andre.celestino\Documents\Embarcadero\Studio\Projects\Unit1.pas=C:\Git\spMonitor4\View.Monitor.pas</Transaction>
-    <Transaction>2018/05/18 09:24:29.000.252,C:\Users\andre.celestino\Documents\Embarcadero\Studio\Projects\Project1.dproj=C:\Git\spMonitor4\spMonitor4.dproj</Transaction>
-    <Transaction>2018/05/25 10:05:28.522,=C:\Git\spMonitor4\Unit1.pas</Transaction>
-    <Transaction>2018/05/25 10:05:43.114,C:\Git\spMonitor4\Utils.Opcoes.pas=C:\Git\spMonitor4\Unit1.pas</Transaction>
+    <Transaction>2018/05/18 09:24:26.000.394,C:\Git\spMonitor4\View.Monitor.pas=C:\Users\andre.celestino\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2018/05/18 09:24:26.000.394,C:\Git\spMonitor4\View.Monitor.dfm=C:\Users\andre.celestino\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>2018/05/18 09:24:29.000.252,C:\Git\spMonitor4\spMonitor4.dproj=C:\Users\andre.celestino\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>2018/05/25 10:05:28.000.522,=C:\Git\spMonitor4\Unit1.pas</Transaction>
+    <Transaction>2018/05/25 10:05:43.000.114,C:\Git\spMonitor4\Unit1.pas=C:\Git\spMonitor4\Utils.Opcoes.pas</Transaction>
+    <Transaction>2018/05/25 14:26:27.036,C:\Git\spMonitor4\Utils.Preferencias.pas=C:\Git\spMonitor4\Utils.Opcoes.pas</Transaction>
+    <Transaction>2018/05/25 14:31:19.319,=C:\Git\spMonitor4\Unit1.pas</Transaction>
+    <Transaction>2018/05/25 14:31:25.801,C:\Git\spMonitor4\Utils.Helpers.pas=C:\Git\spMonitor4\Unit1.pas</Transaction>
   </Transactions>
 </BorlandProject>

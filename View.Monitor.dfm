@@ -113,9 +113,6 @@ object fMonitor: TfMonitor
         Height = 338
         Align = alClient
         TabOrder = 1
-        ExplicitTop = 85
-        ExplicitWidth = 722
-        ExplicitHeight = 331
         object DBGrid: TDBGrid
           Left = 1
           Top = 1
@@ -185,8 +182,6 @@ object fMonitor: TfMonitor
         Height = 41
         Align = alBottom
         TabOrder = 2
-        ExplicitTop = 416
-        ExplicitWidth = 722
       end
     end
     object TabSheetOpcoes: TTabSheet
@@ -219,20 +214,14 @@ object fMonitor: TfMonitor
   end
   object DataSource: TDataSource
     DataSet = ClientDataSet
-    Left = 635
-    Top = 359
-  end
-  object FDGUIxWaitCursor: TFDGUIxWaitCursor
-    Provider = 'Forms'
-    ScreenCursor = gcrAppWait
-    Left = 666
-    Top = 328
+    Left = 327
+    Top = 49
   end
   object TimerAtualizacaoAutomatica: TTimer
     Enabled = False
     OnTimer = TimerAtualizacaoAutomaticaTimer
-    Left = 636
-    Top = 328
+    Left = 388
+    Top = 49
   end
   object ClientDataSet: TClientDataSet
     PersistDataPacket.Data = {
@@ -247,8 +236,8 @@ object fMonitor: TfMonitor
     Active = True
     Aggregates = <>
     Params = <>
-    Left = 666
-    Top = 359
+    Left = 358
+    Top = 49
     object ClientDataSetTipo: TStringField
       FieldName = 'Tipo'
       Size = 10

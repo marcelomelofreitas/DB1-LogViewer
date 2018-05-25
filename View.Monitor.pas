@@ -6,20 +6,12 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.ExtCtrls, Vcl.Grids,
-  Vcl.DBGrids,
-  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
-  FireDAC.Stan.Error, FireDAC.DatS,
-  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client,
-  FireDAC.Comp.BatchMove, FireDAC.Comp.BatchMove.DataSet,
-  FireDAC.Comp.BatchMove.Text, Vcl.StdCtrls,
-  Vcl.Buttons, FireDAC.UI.Intf, FireDAC.VCLUI.Wait, FireDAC.Comp.UI,
-  Vcl.Samples.Spin, Datasnap.DBClient, Vcl.ComCtrls;
+  Vcl.DBGrids, Vcl.StdCtrls,
+  Vcl.Buttons, Vcl.Samples.Spin, Datasnap.DBClient, Vcl.ComCtrls;
 
 type
   TfMonitor = class(TForm)
     DataSource: TDataSource;
-    FDGUIxWaitCursor: TFDGUIxWaitCursor;
     TimerAtualizacaoAutomatica: TTimer;
     ClientDataSet: TClientDataSet;
     ClientDataSetTipo: TStringField;
@@ -61,12 +53,14 @@ type
     FStringListLinha: TStringList;
 
     function AbrirArquivo: string;
-    function DeveExibirSomentSQL: boolean;
-    function LinhaEhSQL: boolean;
+    function VerificarDeveExibirSomentSQL: boolean;
+    function VerificarLinhaEhSQL: boolean;
+    procedure CarregarPreferencias;
     procedure CarregarLog;
     procedure ControlarTemporizador;
     procedure CriarStringLists;
     procedure DestruirStringLists;
+    procedure InicializarPropriedades;
     function PegarDataHora: string;
   end;
 
@@ -74,6 +68,9 @@ var
   fMonitor: TfMonitor;
 
 implementation
+
+uses
+  Utils.Preferencias;
 
 {$R *.dfm}
 
@@ -91,7 +88,6 @@ begin
       Exit;
 
     result := Trim(OpenDialog.FileName);
-
     EditArquivo.Text := Trim(OpenDialog.FileName);
   finally
     OpenDialog.Free;
@@ -102,9 +98,6 @@ procedure TfMonitor.BitBtnAbrirLogClick(Sender: TObject);
 var
   lArquivo: string;
 begin
-  CarregarLog;
-  Exit;
-
   lArquivo := AbrirArquivo;
 
   if lArquivo.IsEmpty then
@@ -126,43 +119,52 @@ end;
 
 procedure TfMonitor.CarregarLog;
 var
-  Contador: integer;
+  lContador: integer;
 begin
-  FStringListLinha.Delimiter := ';';
-  FStringListLinha.StrictDelimiter := True;
-
   ClientDataSet.DisableControls;
-  ClientDataSet.LogChanges := False;
+  try
+    TimerAtualizacaoAutomatica.Enabled := False;
+    FStringListArquivo.LoadFromFile(EditArquivo.Text);
 
-  FStringListArquivo.LoadFromFile(EditArquivo.Text);
+    for lContador := FContador to Pred(FStringListArquivo.Count) do
+    begin
+      FStringListLinha.DelimitedText := FStringListArquivo[lContador];
 
-  for Contador := FContador to Pred(FStringListArquivo.Count) do
-  begin
-    FStringListLinha.DelimitedText := FStringListArquivo[Contador];
+      if VerificarDeveExibirSomentSQL and (not VerificarLinhaEhSQL) then
+        Continue;
 
-    if DeveExibirSomentSQL and not (LinhaEhSQL) then
-    if FStringListLinha[5] <> 'SQL' then
-      Continue;
-
-    ClientDataSet.Append;
-    ClientDataSetTipo.AsString := FStringListLinha[5];
-    ClientDataSetBase.AsString := FStringListLinha[6];
-    ClientDataSetUsuario.AsString := FStringListLinha[9];
-    ClientDataSetIP.AsString := FStringListLinha[10];
-    ClientDataSetDataHora.AsString := PegarDataHora;
-    ClientDataSetClasse.AsString := FStringListLinha[13];
-    ClientDataSetMetodo.AsString := FStringListLinha[14];
-    ClientDataSetSQL.AsString := FStringListLinha[15];
-    ClientDataSet.Post;
+      ClientDataSet.Append;
+      ClientDataSetTipo.AsString := FStringListLinha[5];
+      ClientDataSetBase.AsString := FStringListLinha[6];
+      ClientDataSetUsuario.AsString := FStringListLinha[9];
+      ClientDataSetIP.AsString := FStringListLinha[10];
+      ClientDataSetDataHora.AsString := PegarDataHora;
+      ClientDataSetClasse.AsString := FStringListLinha[13];
+      ClientDataSetMetodo.AsString := FStringListLinha[14];
+      ClientDataSetSQL.AsString := FStringListLinha[15];
+      ClientDataSet.Post;
+    end;
+  finally
+    ClientDataSet.EnableControls;
   end;
 
   FContador := FStringListArquivo.Count;
-
-  ClientDataSet.EnableControls;
-
-  TimerAtualizacaoAutomatica.Enabled := False;
-
   ControlarTemporizador;
+end;
+
+procedure TfMonitor.CarregarPreferencias;
+var
+  lPreferencias: TPreferencias;
+begin
+  lPreferencias := TPreferencias.Create;
+  try
+    CheckBoxAtualizacaoAutomatica.Checked :=
+      lPreferencias.HabilitarAtualizacaoAutomatica;
+    CheckBoxExibirSomenteSQL.Checked := lPreferencias.ExibirSomenteSQL;
+    CheckBoxDestacarLinhasErros.Checked := lPreferencias.DestacarLinhasErro;
+  finally
+    lPreferencias.Free;
+  end;
 end;
 
 procedure TfMonitor.CheckBoxAtualizacaoAutomaticaClick(Sender: TObject);
@@ -193,7 +195,7 @@ begin
   FStringListLinha.Free;
 end;
 
-function TfMonitor.DeveExibirSomentSQL: boolean;
+function TfMonitor.VerificarDeveExibirSomentSQL: boolean;
 begin
   result := CheckBoxExibirSomenteSQL.Checked;
 end;
@@ -201,7 +203,8 @@ end;
 procedure TfMonitor.FormCreate(Sender: TObject);
 begin
   CriarStringLists;
-  FContador := 0;
+  InicializarPropriedades;
+  CarregarPreferencias;
 end;
 
 procedure TfMonitor.FormDestroy(Sender: TObject);
@@ -209,14 +212,23 @@ begin
   DestruirStringLists;
 end;
 
-function TfMonitor.LinhaEhSQL: boolean;
+procedure TfMonitor.InicializarPropriedades;
 begin
+  ClientDataSet.LogChanges := False;
+  FStringListLinha.Delimiter := ';';
+  FStringListLinha.StrictDelimiter := True;
+  FContador := 0;
+end;
 
+function TfMonitor.VerificarLinhaEhSQL: boolean;
+begin
+  result := FStringListLinha[5] = 'SQL';
 end;
 
 function TfMonitor.PegarDataHora: string;
 begin
-  result := Format('%s  %s', [FStringListLinha[11], Copy(FStringListLinha[12], 0, 8)]);
+  result := Format('%s  %s', [FStringListLinha[11],
+    Copy(FStringListLinha[12], 0, 8)]);
 end;
 
 procedure TfMonitor.TimerAtualizacaoAutomaticaTimer(Sender: TObject);
