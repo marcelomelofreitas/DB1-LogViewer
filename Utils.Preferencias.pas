@@ -16,6 +16,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    procedure GravarPreferencia(const aChave: string; const aValor: boolean);
 
     property HabilitarAtualizacaoAutomatica: boolean read GetHabilitarAtualizacaoAutomatica;
     property ExibirSomenteSQL: boolean read GetExibirSomenteSQL;
@@ -25,7 +26,7 @@ type
 implementation
 
 uses
-  System.SysUtils, Utils.Helpers;
+  System.SysUtils, Utils.Helpers, Utils.Constantes;
 
 { TOpcoes }
 
@@ -42,17 +43,23 @@ end;
 
 function TPreferencias.GetDestacarLinhasErro: boolean;
 begin
-  result := FArquivoINI.ReadValue('DestacarLinhasErro') = 'S';
+  result := FArquivoINI.ReadValue(sDESTACAR_LINHAS_ERRO);
 end;
 
 function TPreferencias.GetExibirSomenteSQL: boolean;
 begin
-  result := FArquivoINI.ReadValue('ExibirSomenteSQL') = 'S';
+  result := FArquivoINI.ReadValue(sEXIBIR_SOMENTE_SQL);
 end;
 
 function TPreferencias.GetHabilitarAtualizacaoAutomatica: boolean;
 begin
-  result := FArquivoINI.ReadValue('HabilitarAtualizacaoAutomatica') = 'S';
+  result := FArquivoINI.ReadValue(sHABILITAR_ATUALIZACAO_AUTOMATICA);
+end;
+
+procedure TPreferencias.GravarPreferencia(const aChave: string;
+  const aValor: boolean);
+begin
+  FArquivoINI.WriteValue(aChave, aValor);
 end;
 
 end.

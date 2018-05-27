@@ -1,5 +1,7 @@
 unit View.Monitor;
 
+{$WARN SYMBOL_PLATFORM OFF}
+
 interface
 
 uses
@@ -7,7 +9,8 @@ uses
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.ExtCtrls, Vcl.Grids,
   Vcl.DBGrids, Vcl.StdCtrls,
-  Vcl.Buttons, Vcl.Samples.Spin, Datasnap.DBClient, Vcl.ComCtrls;
+  Vcl.Buttons, Vcl.Samples.Spin, Datasnap.DBClient, Vcl.ComCtrls, Vcl.Menus,
+  Utils.FormatadorSQL;
 
 type
   TfMonitor = class(TForm)
@@ -40,6 +43,10 @@ type
     GroupBoxLog: TGroupBox;
     CheckBoxExibirSomenteSQL: TCheckBox;
     CheckBoxDestacarLinhasErros: TCheckBox;
+    LabelInformacaoRegistro: TLabel;
+    PopupMenu: TPopupMenu;
+    MenuItemCopiarColuna: TMenuItem;
+    MenuItemCopiarSQL: TMenuItem;
     procedure BitBtnLimparLogClick(Sender: TObject);
     procedure BitBtnAbrirLogClick(Sender: TObject);
     procedure BitBtnAtualizarLogClick(Sender: TObject);
@@ -47,21 +54,35 @@ type
     procedure CheckBoxAtualizacaoAutomaticaClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure ClientDataSetAfterScroll(DataSet: TDataSet);
+    procedure CheckBoxExibirSomenteSQLClick(Sender: TObject);
+    procedure CheckBoxDestacarLinhasErrosClick(Sender: TObject);
+    procedure MenuItemCopiarColunaClick(Sender: TObject);
+    procedure MenuItemCopiarSQLClick(Sender: TObject);
+    procedure DBGridDblClick(Sender: TObject);
   private
     FContador: integer;
     FStringListArquivo: TStringList;
     FStringListLinha: TStringList;
+    FFormatadorSQL: TFormatadorSQL;
 
     function AbrirArquivo: string;
+    function FormatarSQL: string;
+    function ObterDataHora: string;
     function VerificarDeveExibirSomenteSQL: boolean;
     function VerificarLinhaEhSQL: boolean;
+    procedure AbrirFormularioSQL;
     procedure CarregarPreferencias;
     procedure CarregarLog;
+    procedure CopiarColuna;
+    procedure CopiarSQL;
+    procedure BuscarLogMaisRecente;
     procedure ControlarTemporizador;
-    procedure CriarStringLists;
-    procedure DestruirStringLists;
+    procedure CriarObjetosInternos;
+    procedure DestruirObjetosInternos;
+    procedure ExibirInformacaoRegistro;
+    procedure GravarPreferencia(const aChave: string; const aValor: boolean);
     procedure InicializarPropriedades;
-    function PegarDataHora: string;
   end;
 
 var
@@ -70,7 +91,7 @@ var
 implementation
 
 uses
-  Utils.Preferencias;
+  ClipBrd, Utils.Preferencias, Utils.Constantes, View.SQL;
 
 {$R *.dfm}
 
@@ -91,6 +112,19 @@ begin
     EditArquivo.Text := Trim(OpenDialog.FileName);
   finally
     OpenDialog.Free;
+  end;
+end;
+
+procedure TfMonitor.AbrirFormularioSQL;
+var
+  lFormularioSQL: TfFormularioSQL;
+begin
+  lFormularioSQL := TfFormularioSQL.Create(nil);
+  try
+    lFormularioSQL.SQL := FormatarSQL;
+    lFormularioSQL.ShowModal;
+  finally
+    lFormularioSQL.Free;
   end;
 end;
 
@@ -117,10 +151,36 @@ begin
   ClientDataSet.EmptyDataSet;
 end;
 
+procedure TfMonitor.BuscarLogMaisRecente;
+var
+  SearchRec: TSearchRec;
+  lHoraArquivo: TFileTime;
+  lNomeArquivo: string;
+begin
+  if FindFirst('Q:\Bin\spLogMetodoServidor*.txt', faNormal, SearchRec) <> 0 then
+    Exit;
+
+  lHoraArquivo.dwLowDateTime := 0;
+  lHoraArquivo.dwHighDateTime := 0;
+
+  repeat
+    if CompareFileTime(SearchRec.FindData.ftCreationTime, lHoraArquivo) = 1 then
+    begin
+      lHoraArquivo := SearchRec.FindData.ftCreationTime;
+      lNomeArquivo := SearchRec.Name;
+    end;
+  until FindNext(SearchRec) <> 0;
+
+  FindClose(SearchRec);
+  EditArquivo.Text := lNomeArquivo.Trim;
+  CarregarLog;
+end;
+
 procedure TfMonitor.CarregarLog;
 var
   lContador: integer;
 begin
+  ClientDataSet.AfterScroll := nil;
   ClientDataSet.DisableControls;
   try
     TimerAtualizacaoAutomatica.Enabled := False;
@@ -138,16 +198,18 @@ begin
       ClientDataSetBase.AsString := FStringListLinha[6];
       ClientDataSetUsuario.AsString := FStringListLinha[9];
       ClientDataSetIP.AsString := FStringListLinha[10];
-      ClientDataSetDataHora.AsString := PegarDataHora;
+      ClientDataSetDataHora.AsString := ObterDataHora;
       ClientDataSetClasse.AsString := FStringListLinha[13];
       ClientDataSetMetodo.AsString := FStringListLinha[14];
       ClientDataSetSQL.AsString := FStringListLinha[15];
       ClientDataSet.Post;
     end;
   finally
+    ClientDataSet.AfterScroll := ClientDataSetAfterScroll;
     ClientDataSet.EnableControls;
   end;
 
+  ExibirInformacaoRegistro;
   FContador := FStringListArquivo.Count;
   ControlarTemporizador;
 end;
@@ -174,6 +236,23 @@ begin
   LabelIntervalo.Enabled := lHabilitar;
   SpinEditIntervalo.Enabled := lHabilitar;
   TimerAtualizacaoAutomatica.Enabled := lHabilitar;
+
+  GravarPreferencia(sHABILITAR_ATUALIZACAO_AUTOMATICA, lHabilitar);
+end;
+
+procedure TfMonitor.CheckBoxDestacarLinhasErrosClick(Sender: TObject);
+begin
+  GravarPreferencia(sDESTACAR_LINHAS_ERRO, CheckBoxDestacarLinhasErros.Checked);
+end;
+
+procedure TfMonitor.CheckBoxExibirSomenteSQLClick(Sender: TObject);
+begin
+  GravarPreferencia(sEXIBIR_SOMENTE_SQL, CheckBoxExibirSomenteSQL.Checked);
+end;
+
+procedure TfMonitor.ClientDataSetAfterScroll(DataSet: TDataSet);
+begin
+  ExibirInformacaoRegistro;
 end;
 
 procedure TfMonitor.ControlarTemporizador;
@@ -182,16 +261,42 @@ begin
   TimerAtualizacaoAutomatica.Enabled := CheckBoxAtualizacaoAutomatica.Checked;
 end;
 
-procedure TfMonitor.CriarStringLists;
+procedure TfMonitor.CopiarColuna;
+var
+  lNomeColuna: string;
+begin
+  lNomeColuna := DBGrid.SelectedField.FieldName;
+  Clipboard.AsText := ClientDataSet.FieldByName(lNomeColuna).AsString;
+end;
+
+procedure TfMonitor.CopiarSQL;
+begin
+  Clipboard.AsText := FormatarSQL;
+end;
+
+procedure TfMonitor.CriarObjetosInternos;
 begin
   FStringListArquivo := TStringList.Create;
   FStringListLinha := TStringList.Create;
+  FFormatadorSQL := TFormatadorSQL.Create;
 end;
 
-procedure TfMonitor.DestruirStringLists;
+procedure TfMonitor.DBGridDblClick(Sender: TObject);
+begin
+  AbrirFormularioSQL;
+end;
+
+procedure TfMonitor.DestruirObjetosInternos;
 begin
   FStringListArquivo.Free;
   FStringListLinha.Free;
+  FFormatadorSQL.Free;
+end;
+
+procedure TfMonitor.ExibirInformacaoRegistro;
+begin
+  LabelInformacaoRegistro.Caption := Format('Registro %d / %d',
+    [ClientDataSet.RecNo, ClientdataSet.RecordCount]);
 end;
 
 function TfMonitor.VerificarDeveExibirSomenteSQL: boolean;
@@ -199,16 +304,35 @@ begin
   result := CheckBoxExibirSomenteSQL.Checked;
 end;
 
+function TfMonitor.FormatarSQL: string;
+begin
+  result := FFormatadorSQL.FormatarSQL(ClientDataSetSQL.AsString);
+end;
+
 procedure TfMonitor.FormCreate(Sender: TObject);
 begin
-  CriarStringLists;
+  CriarObjetosInternos;
   InicializarPropriedades;
   CarregarPreferencias;
+  BuscarLogMaisRecente;
 end;
 
 procedure TfMonitor.FormDestroy(Sender: TObject);
 begin
-  DestruirStringLists;
+  DestruirObjetosInternos;
+end;
+
+procedure TfMonitor.GravarPreferencia(const aChave: string;
+  const aValor: boolean);
+var
+  lPreferencias: TPreferencias;
+begin
+  lPreferencias := TPreferencias.Create;
+  try
+    lPreferencias.GravarPreferencia(aChave, aValor);
+  finally
+    lPreferencias.Free;
+  end;
 end;
 
 procedure TfMonitor.InicializarPropriedades;
@@ -219,12 +343,22 @@ begin
   FContador := 0;
 end;
 
+procedure TfMonitor.MenuItemCopiarColunaClick(Sender: TObject);
+begin
+  CopiarColuna;
+end;
+
+procedure TfMonitor.MenuItemCopiarSQLClick(Sender: TObject);
+begin
+  CopiarSQL;
+end;
+
 function TfMonitor.VerificarLinhaEhSQL: boolean;
 begin
   result := FStringListLinha[5] = 'SQL';
 end;
 
-function TfMonitor.PegarDataHora: string;
+function TfMonitor.ObterDataHora: string;
 begin
   result := Format('%s  %s', [FStringListLinha[11],
     Copy(FStringListLinha[12], 0, 8)]);
