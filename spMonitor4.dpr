@@ -6,8 +6,7 @@ uses
   Utils.Preferencias in 'Utils.Preferencias.pas',
   Utils.Helpers in 'Utils.Helpers.pas',
   Utils.Constantes in 'Utils.Constantes.pas',
-  Utils.FormatadorSQL in 'Utils.FormatadorSQL.pas',
-  View.SQL in 'View.SQL.pas' {fFormularioSQL};
+  Utils.FormatadorSQL in 'Utils.FormatadorSQL.pas';
 
 {$R *.res}
 
