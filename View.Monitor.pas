@@ -47,6 +47,14 @@ type
     PopupMenu: TPopupMenu;
     MenuItemCopiarColuna: TMenuItem;
     MenuItemCopiarSQL: TMenuItem;
+    TabSheetSQL: TTabSheet;
+    MemoAbaSQL: TMemo;
+    Splitter: TSplitter;
+    PanelFiltroSQL: TPanel;
+    Label1: TLabel;
+    EditFiltroSQL: TEdit;
+    MemoSQL: TMemo;
+    CheckBoxExibirPainelInferior: TCheckBox;
     procedure BitBtnLimparLogClick(Sender: TObject);
     procedure BitBtnAbrirLogClick(Sender: TObject);
     procedure BitBtnAtualizarLogClick(Sender: TObject);
@@ -60,6 +68,10 @@ type
     procedure MenuItemCopiarColunaClick(Sender: TObject);
     procedure MenuItemCopiarSQLClick(Sender: TObject);
     procedure DBGridDblClick(Sender: TObject);
+    procedure MemoAbaSQLKeyPress(Sender: TObject; var Key: Char);
+    procedure EditFiltroSQLKeyPress(Sender: TObject; var Key: Char);
+    procedure CheckBoxExibirPainelInferiorClick(Sender: TObject);
+    procedure MemoSQLKeyPress(Sender: TObject; var Key: Char);
   private
     FContador: integer;
     FStringListArquivo: TStringList;
@@ -71,7 +83,7 @@ type
     function ObterDataHora: string;
     function VerificarDeveExibirSomenteSQL: boolean;
     function VerificarLinhaEhSQL: boolean;
-    procedure AbrirFormularioSQL;
+    procedure AbrirAbaSQL;
     procedure CarregarPreferencias;
     procedure CarregarLog;
     procedure CopiarColuna;
@@ -81,6 +93,7 @@ type
     procedure CriarObjetosInternos;
     procedure DestruirObjetosInternos;
     procedure ExibirInformacaoRegistro;
+    procedure FiltrarRegistrosPorSQL;
     procedure GravarPreferencia(const aChave: string; const aValor: boolean);
     procedure InicializarPropriedades;
   end;
@@ -91,7 +104,7 @@ var
 implementation
 
 uses
-  ClipBrd, Utils.Preferencias, Utils.Constantes, View.SQL;
+  ClipBrd, Utils.Helpers, Utils.Preferencias, Utils.Constantes, View.SQL;
 
 {$R *.dfm}
 
@@ -115,17 +128,10 @@ begin
   end;
 end;
 
-procedure TfMonitor.AbrirFormularioSQL;
-var
-  lFormularioSQL: TfFormularioSQL;
+procedure TfMonitor.AbrirAbaSQL;
 begin
-  lFormularioSQL := TfFormularioSQL.Create(nil);
-  try
-    lFormularioSQL.SQL := FormatarSQL;
-    lFormularioSQL.ShowModal;
-  finally
-    lFormularioSQL.Free;
-  end;
+  MemoAbaSQL.Lines.Text := FormatarSQL;
+  PageControl.ActivePage := TabSheetSQL;
 end;
 
 procedure TfMonitor.BitBtnAbrirLogClick(Sender: TObject);
@@ -149,6 +155,7 @@ end;
 procedure TfMonitor.BitBtnLimparLogClick(Sender: TObject);
 begin
   ClientDataSet.EmptyDataSet;
+  LabelInformacaoRegistro.Caption := EmptyStr;
 end;
 
 procedure TfMonitor.BuscarLogMaisRecente;
@@ -180,6 +187,9 @@ procedure TfMonitor.CarregarLog;
 var
   lContador: integer;
 begin
+  if EditArquivo.IsEmpty then
+    Exit;
+
   ClientDataSet.AfterScroll := nil;
   ClientDataSet.DisableControls;
   try
@@ -228,6 +238,11 @@ begin
   end;
 end;
 
+procedure TfMonitor.CheckBoxExibirPainelInferiorClick(Sender: TObject);
+begin
+  GravarPreferencia(sEXIBIR_PAINEL_INFERIOR, CheckBoxExibirPainelInferior.Checked);
+end;
+
 procedure TfMonitor.CheckBoxAtualizacaoAutomaticaClick(Sender: TObject);
 var
   lHabilitar: boolean;
@@ -253,6 +268,7 @@ end;
 procedure TfMonitor.ClientDataSetAfterScroll(DataSet: TDataSet);
 begin
   ExibirInformacaoRegistro;
+  MemoSQL.Lines.Text := FormatarSQL;
 end;
 
 procedure TfMonitor.ControlarTemporizador;
@@ -283,7 +299,7 @@ end;
 
 procedure TfMonitor.DBGridDblClick(Sender: TObject);
 begin
-  AbrirFormularioSQL;
+  AbrirAbaSQL;
 end;
 
 procedure TfMonitor.DestruirObjetosInternos;
@@ -291,6 +307,15 @@ begin
   FStringListArquivo.Free;
   FStringListLinha.Free;
   FFormatadorSQL.Free;
+end;
+
+procedure TfMonitor.EditFiltroSQLKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #13 then
+  begin
+    Key := #0;
+    FiltrarRegistrosPorSQL;
+   end;
 end;
 
 procedure TfMonitor.ExibirInformacaoRegistro;
@@ -302,6 +327,22 @@ end;
 function TfMonitor.VerificarDeveExibirSomenteSQL: boolean;
 begin
   result := CheckBoxExibirSomenteSQL.Checked;
+end;
+
+procedure TfMonitor.FiltrarRegistrosPorSQL;
+begin
+  if ClientDataSet.IsEmpty then
+    Exit;
+
+  if EditFiltroSQL.IsEmpty then
+  begin
+    ClientDataSet.Filtered := False;
+    Exit;
+  end;
+
+  ClientDataSet.Filter := Format('SQL like %s',
+    [QuotedStr('%' + EditFiltroSQL.Text + '%')]);
+  ClientDataSet.Filtered := True;
 end;
 
 function TfMonitor.FormatarSQL: string;
@@ -341,6 +382,24 @@ begin
   FStringListLinha.Delimiter := ';';
   FStringListLinha.StrictDelimiter := True;
   FContador := 0;
+end;
+
+procedure TfMonitor.MemoAbaSQLKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = ^C then
+    ClipBoard.AsText := MemoAbaSQL.Lines.Text;
+
+  if Key = ^A then
+    MemoAbaSQL.SelectAll;
+end;
+
+procedure TfMonitor.MemoSQLKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = ^C then
+    ClipBoard.AsText := MemoSQL.Lines.Text;
+
+  if Key = ^A then
+    MemoSQL.SelectAll;
 end;
 
 procedure TfMonitor.MenuItemCopiarColunaClick(Sender: TObject);

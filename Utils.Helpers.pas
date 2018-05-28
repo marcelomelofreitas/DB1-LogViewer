@@ -3,7 +3,7 @@ unit Utils.Helpers;
 interface
 
 uses
-  IniFiles;
+  System.IniFiles, Vcl.StdCtrls;
 
 type
   TIniFileHelper = class helper for TIniFile
@@ -11,7 +11,14 @@ type
     procedure WriteValue(const aKey: string; const aValue: boolean);
   end;
 
+  TEditHelper = class helper for TEdit
+    function IsEmpty: boolean;
+  end;
+
 implementation
+
+uses
+  System.SysUtils;
 
 { TIniFileHelper }
 
@@ -23,6 +30,13 @@ end;
 procedure TIniFileHelper.WriteValue(const aKey: string; const aValue: boolean);
 begin
   Self.WriteBool('Opcoes', aKey, aValue);
+end;
+
+{ TEditHelper }
+
+function TEditHelper.IsEmpty: boolean;
+begin
+  result := Trim(Self.Text) = EmptyStr;
 end;
 
 end.

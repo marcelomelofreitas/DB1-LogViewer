@@ -13,6 +13,7 @@ type
     function GetHabilitarAtualizacaoAutomatica: boolean;
     function GetExibirSomenteSQL: boolean;
     function GetDestacarLinhasErro: boolean;
+    function GetExibirPainelInferior: boolean;
   public
     constructor Create;
     destructor Destroy; override;
@@ -21,6 +22,7 @@ type
     property HabilitarAtualizacaoAutomatica: boolean read GetHabilitarAtualizacaoAutomatica;
     property ExibirSomenteSQL: boolean read GetExibirSomenteSQL;
     property DestacarLinhasErro: boolean read GetDestacarLinhasErro;
+    property ExibirPainelInferior: boolean read GetExibirPainelInferior;
   end;
 
 implementation
@@ -44,6 +46,11 @@ end;
 function TPreferencias.GetDestacarLinhasErro: boolean;
 begin
   result := FArquivoINI.ReadValue(sDESTACAR_LINHAS_ERRO);
+end;
+
+function TPreferencias.GetExibirPainelInferior: boolean;
+begin
+  result := FArquivoINI.ReadValue(sEXIBIR_PAINEL_INFERIOR);
 end;
 
 function TPreferencias.GetExibirSomenteSQL: boolean;

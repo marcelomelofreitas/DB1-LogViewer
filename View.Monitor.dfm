@@ -28,6 +28,16 @@ object fMonitor: TfMonitor
     TabWidth = 100
     object TabSheetLog: TTabSheet
       Caption = 'Log'
+      object Splitter: TSplitter
+        Left = 0
+        Top = 332
+        Width = 963
+        Height = 3
+        Cursor = crVSplit
+        Align = alBottom
+        ExplicitTop = 91
+        ExplicitWidth = 338
+      end
       object PanelOpcoes: TPanel
         Left = 0
         Top = 0
@@ -40,9 +50,9 @@ object fMonitor: TfMonitor
           963
           91)
         object LabelInformacaoRegistro: TLabel
-          Left = 840
+          Left = 956
           Top = 72
-          Width = 119
+          Width = 3
           Height = 13
           Alignment = taRightJustify
           Anchors = [akLeft, akTop, akRight]
@@ -256,6 +266,7 @@ object fMonitor: TfMonitor
           Top = 58
           Width = 469
           Height = 21
+          Color = clInfoBk
           ReadOnly = True
           TabOrder = 3
           Text = 'C:\Andre.Celestino\log2.txt'
@@ -300,17 +311,19 @@ object fMonitor: TfMonitor
         Left = 0
         Top = 91
         Width = 963
-        Height = 338
+        Height = 241
         Align = alClient
+        BevelOuter = bvNone
         TabOrder = 1
+        ExplicitHeight = 335
         object DBGrid: TDBGrid
-          Left = 1
-          Top = 1
-          Width = 961
-          Height = 336
+          Left = 0
+          Top = 0
+          Width = 963
+          Height = 241
           Align = alClient
           DataSource = DataSource
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           PopupMenu = PopupMenu
           ReadOnly = True
           TabOrder = 0
@@ -337,7 +350,7 @@ object fMonitor: TfMonitor
               Expanded = False
               FieldName = 'Usuario'
               Title.Caption = 'Usu'#225'rio'
-              Width = 120
+              Width = 140
               Visible = True
             end
             item
@@ -369,21 +382,86 @@ object fMonitor: TfMonitor
       end
       object PanelFiltro: TPanel
         Left = 0
-        Top = 429
+        Top = 335
         Width = 963
-        Height = 41
+        Height = 135
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 2
+        ExplicitTop = 338
+        object PanelFiltroSQL: TPanel
+          Left = 0
+          Top = 0
+          Width = 963
+          Height = 27
+          Align = alTop
+          BevelOuter = bvNone
+          TabOrder = 0
+          object Label1: TLabel
+            Left = 8
+            Top = 8
+            Width = 28
+            Height = 13
+            Caption = 'Filtro:'
+          end
+          object EditFiltroSQL: TEdit
+            Left = 42
+            Top = 3
+            Width = 519
+            Height = 21
+            TabOrder = 0
+            OnKeyPress = EditFiltroSQLKeyPress
+          end
+        end
+        object MemoSQL: TMemo
+          Left = 0
+          Top = 27
+          Width = 963
+          Height = 108
+          Align = alClient
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -13
+          Font.Name = 'Courier New'
+          Font.Style = []
+          ParentFont = False
+          ReadOnly = True
+          ScrollBars = ssBoth
+          TabOrder = 1
+          OnKeyPress = MemoSQLKeyPress
+        end
+      end
+    end
+    object TabSheetSQL: TTabSheet
+      Caption = 'SQL'
+      ImageIndex = 2
+      ExplicitWidth = 960
+      object MemoAbaSQL: TMemo
+        Left = 0
+        Top = 0
+        Width = 963
+        Height = 470
+        Align = alClient
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssBoth
+        TabOrder = 0
+        OnKeyPress = MemoAbaSQLKeyPress
       end
     end
     object TabSheetOpcoes: TTabSheet
       Caption = 'Op'#231#245'es'
+      ExplicitWidth = 960
       object GroupBoxLog: TGroupBox
         Left = 18
         Top = 16
         Width = 213
-        Height = 73
+        Height = 97
         Caption = 'Log: '
         TabOrder = 0
         object CheckBoxExibirSomenteSQL: TCheckBox
@@ -397,12 +475,21 @@ object fMonitor: TfMonitor
         end
         object CheckBoxDestacarLinhasErros: TCheckBox
           Left = 8
-          Top = 42
+          Top = 43
           Width = 189
           Height = 17
           Caption = 'Destacar linhas de erros'
           TabOrder = 1
           OnClick = CheckBoxDestacarLinhasErrosClick
+        end
+        object CheckBoxExibirPainelInferior: TCheckBox
+          Left = 8
+          Top = 65
+          Width = 169
+          Height = 17
+          Caption = 'Exibir Painel Inferior'
+          TabOrder = 2
+          OnClick = CheckBoxExibirPainelInferiorClick
         end
       end
     end
@@ -466,7 +553,7 @@ object fMonitor: TfMonitor
   end
   object PopupMenu: TPopupMenu
     Left = 418
-    Top = 48
+    Top = 49
     object MenuItemCopiarColuna: TMenuItem
       Caption = 'Copiar Coluna'
       ShortCut = 16465

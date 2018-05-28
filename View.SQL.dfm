@@ -30,6 +30,5 @@ object fFormularioSQL: TfFormularioSQL
     ReadOnly = True
     ScrollBars = ssBoth
     TabOrder = 0
-    OnKeyPress = MemoSQLKeyPress
   end
 end
