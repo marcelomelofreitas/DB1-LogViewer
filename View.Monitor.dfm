@@ -169,7 +169,6 @@ object fMonitor: TfMonitor
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
-          OnDrawColumnCell = DBGridDrawColumnCell
           OnDblClick = DBGridDblClick
           Columns = <
             item

@@ -79,8 +79,6 @@ type
     procedure ActionAbrirLogExecute(Sender: TObject);
     procedure ActionAtualizarLogExecute(Sender: TObject);
     procedure ActionLimparLogExecute(Sender: TObject);
-    procedure DBGridDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
-      Column: TColumn; State: TGridDrawState);
   private
     FContador: integer;
     FStringListArquivo: TStringList;
@@ -186,25 +184,25 @@ end;
 
 procedure TfMonitor.BuscarLogMaisRecente;
 var
-  SearchRec: TSearchRec;
+  lSearchRec: TSearchRec;
   lHoraArquivo: TFileTime;
   lNomeArquivo: string;
 begin
-  if FindFirst('Q:\Bin\spLogMetodoServidor*.txt', faNormal, SearchRec) <> 0 then
+  if FindFirst('Q:\Bin\spLogMetodoServidor*.txt', faNormal, lSearchRec) <> 0 then
     Exit;
 
   lHoraArquivo.dwLowDateTime := 0;
   lHoraArquivo.dwHighDateTime := 0;
 
   repeat
-    if CompareFileTime(SearchRec.FindData.ftCreationTime, lHoraArquivo) = 1 then
+    if CompareFileTime(lSearchRec.FindData.ftCreationTime, lHoraArquivo) = 1 then
     begin
-      lHoraArquivo := SearchRec.FindData.ftCreationTime;
-      lNomeArquivo := SearchRec.Name;
+      lHoraArquivo := lSearchRec.FindData.ftCreationTime;
+      lNomeArquivo := lSearchRec.Name;
     end;
-  until FindNext(SearchRec) <> 0;
+  until FindNext(lSearchRec) <> 0;
 
-  FindClose(SearchRec);
+  FindClose(lSearchRec);
   EditArquivo.Text := 'Q:\bin\' + lNomeArquivo.Trim;
   CarregarLog;
 end;
@@ -334,23 +332,6 @@ end;
 procedure TfMonitor.DBGridDblClick(Sender: TObject);
 begin
   AbrirAbaSQL;
-end;
-
-procedure TfMonitor.DBGridDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
-  Column: TColumn; State: TGridDrawState);
-begin
-  if not CheckBoxDestacarLinhasErros.Checked then
-    Exit;
-// verifica se o registro está inativo
-if ClientDataSet.FieldByName('Ativo').AsString = 'N' then
-begin
-  // formata a linha em vermelho e itálico
-  DBGrid.Canvas.Font.Style := [fsItalic];
-  DBGrid.Canvas.Font.Color := clRed;
-
-  // pinta a linha
-  DBGrid.DefaultDrawColumnCell(Rect, DataCol, Column, State);
-end;
 end;
 
 procedure TfMonitor.DestruirObjetosInternos;
