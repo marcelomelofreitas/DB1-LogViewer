@@ -97,6 +97,7 @@ type
     function ObterErro: string;
     function VerificarDeveExibirSomenteSQL: boolean;
     function VerificarLinhaEhSQL: boolean;
+    function VerificarArquivoEhValido: boolean;
     procedure AbrirAbaSQL;
     procedure AssociarEventosCheckBoxes;
     procedure CarregarPreferencias;
@@ -110,6 +111,7 @@ type
     procedure ExibirInformacaoRegistro;
     procedure FiltrarRegistrosPorSQL;
     procedure GravarPreferencia(const aChave: string; const aValor: boolean);
+    procedure IncluirLinhaLog;
     procedure InicializarPropriedades;
     procedure RemoverEventosCheckBoxes;
   end;
@@ -209,42 +211,28 @@ end;
 
 procedure TfMonitor.CarregarLog;
 var
-  lContador: integer;
+  lLinha: string;
 begin
-  if EditArquivo.IsEmpty then
+  if not VerificarArquivoEhValido then
     Exit;
-
-  if not FileExists(EditArquivo.Text) then
-  begin
-    Exit;
-  end;
 
   ClientDataSet.AfterScroll := nil;
   ClientDataSet.DisableControls;
+  TimerAtualizacaoAutomatica.Enabled := False;
   try
-    TimerAtualizacaoAutomatica.Enabled := False;
     FStringListArquivo.LoadFromStream(
       TFileStream.Create(EditArquivo.Text, fmOpenRead or fmShareDenyNone));
 
-    for lContador := FContador to Pred(FStringListArquivo.Count) do
+    for lLInha in FStringListArquivo do
     begin
-      FStringListLinha.DelimitedText := FStringListArquivo[lContador];
+      FStringListLinha.DelimitedText := lLInha;
 
       if VerificarDeveExibirSomenteSQL and (not VerificarLinhaEhSQL) then
         Continue;
 
-      ClientDataSet.Append;
-      ClientDataSetTipo.AsString := FStringListLinha[5];
-      ClientDataSetBase.AsString := FStringListLinha[6];
-      ClientDataSetUsuario.AsString := FStringListLinha[9];
-      ClientDataSetIP.AsString := FStringListLinha[10];
-      ClientDataSetDataHora.AsString := ObterDataHora;
-      ClientDataSetClasse.AsString := FStringListLinha[13];
-      ClientDataSetMetodo.AsString := FStringListLinha[14];
-      ClientDataSetSQL.AsString := FStringListLinha[15];
-      ClientDataSetErro.AsString := ObterErro;
-      ClientDataSet.Post;
+      IncluirLinhaLog;
     end;
+
   finally
     ClientDataSet.AfterScroll := ClientDataSetAfterScroll;
     ClientDataSet.EnableControls;
@@ -253,6 +241,9 @@ begin
   ExibirInformacaoRegistro;
   FContador := FStringListArquivo.Count;
   ControlarTemporizador;
+
+  if not ClientDataSetSQL.AsString.IsEmpty then
+    MemoSQL.Lines.Text := FormatarSQL;
 end;
 
 procedure TfMonitor.CarregarPreferencias;
@@ -394,6 +385,19 @@ begin
     [ClientDataSet.RecNo, ClientdataSet.RecordCount]);
 end;
 
+function TfMonitor.VerificarArquivoEhValido: boolean;
+begin
+  result := False;
+
+  if EditArquivo.IsEmpty then
+    Exit;
+
+  if not FileExists(EditArquivo.Text) then
+    Exit;
+
+  result := True;
+end;
+
 function TfMonitor.VerificarDeveExibirSomenteSQL: boolean;
 begin
   result := CheckBoxExibirSomenteSQL.Checked;
@@ -445,6 +449,21 @@ begin
   finally
     lPreferencias.Free;
   end;
+end;
+
+procedure TfMonitor.IncluirLinhaLog;
+begin
+  ClientDataSet.Append;
+  ClientDataSetTipo.AsString := FStringListLinha[5];
+  ClientDataSetBase.AsString := FStringListLinha[6];
+  ClientDataSetUsuario.AsString := FStringListLinha[9];
+  ClientDataSetIP.AsString := FStringListLinha[10];
+  ClientDataSetDataHora.AsString := ObterDataHora;
+  ClientDataSetClasse.AsString := FStringListLinha[13];
+  ClientDataSetMetodo.AsString := FStringListLinha[14];
+  ClientDataSetSQL.AsString := FStringListLinha[15];
+  ClientDataSetErro.AsString := ObterErro;
+  ClientDataSet.Post;
 end;
 
 procedure TfMonitor.InicializarPropriedades;

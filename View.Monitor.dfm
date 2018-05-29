@@ -66,7 +66,7 @@ object fMonitor: TfMonitor
         object EditArquivo: TEdit
           Left = 1
           Top = 63
-          Width = 503
+          Width = 533
           Height = 21
           Color = clInfoBk
           ReadOnly = True
@@ -94,7 +94,7 @@ object fMonitor: TfMonitor
           Spacing = 0
         end
         object GroupBoxAtualizacaoAutomatica: TGroupBox
-          Left = 319
+          Left = 349
           Top = 3
           Width = 185
           Height = 54
@@ -129,9 +129,9 @@ object fMonitor: TfMonitor
           end
         end
         object GroupBox1: TGroupBox
-          Left = 510
+          Left = 600
           Top = 3
-          Width = 503
+          Width = 413
           Height = 81
           Caption = 'GroupBox1'
           TabOrder = 3
@@ -412,7 +412,7 @@ object fMonitor: TfMonitor
     Left = 1100
     Top = 371
     Bitmap = {
-      494C010103000500040020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C0101030005000C0020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       000000000000000000000000000000000000000000000000000000060809000F
       1517000F1517000F1517000F1517000F1517000F1517000F1517000F1517000F
@@ -952,6 +952,12 @@ object fMonitor: TfMonitor
       item
         Items = <
           item
+            Action = ActionAbrirLog
+            Caption = '&Abrir Arquivo'
+            ImageIndex = 0
+            ShortCut = 16463
+          end
+          item
             Caption = '-'
           end
           item
@@ -977,7 +983,7 @@ object fMonitor: TfMonitor
     Top = 371
     StyleName = 'Platform Default'
     object ActionAbrirLog: TAction
-      Caption = 'ActionAbrirLog'
+      Caption = 'Abrir Arquivo'
       ImageIndex = 0
       ShortCut = 16463
       OnExecute = ActionAbrirLogExecute

@@ -24,9 +24,11 @@ uses
 
 function TFormatadorSQL.PreencherParametrosSQL(const aSQL: string): string;
 var
-  nCont, nPosParams, nAbriu: integer;
-  sSQL, sParams, sAux, lNome, lTipo, lValor, lValorFormatado: string;
+  nCont, nPosParams: integer;
+  sSQL, sParams: string;
   lListaParametros, lListaValores: TStringList;
+  lNome, lTipo, lValor, lValorFormatado, lCopia, lLetra: string;
+  lEncontrouParametro: boolean;
 begin
   nPosParams := AnsiPos('PARAMS=', AnsiUpperCase(aSQL));
 
@@ -36,7 +38,7 @@ begin
     Exit;
   end;
 
-  sSQL := Copy(aSQL, 1, nPosParams - 1);
+  sSQL := Copy(aSQL, 1, Pred(nPosParams));
   sParams := Copy(aSQL, nPosParams, Length(aSQL) - nPosParams + 1);
 
   Result := sSQL;
@@ -44,52 +46,59 @@ begin
   lListaParametros := TStringList.Create;
   lListaValores := TStringList.Create;
   try
-    nAbriu := 0;
-    for nCont := 1 to Length(sParams) do
-    begin
-      if (sParams[nCont] = '[') and (nAbriu = 0) then
-        sAux := EmptyStr
-      else if (sParams[nCont] = ']') and (nAbriu = 1) then
-        lListaParametros.Add(sAux)
-      else
-        sAux := sAux + sParams[nCont];
+    lEncontrouParametro := False;
+    lCopia := EmptyStr;
 
-      if sParams[nCont] = '[' then
-        Inc(nAbriu)
-      else if sParams[nCont] = ']' then
-        Dec(nAbriu);
+    for lLetra in sParams do
+    begin
+      if lLetra = '[' then
+      begin
+        lEncontrouParametro := True;
+        Continue;
+      end;
+
+      if lLetra = ']' then
+      begin
+        lListaParametros.Add(lCopia);
+        lEncontrouParametro := False;
+        lCopia := EmptyStr;
+        Continue;
+      end;
+
+      if lEncontrouParametro then
+        lCopia := lCopia + lLetra;
     end;
+
     lListaParametros.Sort;
 
+    lListaValores.StrictDelimiter := True;
+    lListaValores.Delimiter := ',';
     for nCont := Pred(lListaParametros.Count) downto 0 do
     begin
-      sAux := SubstituirString(lListaParametros[nCont], sESPACO, sSEPARADOR);
-      lListaValores.CommaText := sAux;
-      lNome := ':' + SubstituirString(lListaValores[0], sSEPARADOR, sESPACO);
-      lTipo := AnsiUpperCase(SubstituirString(lListaValores[1], sSEPARADOR, sESPACO));
+      lListaValores.DelimitedText := lListaParametros[nCont];
+      lNome := ':' + lListaValores[0];
+      lTipo := AnsiUpperCase(lListaValores[1]);
       lValor := lListaValores[2];
 
       if lListaValores.Count < 3 then
-        lValorFormatado := 'null'
-      else
       begin
-        lValor := SubstituirString(lValor, sSEPARADOR, sESPACO);
-        if ((lTipo = 'FTFIXEDCHAR') or (lTipo = 'FTSTRING')) and (QuotedStr(Copy(lValor, 2, Length(lValor) - 2)) <> lValor) then
-        begin
-          lValorFormatado := QuotedStr(lValor);
-        end
-        else if (lTipo = 'FTDATETIME') or (lTipo = 'FTDATE') then
-        begin
-          if AnsiPos('/', lValor) = 0 then
-            lValor := DateTimeToStr(StrToInt(lValor));
-          lValorFormatado := FormatarData(StrToDateTime(lValor));
-        end
-        else
-          lValorFormatado := lValor;
+        lValorFormatado := 'null';
+        Result := SubstituirString(Result, lNome, lValorFormatado);
+        Continue;
       end;
 
+      if ((lTipo = 'FTFIXEDCHAR') or (lTipo = 'FTSTRING')) and (QuotedStr(Copy(lValor, 2, Length(lValor) - 2)) <> lValor) then
+        lValorFormatado := QuotedStr(lValor)
+      else if (lTipo = 'FTDATETIME') or (lTipo = 'FTDATE') then
+      begin
+        if AnsiPos('/', lValor) = 0 then
+          lValor := DateTimeToStr(StrToInt(lValor));
+        lValorFormatado := FormatarData(StrToDateTime(lValor));
+      end
+      else
+        lValorFormatado := lValor;
+
       Result := SubstituirString(Result, lNome, lValorFormatado);
-      Result := SubstituirString(Result, sSEPARADOR, sESPACO);
     end;
 
   finally
