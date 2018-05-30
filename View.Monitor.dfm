@@ -128,20 +128,56 @@ object fMonitor: TfMonitor
             Value = 1
           end
         end
-        object GroupBox1: TGroupBox
-          Left = 600
+        object GroupBoxFiltros: TGroupBox
+          Left = 546
           Top = 3
-          Width = 413
+          Width = 434
           Height = 81
-          Caption = 'GroupBox1'
+          Caption = 'Filtros: '
           TabOrder = 3
-          object Edit1: TEdit
+          object EditFiltroClasse: TEdit
             Left = 14
             Top = 50
-            Width = 121
+            Width = 200
             Height = 21
-            TabOrder = 0
+            MaxLength = 200
+            TabOrder = 1
             TextHint = 'Classe'
+          end
+          object ComboBoxTipo: TComboBox
+            Left = 14
+            Top = 23
+            Width = 100
+            Height = 21
+            Style = csDropDownList
+            ItemIndex = 0
+            TabOrder = 0
+            Text = '[Todos]'
+            TextHint = 'Tipo'
+            OnChange = ComboBoxTipoChange
+            Items.Strings = (
+              '[Todos]'
+              'ENTRADA'
+              'SAIDA'
+              'SQL')
+          end
+          object EditFiltroMetodo: TEdit
+            Left = 222
+            Top = 22
+            Width = 200
+            Height = 21
+            MaxLength = 200
+            TabOrder = 2
+            TextHint = 'M'#233'todo'
+          end
+          object EditFiltroSQL: TEdit
+            Left = 222
+            Top = 50
+            Width = 200
+            Height = 21
+            MaxLength = 200
+            TabOrder = 3
+            TextHint = 'SQL'
           end
         end
       end
@@ -225,35 +261,11 @@ object fMonitor: TfMonitor
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 2
-        object PanelFiltroSQL: TPanel
+        object MemoSQL: TMemo
           Left = 0
           Top = 0
           Width = 1191
-          Height = 27
-          Align = alTop
-          BevelOuter = bvNone
-          TabOrder = 0
-          object Label1: TLabel
-            Left = 2
-            Top = 8
-            Width = 28
-            Height = 13
-            Caption = 'Filtro:'
-          end
-          object EditFiltroSQL: TEdit
-            Left = 36
-            Top = 3
-            Width = 519
-            Height = 21
-            TabOrder = 0
-            OnKeyPress = EditFiltroSQLKeyPress
-          end
-        end
-        object MemoSQL: TMemo
-          Left = 0
-          Top = 27
-          Width = 1191
-          Height = 108
+          Height = 135
           Align = alClient
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -263,7 +275,7 @@ object fMonitor: TfMonitor
           ParentFont = False
           ReadOnly = True
           ScrollBars = ssBoth
-          TabOrder = 1
+          TabOrder = 0
           OnKeyPress = MemoSQLKeyPress
         end
       end
@@ -411,7 +423,7 @@ object fMonitor: TfMonitor
     Left = 1100
     Top = 371
     Bitmap = {
-      494C0101030005000C0020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010103000500040020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       000000000000000000000000000000000000000000000000000000060809000F
       1517000F1517000F1517000F1517000F1517000F1517000F1517000F1517000F

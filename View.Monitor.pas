@@ -15,102 +15,112 @@ uses
 
 type
   TfMonitor = class(TForm)
-    DataSource: TDataSource;
-    TimerAtualizacaoAutomatica: TTimer;
-    ClientDataSet: TClientDataSet;
-    ClientDataSetTipo: TStringField;
-    ClientDataSetBase: TStringField;
-    ClientDataSetUsuario: TStringField;
-    ClientDataSetIP: TStringField;
-    ClientDataSetClasse: TStringField;
-    ClientDataSetMetodo: TStringField;
-    ClientDataSetSQL: TStringField;
-    ClientDataSetDataHora: TStringField;
-    PageControl: TPageControl;
-    TabSheetLog: TTabSheet;
-    PanelOpcoes: TPanel;
-    EditArquivo: TEdit;
-    PanelGrid: TPanel;
-    DBGrid: TDBGrid;
-    PanelFiltro: TPanel;
-    TabSheetOpcoes: TTabSheet;
-    GroupBoxLog: TGroupBox;
-    CheckBoxExibirSomenteSQL: TCheckBox;
-    CheckBoxDestacarLinhasErros: TCheckBox;
-    LabelInformacaoRegistro: TLabel;
-    PopupMenu: TPopupMenu;
-    MenuItemCopiarColuna: TMenuItem;
-    MenuItemCopiarSQL: TMenuItem;
-    TabSheetSQL: TTabSheet;
-    MemoAbaSQL: TMemo;
-    Splitter: TSplitter;
-    PanelFiltroSQL: TPanel;
-    Label1: TLabel;
-    EditFiltroSQL: TEdit;
-    MemoSQL: TMemo;
-    CheckBoxExibirPainelInferior: TCheckBox;
-    ImageList: TImageList;
-    ActionToolBar1: TActionToolBar;
-    ActionManager: TActionManager;
     ActionAbrirLog: TAction;
     ActionAtualizarLog: TAction;
     ActionLimparLog: TAction;
-    GroupBoxAtualizacaoAutomatica: TGroupBox;
-    LabelIntervalo: TLabel;
+    ActionManager: TActionManager;
+    ActionToolBar1: TActionToolBar;
     CheckBoxAtualizacaoAutomatica: TCheckBox;
-    SpinEditIntervalo: TSpinEdit;
-    GroupBox1: TGroupBox;
-    Edit1: TEdit;
+    CheckBoxDestacarLinhasErros: TCheckBox;
+    CheckBoxExibirPainelInferior: TCheckBox;
+    CheckBoxExibirSomenteSQL: TCheckBox;
+    ClientDataSet: TClientDataSet;
+    ClientDataSetBase: TStringField;
+    ClientDataSetClasse: TStringField;
+    ClientDataSetDataHora: TStringField;
     ClientDataSetErro: TStringField;
-    procedure TimerAtualizacaoAutomaticaTimer(Sender: TObject);
-    procedure CheckBoxAtualizacaoAutomaticaClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
-    procedure ClientDataSetAfterScroll(DataSet: TDataSet);
-    procedure CheckBoxExibirSomenteSQLClick(Sender: TObject);
-    procedure CheckBoxDestacarLinhasErrosClick(Sender: TObject);
-    procedure MenuItemCopiarColunaClick(Sender: TObject);
-    procedure MenuItemCopiarSQLClick(Sender: TObject);
-    procedure DBGridDblClick(Sender: TObject);
-    procedure MemoAbaSQLKeyPress(Sender: TObject; var Key: Char);
-    procedure EditFiltroSQLKeyPress(Sender: TObject; var Key: Char);
-    procedure CheckBoxExibirPainelInferiorClick(Sender: TObject);
-    procedure MemoSQLKeyPress(Sender: TObject; var Key: Char);
+    ClientDataSetIP: TStringField;
+    ClientDataSetMetodo: TStringField;
+    ClientDataSetSQL: TStringField;
+    ClientDataSetTipo: TStringField;
+    ClientDataSetUsuario: TStringField;
+    ComboBoxTipo: TComboBox;
+    DataSource: TDataSource;
+    DBGrid: TDBGrid;
+    EditArquivo: TEdit;
+    EditFiltroClasse: TEdit;
+    EditFiltroMetodo: TEdit;
+    EditFiltroSQL: TEdit;
+    GroupBoxAtualizacaoAutomatica: TGroupBox;
+    GroupBoxFiltros: TGroupBox;
+    GroupBoxLog: TGroupBox;
+    ImageList: TImageList;
+    LabelInformacaoRegistro: TLabel;
+    LabelIntervalo: TLabel;
+    MemoAbaSQL: TMemo;
+    MemoSQL: TMemo;
+    MenuItemCopiarColuna: TMenuItem;
+    MenuItemCopiarSQL: TMenuItem;
+    PageControl: TPageControl;
+    PanelFiltro: TPanel;
+    PanelGrid: TPanel;
+    PanelOpcoes: TPanel;
+    PopupMenu: TPopupMenu;
+    SpinEditIntervalo: TSpinEdit;
+    Splitter: TSplitter;
+    TabSheetLog: TTabSheet;
+    TabSheetOpcoes: TTabSheet;
+    TabSheetSQL: TTabSheet;
+    TimerAtualizacaoAutomatica: TTimer;
     procedure ActionAbrirLogExecute(Sender: TObject);
     procedure ActionAtualizarLogExecute(Sender: TObject);
     procedure ActionLimparLogExecute(Sender: TObject);
+    procedure CheckBoxAtualizacaoAutomaticaClick(Sender: TObject);
+    procedure CheckBoxDestacarLinhasErrosClick(Sender: TObject);
+    procedure CheckBoxExibirPainelInferiorClick(Sender: TObject);
+    procedure CheckBoxExibirSomenteSQLClick(Sender: TObject);
+    procedure ClientDataSetAfterScroll(DataSet: TDataSet);
+    procedure ComboBoxTipoChange(Sender: TObject);
+    procedure DBGridDblClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure MemoAbaSQLKeyPress(Sender: TObject; var Key: Char);
+    procedure MemoSQLKeyPress(Sender: TObject; var Key: Char);
+    procedure MenuItemCopiarColunaClick(Sender: TObject);
+    procedure MenuItemCopiarSQLClick(Sender: TObject);
+    procedure TimerAtualizacaoAutomaticaTimer(Sender: TObject);
   private
+    // Class Fields
     FContador: integer;
     FStringListArquivo: TStringList;
     FStringListLinha: TStringList;
     FFormatadorSQL: TFormatadorSQL;
 
     // Event Handlers
-    procedure EventoPinturaLinha(Sender: TObject; const Rect: TRect; DataCol: Integer;
+    procedure OnDrawColumnCellPintura(Sender: TObject; const Rect: TRect; DataCol: Integer;
       Column: TColumn; State: TGridDrawState);
+    procedure OnKeyPressCamposFiltros(Sender: TObject; var Key: Char);
 
+    // Functions
     function AbrirArquivo: string;
     function FormatarSQL: string;
     function ObterDataHora: string;
     function ObterErro: string;
+    function ObterNomeCampo(aComponente: TEdit): string;
     function VerificarDeveExibirSomenteSQL: boolean;
     function VerificarLinhaEhSQL: boolean;
     function VerificarArquivoEhValido: boolean;
+
+    // Procdures
     procedure AbrirAbaSQL;
     procedure AssociarEventosCheckBoxes;
+    procedure AssociarEventosFiltros;
+    procedure AssociarEventoPinturaDBGrid;
+    procedure BuscarLogMaisRecente;
     procedure CarregarPreferencias;
     procedure CarregarLog;
+    procedure CarregarSQLPainelInferior;
     procedure CopiarColuna;
     procedure CopiarSQL;
-    procedure BuscarLogMaisRecente;
     procedure ControlarTemporizador;
     procedure CriarObjetosInternos;
     procedure DestruirObjetosInternos;
     procedure ExibirInformacaoRegistro;
-    procedure FiltrarRegistrosPorSQL;
+    procedure FiltrarRegistros(const aNomeCampo, aValor: string);
     procedure GravarPreferencia(const aChave: string; const aValor: boolean);
     procedure IncluirLinhaLog;
     procedure InicializarPropriedades;
+    procedure LimparOutrosCamposFiltro(aComponente: TEdit);
     procedure RemoverEventosCheckBoxes;
   end;
 
@@ -126,21 +136,21 @@ uses
 
 function TfMonitor.AbrirArquivo: string;
 var
-  OpenDialog: TOpenDialog;
+  lOpenDialog: TOpenDialog;
 begin
-  OpenDialog := TOpenDialog.Create(nil);
+  lOpenDialog := TOpenDialog.Create(nil);
   try
-    OpenDialog.InitialDir := 'Q:\bin';
-    OpenDialog.Filter := 'Log de métodos do servidor|*.txt';
-    OpenDialog.DefaultExt := 'txt';
+    lOpenDialog.InitialDir := 'Q:\bin';
+    lOpenDialog.Filter := 'Log de métodos do servidor|*.txt';
+    lOpenDialog.DefaultExt := 'txt';
 
-    if not OpenDialog.Execute then
+    if not lOpenDialog.Execute then
       Exit;
 
-    result := Trim(OpenDialog.FileName);
-    EditArquivo.Text := Trim(OpenDialog.FileName);
+    result := Trim(lOpenDialog.FileName);
+    EditArquivo.Text := Trim(lOpenDialog.FileName);
   finally
-    OpenDialog.Free;
+    lOpenDialog.Free;
   end;
 end;
 
@@ -159,6 +169,7 @@ end;
 
 procedure TfMonitor.ActionAtualizarLogExecute(Sender: TObject);
 begin
+  ClientDataSet.EmptyDataSet;
   CarregarLog;
 end;
 
@@ -168,12 +179,26 @@ begin
   LabelInformacaoRegistro.Caption := EmptyStr;
 end;
 
+procedure TfMonitor.AssociarEventoPinturaDBGrid;
+begin
+  DBGrid.OnDrawColumnCell := nil;
+  if CheckBoxDestacarLinhasErros.Checked then
+    DBGrid.OnDrawColumnCell := OnDrawColumnCellPintura;
+end;
+
 procedure TfMonitor.AssociarEventosCheckBoxes;
 begin
   CheckBoxAtualizacaoAutomatica.OnClick := CheckBoxAtualizacaoAutomaticaClick;
   CheckBoxExibirSomenteSQL.OnClick := CheckBoxExibirSomenteSQLClick;
   CheckBoxDestacarLinhasErros.OnClick := CheckBoxDestacarLinhasErrosClick;
   CheckBoxExibirPainelInferior.OnClick := CheckBoxExibirPainelInferiorClick;
+end;
+
+procedure TfMonitor.AssociarEventosFiltros;
+begin
+  EditFiltroClasse.OnKeyPress := OnKeyPressCamposFiltros;
+  EditFiltroMetodo.OnKeyPress := OnKeyPressCamposFiltros;
+  EditFiltroSQL.OnKeyPress := OnKeyPressCamposFiltros;
 end;
 
 procedure TfMonitor.AbrirAbaSQL;
@@ -209,7 +234,7 @@ end;
 
 procedure TfMonitor.CarregarLog;
 var
-  lLinha: string;
+  lContador: integer;
 begin
   if not VerificarArquivoEhValido then
     Exit;
@@ -221,16 +246,15 @@ begin
     FStringListArquivo.LoadFromStream(
       TFileStream.Create(EditArquivo.Text, fmOpenRead or fmShareDenyNone));
 
-    for lLInha in FStringListArquivo do
+    for lContador := FContador to Pred(FStringListArquivo.Count) do
     begin
-      FStringListLinha.DelimitedText := lLInha;
+      FStringListLinha.DelimitedText := FStringListArquivo[lContador];
 
       if VerificarDeveExibirSomenteSQL and (not VerificarLinhaEhSQL) then
         Continue;
 
       IncluirLinhaLog;
     end;
-
   finally
     ClientDataSet.AfterScroll := ClientDataSetAfterScroll;
     ClientDataSet.EnableControls;
@@ -239,9 +263,7 @@ begin
   ExibirInformacaoRegistro;
   FContador := FStringListArquivo.Count;
   ControlarTemporizador;
-
-  if not ClientDataSetSQL.AsString.IsEmpty then
-    MemoSQL.Lines.Text := FormatarSQL;
+  CarregarSQLPainelInferior;
 end;
 
 procedure TfMonitor.CarregarPreferencias;
@@ -259,6 +281,13 @@ begin
     lPreferencias.Free;
     AssociarEventosCheckBoxes;
   end;
+end;
+
+procedure TfMonitor.CarregarSQLPainelInferior;
+begin
+  MemoSQL.Lines.Clear;
+  if not ClientDataSetSQL.AsString.IsEmpty then
+    MemoSQL.Lines.Text := FormatarSQL;
 end;
 
 procedure TfMonitor.CheckBoxExibirPainelInferiorClick(Sender: TObject);
@@ -285,9 +314,7 @@ begin
   lHabilitar := CheckBoxDestacarLinhasErros.Checked;
   GravarPreferencia(sDESTACAR_LINHAS_ERRO, lHabilitar);
 
-  DBGrid.OnDrawColumnCell := nil;
-  if lHabilitar then
-    DBGrid.OnDrawColumnCell := EventoPinturaLinha;
+  AssociarEventoPinturaDBGrid;
 end;
 
 procedure TfMonitor.CheckBoxExibirSomenteSQLClick(Sender: TObject);
@@ -298,9 +325,18 @@ end;
 procedure TfMonitor.ClientDataSetAfterScroll(DataSet: TDataSet);
 begin
   ExibirInformacaoRegistro;
+  CarregarSQLPainelInferior;
+end;
 
-  if not ClientDataSetSQL.AsString.IsEmpty then
-    MemoSQL.Lines.Text := FormatarSQL;
+procedure TfMonitor.ComboBoxTipoChange(Sender: TObject);
+var
+  lValor: string;
+begin
+  lValor := EmptyStr;
+  if ComboBoxTipo.ItemIndex > 0 then
+    lValor := ComboBoxTipo.Text;
+
+  FiltrarRegistros('Tipo', lValor);
 end;
 
 procedure TfMonitor.ControlarTemporizador;
@@ -341,19 +377,25 @@ begin
   FFormatadorSQL.Free;
 end;
 
-procedure TfMonitor.EditFiltroSQLKeyPress(Sender: TObject; var Key: Char);
+procedure TfMonitor.OnKeyPressCamposFiltros(Sender: TObject; var Key: Char);
+var
+  lComponente: TEdit;
+  lNomeCampo: string;
 begin
   if Key = #13 then
   begin
     Key := #0;
-    FiltrarRegistrosPorSQL;
+    lComponente := (Sender as TEdit);
+    lNomeCampo := ObterNomeCampo(lComponente);
+    LimparOutrosCamposFiltro(lComponente);
+    FiltrarRegistros(lNomeCampo, lComponente.Text);
    end;
 end;
 
-procedure TfMonitor.EventoPinturaLinha(Sender: TObject; const Rect: TRect; DataCol: Integer;
+procedure TfMonitor.OnDrawColumnCellPintura(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
-  if ClientDataSet.FieldByName('Erro').AsString = 'S' then
+  if ClientDataSetErro.AsString = 'S' then
   begin
     DBGrid.Canvas.Brush.Color := $00B9B9FF;
     DBGrid.DefaultDrawColumnCell(Rect, DataCol, Column, State);
@@ -362,6 +404,12 @@ end;
 
 procedure TfMonitor.ExibirInformacaoRegistro;
 begin
+  if ClientDataSet.IsEmpty then
+  begin
+    LabelInformacaoRegistro.Caption := EmptyStr;
+    Exit;
+  end;
+
   LabelInformacaoRegistro.Caption := Format('Registro %d / %d',
     [ClientDataSet.RecNo, ClientdataSet.RecordCount]);
 end;
@@ -384,20 +432,23 @@ begin
   result := CheckBoxExibirSomenteSQL.Checked;
 end;
 
-procedure TfMonitor.FiltrarRegistrosPorSQL;
+procedure TfMonitor.FiltrarRegistros(const aNomeCampo, aValor: string);
+var
+  lFiltro: string;
+  lValor: string;
 begin
-  if ClientDataSet.IsEmpty then
-    Exit;
-
-  if EditFiltroSQL.IsEmpty then
+  if aValor.IsEmpty then
   begin
+    ClientDataSet.Filter := EmptyStr;
     ClientDataSet.Filtered := False;
-    Exit;
+    ClientDataSet.Last;
   end;
 
-  ClientDataSet.Filter := Format('SQL like %s',
-    [QuotedStr('%' + EditFiltroSQL.Text + '%')]);
+  lValor := '%' + aValor + '%';
+  lFiltro := Format('%s like %s', [aNomeCampo, QuotedStr(lValor)]);
+  ClientDataSet.Filter := lFiltro;
   ClientDataSet.Filtered := True;
+  ClientDataSet.Last;
 end;
 
 function TfMonitor.FormatarSQL: string;
@@ -412,6 +463,8 @@ begin
   CarregarPreferencias;
   BuscarLogMaisRecente;
   AssociarEventosCheckBoxes;
+  AssociarEventosFiltros;
+  AssociarEventoPinturaDBGrid;
 end;
 
 procedure TfMonitor.FormDestroy(Sender: TObject);
@@ -453,6 +506,20 @@ begin
   FStringListLinha.Delimiter := ';';
   FStringListLinha.StrictDelimiter := True;
   FContador := 0;
+end;
+
+procedure TfMonitor.LimparOutrosCamposFiltro(aComponente: TEdit);
+begin
+  ComboBoxTipo.ItemIndex := 0;
+
+  if EditFiltroClasse.Name <> aComponente.Name then
+    EditFiltroClasse.Clear;
+
+  if EditFiltroMetodo.Name <> aComponente.Name then
+    EditFiltroMetodo.Clear;
+
+  if EditFiltroSQL.Name <> aComponente.Name then
+    EditFiltroSQL.Clear;
 end;
 
 procedure TfMonitor.MemoAbaSQLKeyPress(Sender: TObject; var Key: Char);
@@ -497,7 +564,13 @@ end;
 function TfMonitor.ObterErro: string;
 begin
   result := EmptyStr;
-  //if FStringListLinha[5] = '';
+  if (FStringListLinha[5] = 'SAIDA') and (FStringListLinha[15] <> EmptyStr) then
+    result := 'S';
+end;
+
+function TfMonitor.ObterNomeCampo(aComponente: TEdit): string;
+begin
+  result := StringReplace(aComponente.Name, 'EditFiltro', EmptyStr, []);
 end;
 
 procedure TfMonitor.RemoverEventosCheckBoxes;
