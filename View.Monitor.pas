@@ -11,7 +11,9 @@ uses
   Vcl.DBGrids, Vcl.StdCtrls,
   Vcl.Buttons, Vcl.Samples.Spin, Datasnap.DBClient, Vcl.ComCtrls, Vcl.Menus,
   Utils.FormatadorSQL, System.ImageList, Vcl.ImgList, System.Actions, Vcl.ActnList,
-  Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan, Vcl.ToolWin, Vcl.ActnCtrls;
+  Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan, Vcl.ToolWin, Vcl.ActnCtrls,
+  Data.Bind.EngExt, Vcl.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs,
+  Vcl.Bind.Editors, Data.Bind.Components;
 
 type
   TfMonitor = class(TForm)
@@ -19,7 +21,7 @@ type
     ActionAtualizarLog: TAction;
     ActionLimparLog: TAction;
     ActionManager: TActionManager;
-    ActionToolBar1: TActionToolBar;
+    ActionToolBar: TActionToolBar;
     CheckBoxAtualizacaoAutomatica: TCheckBox;
     CheckBoxDestacarLinhasErros: TCheckBox;
     CheckBoxExibirPainelInferior: TCheckBox;
@@ -62,6 +64,9 @@ type
     TabSheetOpcoes: TTabSheet;
     TabSheetSQL: TTabSheet;
     TimerAtualizacaoAutomatica: TTimer;
+    BindingsList: TBindingsList;
+    LinkControlToPropertyLabel: TLinkControlToProperty;
+    LinkControlToPropertySpinEdit: TLinkControlToProperty;
     procedure ActionAbrirLogExecute(Sender: TObject);
     procedure ActionAtualizarLogExecute(Sender: TObject);
     procedure ActionLimparLogExecute(Sender: TObject);
@@ -79,6 +84,7 @@ type
     procedure MenuItemCopiarColunaClick(Sender: TObject);
     procedure MenuItemCopiarSQLClick(Sender: TObject);
     procedure TimerAtualizacaoAutomaticaTimer(Sender: TObject);
+    procedure TabSheetSQLEnter(Sender: TObject);
   private
     // Class Fields
     FContador: integer;
@@ -111,7 +117,6 @@ type
     procedure CarregarLog;
     procedure CarregarSQLPainelInferior;
     procedure CopiarColuna;
-    procedure CopiarSQL;
     procedure ControlarTemporizador;
     procedure CriarObjetosInternos;
     procedure DestruirObjetosInternos;
@@ -203,7 +208,6 @@ end;
 
 procedure TfMonitor.AbrirAbaSQL;
 begin
-  MemoAbaSQL.Lines.Text := FormatarSQL;
   PageControl.ActivePage := TabSheetSQL;
 end;
 
@@ -274,6 +278,8 @@ begin
   lPreferencias := TPreferencias.Create;
   try
     CheckBoxAtualizacaoAutomatica.Checked := lPreferencias.HabilitarAtualizacaoAutomatica;
+    LabelIntervalo.Enabled := lPreferencias.HabilitarAtualizacaoAutomatica;
+    SpinEditIntervalo.Enabled := lPreferencias.HabilitarAtualizacaoAutomatica;
     CheckBoxExibirSomenteSQL.Checked := lPreferencias.ExibirSomenteSQL;
     CheckBoxDestacarLinhasErros.Checked := lPreferencias.DestacarLinhasErro;
     CheckBoxExibirPainelInferior.Checked := lPreferencias.ExibirPainelInferior;
@@ -300,10 +306,7 @@ var
   lHabilitar: boolean;
 begin
   lHabilitar := CheckBoxAtualizacaoAutomatica.Checked;
-  LabelIntervalo.Enabled := lHabilitar;
-  SpinEditIntervalo.Enabled := lHabilitar;
   TimerAtualizacaoAutomatica.Enabled := lHabilitar;
-
   GravarPreferencia(sHABILITAR_ATUALIZACAO_AUTOMATICA, lHabilitar);
 end;
 
@@ -313,7 +316,6 @@ var
 begin
   lHabilitar := CheckBoxDestacarLinhasErros.Checked;
   GravarPreferencia(sDESTACAR_LINHAS_ERRO, lHabilitar);
-
   AssociarEventoPinturaDBGrid;
 end;
 
@@ -351,11 +353,6 @@ var
 begin
   lNomeColuna := DBGrid.SelectedField.FieldName;
   Clipboard.AsText := ClientDataSet.FieldByName(lNomeColuna).AsString;
-end;
-
-procedure TfMonitor.CopiarSQL;
-begin
-  Clipboard.AsText := FormatarSQL;
 end;
 
 procedure TfMonitor.CriarObjetosInternos;
@@ -547,7 +544,7 @@ end;
 
 procedure TfMonitor.MenuItemCopiarSQLClick(Sender: TObject);
 begin
-  CopiarSQL;
+  Clipboard.AsText := FormatarSQL;
 end;
 
 function TfMonitor.VerificarLinhaEhSQL: boolean;
@@ -579,6 +576,11 @@ begin
   CheckBoxExibirSomenteSQL.OnClick := nil;
   CheckBoxDestacarLinhasErros.OnClick := nil;
   CheckBoxExibirPainelInferior.OnClick := nil;
+end;
+
+procedure TfMonitor.TabSheetSQLEnter(Sender: TObject);
+begin
+  MemoAbaSQL.Lines.Text := FormatarSQL;
 end;
 
 procedure TfMonitor.TimerAtualizacaoAutomaticaTimer(Sender: TObject);

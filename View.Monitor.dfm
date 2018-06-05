@@ -71,9 +71,8 @@ object fMonitor: TfMonitor
           Color = clInfoBk
           ReadOnly = True
           TabOrder = 0
-          Text = 'C:\Andre.Celestino\log2.txt'
         end
-        object ActionToolBar1: TActionToolBar
+        object ActionToolBar: TActionToolBar
           Left = 0
           Top = 0
           Width = 1191
@@ -283,6 +282,7 @@ object fMonitor: TfMonitor
     object TabSheetSQL: TTabSheet
       Caption = 'SQL'
       ImageIndex = 2
+      OnEnter = TabSheetSQLEnter
       object MemoAbaSQL: TMemo
         Left = 0
         Top = 0
@@ -423,7 +423,7 @@ object fMonitor: TfMonitor
     Left = 1100
     Top = 371
     Bitmap = {
-      494C010103000500040020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010103000500080020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       000000000000000000000000000000000000000000000000000000060809000F
       1517000F1517000F1517000F1517000F1517000F1517000F1517000F1517000F
@@ -986,7 +986,7 @@ object fMonitor: TfMonitor
             ImageIndex = 2
             ShortCut = 16460
           end>
-        ActionBar = ActionToolBar1
+        ActionBar = ActionToolBar
         GlyphLayout = blGlyphTop
       end>
     Images = ImageList
@@ -1010,6 +1010,27 @@ object fMonitor: TfMonitor
       ImageIndex = 2
       ShortCut = 16460
       OnExecute = ActionLimparLogExecute
+    end
+  end
+  object BindingsList: TBindingsList
+    Methods = <>
+    OutputConverters = <>
+    Left = 20
+    Top = 5
+    object LinkControlToPropertyLabel: TLinkControlToProperty
+      Category = 'Quick Bindings'
+      Control = CheckBoxAtualizacaoAutomatica
+      Track = True
+      Component = LabelIntervalo
+      ComponentProperty = 'Enabled'
+    end
+    object LinkControlToPropertySpinEdit: TLinkControlToProperty
+      Category = 'Quick Bindings'
+      Control = CheckBoxAtualizacaoAutomatica
+      Track = True
+      Component = SpinEditIntervalo
+      ComponentProperty = 'Enabled'
+      InitializeControlValue = False
     end
   end
 end
