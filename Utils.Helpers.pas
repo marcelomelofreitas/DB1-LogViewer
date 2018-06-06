@@ -3,7 +3,7 @@ unit Utils.Helpers;
 interface
 
 uses
-  System.IniFiles, Vcl.StdCtrls;
+  System.SysUtils, System.IniFiles, Vcl.StdCtrls;
 
 type
   TIniFileHelper = class helper for TIniFile
@@ -15,10 +15,14 @@ type
     function IsEmpty: boolean;
   end;
 
+  TStringBuilderHelper = class helper for TStringBuilder
+    function AppendSpaces(const aCount: byte): TStringBuilder;
+  end;
+
 implementation
 
 uses
-  System.SysUtils;
+  Utils.Constantes;
 
 { TIniFileHelper }
 
@@ -37,6 +41,13 @@ end;
 function TEditHelper.IsEmpty: boolean;
 begin
   result := Trim(Self.Text) = EmptyStr;
+end;
+
+{ TStringBuilderHelper }
+
+function TStringBuilderHelper.AppendSpaces(const aCount: byte): TStringBuilder;
+begin
+  result := Self.AppendLine.Append(StringOfChar(sESPACO, aCount));
 end;
 
 end.

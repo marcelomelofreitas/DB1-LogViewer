@@ -9,6 +9,8 @@ const
   sEXIBIR_PAINEL_INFERIOR = 'ExibirPainelInferior';
   sESPACO = ' ';
   sSEPARADOR = '((ESPACO))';
+  nRECUO = 2;
+  sSUBSELECT = '(SELECT';
 
 implementation
 
