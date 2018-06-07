@@ -85,6 +85,7 @@ type
     procedure MenuItemCopiarSQLClick(Sender: TObject);
     procedure TimerAtualizacaoAutomaticaTimer(Sender: TObject);
     procedure TabSheetSQLEnter(Sender: TObject);
+    procedure DBGridKeyPress(Sender: TObject; var Key: Char);
   private
     // Class Fields
     FContador: integer;
@@ -367,6 +368,12 @@ begin
   AbrirAbaSQL;
 end;
 
+procedure TfMonitor.DBGridKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #13 then
+    AbrirAbaSQL;
+end;
+
 procedure TfMonitor.DestruirObjetosInternos;
 begin
   FStringListArquivo.Free;
@@ -462,6 +469,9 @@ begin
   AssociarEventosCheckBoxes;
   AssociarEventosFiltros;
   AssociarEventoPinturaDBGrid;
+
+  EditArquivo.Text := 'C:\Andre.Celestino\logErro.txt';
+  CarregarLog;
 end;
 
 procedure TfMonitor.FormDestroy(Sender: TObject);

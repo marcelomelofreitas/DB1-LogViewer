@@ -19,7 +19,7 @@ type
     function FormatarData(const aData: TDateTime): string;
     function SubstituirString(const aTexto, aBusca, aSubstituicao: string): string;
     function PreencherParametrosSQL(const aSQL: string): string;
-    function IdentarSQL(var aSQL: string): string;
+    function IdentarSQL(const aSQLFormatado: string): string;
 
     procedure CriarObjetosInternos;
     procedure DestruirObjetosInternos;
@@ -37,7 +37,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function FormatarSQL(aSQL: string): string;
+    function FormatarSQL(const aSQL: string): string;
   end;
 
 implementation
@@ -178,16 +178,15 @@ end;
 
 function TFormatadorSQL.PrepararSQL(const aSQL: string): string;
 begin
-  result := aSQL;
-  result := StringReplace(result, '  ', sESPACO, [rfReplaceAll]);
-  result := StringReplace(result, ',', ', ', [rfReplaceAll]);
-  result := StringReplace(result, 'LEFT JOIN', 'LEFT_JOIN', [rfReplaceAll]);
-  result := StringReplace(result, 'LEFT OUTER JOIN', 'LEFT_OUTER_JOIN', [rfReplaceAll]);
-  result := StringReplace(result, 'INNER JOIN', 'INNER_JOIN', [rfReplaceAll]);
-  result := StringReplace(result, 'RIGHT JOIN', 'RIGHT_JOIN', [rfReplaceAll]);
-  result := StringReplace(result, 'RIGHT OUTER JOIN', 'RIGHT_OUTER_JOIN', [rfReplaceAll]);
-  result := StringReplace(result, 'ORDER BY', 'ORDER_BY', [rfReplaceAll]);
-  result := StringReplace(result, 'GROUP BY', 'GROUP_BY', [rfReplaceAll]);
+  result := SubstituirString(aSQL, '  ', sESPACO);
+  result := SubstituirString(result, ',', ', ');
+  result := SubstituirString(result, 'LEFT JOIN', 'LEFT_JOIN');
+  result := SubstituirString(result, 'LEFT OUTER JOIN', 'LEFT_OUTER_JOIN');
+  result := SubstituirString(result, 'INNER JOIN', 'INNER_JOIN');
+  result := SubstituirString(result, 'RIGHT JOIN', 'RIGHT_JOIN');
+  result := SubstituirString(result, 'RIGHT OUTER JOIN', 'RIGHT_OUTER_JOIN');
+  result := SubstituirString(result, 'ORDER BY', 'ORDER_BY');
+  result := SubstituirString(result, 'GROUP BY', 'GROUP_BY');
 end;
 
 procedure TFormatadorSQL.ProcessarClausula(const aValor: string; aBuilder: TStringBuilder);
@@ -204,11 +203,8 @@ begin
 
   FPosicaoMesmaLinha := 0;
 
-  if not aValor.ToUpper.Equals('SELECT') then
-  begin
-    aBuilder.AppendSpaces(FNivelRecuo);
-    FQuebrarLinha := False;
-  end;
+  aBuilder.AppendSpaces(FNivelRecuo);
+  FQuebrarLinha := False;
 end;
 
 procedure TFormatadorSQL.ProcessarJuncao(const aValor: string; aBuilder: TStringBuilder);
@@ -220,7 +216,7 @@ begin
     .Append(aValor.ToUpper.Replace('_', sESPACO, [rfReplaceAll]))
     .Append(sESPACO);
 
-  FPosicaoMesmaLinha := 0;
+  FPosicaoMesmaLinha := aValor.Length;
 end;
 
 procedure TFormatadorSQL.ProcessarOperador(const aValor: string; aBuilder: TStringBuilder);
@@ -239,26 +235,26 @@ begin
   if aValor.ToUpper.Equals('ON') then
     aBuilder.Append(sESPACO);
 
-  FPosicaoMesmaLinha := 0;
+  FPosicaoMesmaLinha := aValor.Length;
   FQuebrarLinha := False;
 end;
 
-procedure TFormatadorSQL.ProcessarSubSelect(const aSubSelect: string; var aPosicaoToken: integer;
-  aBuilder: TStringBuilder);
+procedure TFormatadorSQL.ProcessarSubSelect(const aSubSelect: string;
+      var aPosicaoToken: integer; aBuilder: TStringBuilder);
 var
   lRecuoAtual: integer;
 begin
   lRecuoAtual := FNivelRecuo;
 
   // Configura o recuo das colunas do SubSelect
-  Inc(FNivelRecuo, FPosicaoMesmaLinha - 3);
+  Inc(FNivelRecuo, FPosicaoMesmaLinha + 2);
 
   // "-5" é o offset da palavra SELECT
   Inc(aPosicaoToken, aSubSelect.Length - 5);
 
   aBuilder
     .Append('(')
-    .Append(FormatarSQL(aSubSelect))
+    .Append(IdentarSQL(aSubSelect))
     .Append(')');
 
   FNivelRecuo := lRecuoAtual;
@@ -310,78 +306,85 @@ begin
   result := QuotedStr(FormatDateTime('dd/mm/yyyy hh:nn:ss', aData));
 end;
 
-function TFormatadorSQL.FormatarSQL(aSQL: string): string;
+function TFormatadorSQL.FormatarSQL(const aSQL: string): string;
 var
   lSQLFormatado: string;
 begin
   FNivelRecuo := 0;
   lSQLFormatado := PreencherParametrosSQL(aSQL);
-  lSQLFormatado := IdentarSQL(lSQLFormatado);
-  result := lSQLFormatado;
+  lSQLFormatado := PrepararSQL(lSQLFormatado);
+  result := IdentarSQL(lSQLFormatado);
 end;
 
-function TFormatadorSQL.IdentarSQL(var aSQL: string): string;
+function TFormatadorSQL.IdentarSQL(const aSQLFormatado: string): string;
 var
   lValor: string;
+  lSQL: string;
   lBuilder: TStringBuilder;
   lPosicaoToken: integer;
 
   procedure RecortarSQL;
   begin
-    aSQL := Copy(aSQL, lPosicaoToken, aSQL.Length).Trim;
+    lSQL := Copy(lSQL, lPosicaoToken, lSQL.Length).Trim;
   end;
 
 begin
+  lSQL := aSQLFormatado;
   lBuilder := TStringBuilder.Create;
   try
-    aSQL := PrepararSQL(aSQL);
     FAcumuladorRecuos := 0;
     FQuebrarLinha := True;
     FPosicaoMesmaLinha := 0;
 
-    while aSQL.Length > 0 do
+    while lSQL.Length > 0 do
     begin
-      lPosicaoToken := Pos(sESPACO, aSQL);
+      lPosicaoToken := Pos(sESPACO, lSQL);
 
       if lPosicaoToken = 0 then
-        lPosicaoToken := Succ(aSQL.Length);
+        lPosicaoToken := Succ(lSQL.Length);
 
-      lValor := Copy(aSQL, 1, Pred(lPosicaoToken));
-      Inc(FPosicaoMesmaLinha, Succ(lValor.Length));
-      lValor := lValor.Trim;
+      lValor := Copy(lSQL, 1, Pred(lPosicaoToken)).Trim;
 
       if lValor.ToUpper.Equals(sSUBSELECT) then
       begin
-        ProcessarSubSelect(PegarSubSelect(aSQL), lPosicaoToken, lBuilder);
+        ProcessarSubSelect(PegarSubSelect(lSQL), lPosicaoToken, lBuilder);
         RecortarSQL;
         Continue;
       end;
 
-      if FStringListClausulas.IndexOf(lValor) >= 0 then
+      if FStringListClausulas.IndexOf(lValor.ToUpper) >= 0 then
       begin
         ProcessarClausula(lValor, lBuilder);
         RecortarSQL;
         Continue;
       end;
 
-      if FStringListJuncoes.IndexOf(lValor) >= 0 then
+      if FStringListJuncoes.IndexOf(lValor.ToUpper) >= 0 then
       begin
         ProcessarJuncao(lValor, lBuilder);
         RecortarSQL;
         Continue;
       end;
 
-      if FStringListOperadores.IndexOf(lValor) >= 0 then
+      if FStringListOperadores.IndexOf(lValor.ToUpper) >= 0 then
       begin
         ProcessarOperador(lValor, lBuilder);
         RecortarSQL;
         Continue;
       end;
 
-      if FQuebrarLinha then
-        lBuilder.AppendSpaces(FNivelRecuo);
+      Inc(FPosicaoMesmaLinha, Succ(lValor.Length));
+
+      if (lValor[lValor.Length] = ',') then
+        FQuebrarLinha := True;
 
       lBuilder.Append(lValor).Append(sESPACO);
+
+      if FQuebrarLinha then
+      begin
+        lBuilder.AppendSpaces(FNivelRecuo);
+        FQuebrarLinha := False;
+      end;
 
       RecortarSQL;
     end;
