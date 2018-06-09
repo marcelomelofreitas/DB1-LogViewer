@@ -158,6 +158,7 @@ object fMonitor: TfMonitor
               '[Todos]'
               'ENTRADA'
               'SAIDA'
+              'AVISO'
               'SQL')
           end
           object EditFiltroMetodo: TEdit

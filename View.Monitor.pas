@@ -113,6 +113,7 @@ type
     procedure AssociarEventosCheckBoxes;
     procedure AssociarEventosFiltros;
     procedure AssociarEventoPinturaDBGrid;
+    procedure AtualizarLog;
     procedure BuscarLogMaisRecente;
     procedure CarregarPreferencias;
     procedure CarregarLog;
@@ -175,8 +176,7 @@ end;
 
 procedure TfMonitor.ActionAtualizarLogExecute(Sender: TObject);
 begin
-  ClientDataSet.EmptyDataSet;
-  CarregarLog;
+  AtualizarLog;
 end;
 
 procedure TfMonitor.ActionLimparLogExecute(Sender: TObject);
@@ -205,6 +205,13 @@ begin
   EditFiltroClasse.OnKeyPress := OnKeyPressCamposFiltros;
   EditFiltroMetodo.OnKeyPress := OnKeyPressCamposFiltros;
   EditFiltroSQL.OnKeyPress := OnKeyPressCamposFiltros;
+end;
+
+procedure TfMonitor.AtualizarLog;
+begin
+  ClientDataSet.EmptyDataSet;
+  FContador := 0;
+  CarregarLog;
 end;
 
 procedure TfMonitor.AbrirAbaSQL;
@@ -323,6 +330,7 @@ end;
 procedure TfMonitor.CheckBoxExibirSomenteSQLClick(Sender: TObject);
 begin
   GravarPreferencia(sEXIBIR_SOMENTE_SQL, CheckBoxExibirSomenteSQL.Checked);
+  AtualizarLog;
 end;
 
 procedure TfMonitor.ClientDataSetAfterScroll(DataSet: TDataSet);
@@ -448,8 +456,12 @@ begin
     ClientDataSet.Last;
   end;
 
+  lFiltro := EmptyStr;
+  if aNomeCampo = 'SQL' then
+    lFiltro := Format('Tipo = %s AND ', ['SQL'.QuotedString]);
+
   lValor := '%' + aValor + '%';
-  lFiltro := Format('%s like %s', [aNomeCampo, QuotedStr(lValor)]);
+  lFiltro := lFiltro + Format('%s like %s', [aNomeCampo, lValor.QuotedString]);
   ClientDataSet.Filter := lFiltro;
   ClientDataSet.Filtered := True;
   ClientDataSet.Last;
@@ -461,6 +473,8 @@ begin
 end;
 
 procedure TfMonitor.FormCreate(Sender: TObject);
+var
+  k: char;
 begin
   CriarObjetosInternos;
   InicializarPropriedades;
@@ -472,6 +486,9 @@ begin
 
   EditArquivo.Text := 'C:\Andre.Celestino\logErro.txt';
   CarregarLog;
+  k := #13;
+  EditFiltroMetodo.Text := 'pesquise';
+  EditFiltroMetodo.OnKeyPress(EditFiltroMetodo, k);
 end;
 
 procedure TfMonitor.FormDestroy(Sender: TObject);
@@ -510,6 +527,7 @@ end;
 procedure TfMonitor.InicializarPropriedades;
 begin
   ClientDataSet.LogChanges := False;
+  ClientDataSet.FilterOptions := [foCaseInsensitive];
   FStringListLinha.Delimiter := ';';
   FStringListLinha.StrictDelimiter := True;
   FContador := 0;

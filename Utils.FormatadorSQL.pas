@@ -6,6 +6,8 @@ uses
   System.SysUtils, System.Classes;
 
 type
+  TClausulas = (clSelect, clFrom, clWhere);
+
   TFormatadorSQL = class
   private
     FStringListClausulas: TStringList;
@@ -13,13 +15,14 @@ type
     FStringListOperadores: TStringList;
     FNivelRecuo: integer;
     FAcumuladorRecuos: integer;
-    FQuebrarLinha: boolean;
     FPosicaoMesmaLinha: integer;
+    FClausula: TClausulas;
 
     function FormatarData(const aData: TDateTime): string;
     function SubstituirString(const aTexto, aBusca, aSubstituicao: string): string;
     function PreencherParametrosSQL(const aSQL: string): string;
     function IdentarSQL(const aSQLFormatado: string): string;
+    function VerificarDeveQuebrarLinha(const aValor: string): boolean;
 
     procedure CriarObjetosInternos;
     procedure DestruirObjetosInternos;
@@ -162,7 +165,7 @@ begin
       begin
         if AnsiPos('/', lValor) = 0 then
           lValor := DateTimeToStr(lValor.ToInteger);
-        lValorFormatado := FormatarData(lValor.ToDouble);
+        lValorFormatado := FormatarData(StrToDateTime(lValor));
       end
       else
         lValorFormatado := lValor;
@@ -204,7 +207,13 @@ begin
   FPosicaoMesmaLinha := 0;
 
   aBuilder.AppendSpaces(FNivelRecuo);
-  FQuebrarLinha := False;
+
+  if aValor.ToUpper.Equals('SELECT') then
+    FClausula := clSelect
+  else if aValor.ToUpper.Equals('FROM') then
+    FClausula := clFrom
+  else if aValor.ToUpper.Equals('WHERE') then
+    FClausula := clWhere;
 end;
 
 procedure TFormatadorSQL.ProcessarJuncao(const aValor: string; aBuilder: TStringBuilder);
@@ -236,15 +245,16 @@ begin
     aBuilder.Append(sESPACO);
 
   FPosicaoMesmaLinha := aValor.Length;
-  FQuebrarLinha := False;
 end;
 
 procedure TFormatadorSQL.ProcessarSubSelect(const aSubSelect: string;
       var aPosicaoToken: integer; aBuilder: TStringBuilder);
 var
   lRecuoAtual: integer;
+  lClausulaAtual: TClausulas;
 begin
   lRecuoAtual := FNivelRecuo;
+  lClausulaAtual := FClausula;
 
   // Configura o recuo das colunas do SubSelect
   Inc(FNivelRecuo, FPosicaoMesmaLinha + 2);
@@ -253,17 +263,27 @@ begin
   Inc(aPosicaoToken, aSubSelect.Length - 5);
 
   aBuilder
+    //.AppendSpaces(FNivelRecuo)
     .Append('(')
     .Append(IdentarSQL(aSubSelect))
     .Append(')');
 
   FNivelRecuo := lRecuoAtual;
+  FClausula := lClausulaAtual;
 end;
 
 function TFormatadorSQL.SubstituirString(const aTexto, aBusca,
   aSubstituicao: string): string;
 begin
   result := StringReplace(aTexto, aBusca, aSubstituicao, [rfReplaceAll, rfIgnoreCase]);
+end;
+
+function TFormatadorSQL.VerificarDeveQuebrarLinha(const aValor: string): boolean;
+var
+  lUltimaLetraEhVirgula: boolean;
+begin
+  lUltimaLetraEhVirgula := (aValor[aValor.Length] = ',');
+  result := lUltimaLetraEhVirgula and (FClausula <> clWhere);
 end;
 
 constructor TFormatadorSQL.Create;
@@ -333,7 +353,6 @@ begin
   lBuilder := TStringBuilder.Create;
   try
     FAcumuladorRecuos := 0;
-    FQuebrarLinha := True;
     FPosicaoMesmaLinha := 0;
 
     while lSQL.Length > 0 do
@@ -375,15 +394,12 @@ begin
 
       Inc(FPosicaoMesmaLinha, Succ(lValor.Length));
 
-      if (lValor[lValor.Length] = ',') then
-        FQuebrarLinha := True;
-
       lBuilder.Append(lValor).Append(sESPACO);
 
-      if FQuebrarLinha then
+      if VerificarDeveQuebrarLinha(lValor) then
       begin
         lBuilder.AppendSpaces(FNivelRecuo);
-        FQuebrarLinha := False;
+        FPosicaoMesmaLinha := 0;
       end;
 
       RecortarSQL;
