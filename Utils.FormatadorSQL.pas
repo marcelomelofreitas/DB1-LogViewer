@@ -6,17 +6,16 @@ uses
   System.SysUtils, System.Classes;
 
 type
-  TClausulas = (clSelect, clFrom, clWhere);
-
   TFormatadorSQL = class
   private
     FStringListClausulas: TStringList;
     FStringListJuncoes: TStringList;
     FStringListOperadores: TStringList;
+    FStringListComandos: TStringList;
     FNivelRecuo: integer;
     FAcumuladorRecuos: integer;
     FPosicaoMesmaLinha: integer;
-    FClausula: TClausulas;
+    FDentroComandoUnico: boolean;
 
     function FormatarData(const aData: TDateTime): string;
     function SubstituirString(const aTexto, aBusca, aSubstituicao: string): string;
@@ -34,7 +33,10 @@ type
     procedure ProcessarOperador(const aValor: string; aBuilder: TStringBuilder);
     procedure ProcessarSubSelect(const aSubSelect: string;
       var aPosicaoToken: integer; aBuilder: TStringBuilder);
+    procedure ProcessarComando(const aSubSelect: string; var aPosicaoToken: integer;
+  aBuilder: TStringBuilder; const aValor: string);
 
+    function ObterTrechoComando(const aSQL: string): string;
     function PegarSubSelect(const aSQL: string): string;
     function PrepararSQL(const aSQL: string): string;
   public
@@ -94,6 +96,10 @@ begin
 
   FStringListOperadores.Add('ON');
   FStringListOperadores.Add('AND');
+  FStringListComandos.Add('CAST');
+  FStringListComandos.Add('(CAST');
+  FStringListComandos.Add('CAST(');
+  FStringListComandos.Add('CONVERT');
 end;
 
 function TFormatadorSQL.PreencherParametrosSQL(const aSQL: string): string;
@@ -199,7 +205,7 @@ begin
   if aBuilder.Length > 0 then
     aBuilder.AppendSpaces(FNivelRecuo);
 
-  aBuilder.Append(aValor.ToUpper);
+  aBuilder.Append(aValor.ToUpper.Replace('_', sESPACO, [rfReplaceAll]));
 
   Inc(FNivelRecuo, nRECUO);
   Inc(FAcumuladorRecuos, nRECUO);
@@ -208,12 +214,20 @@ begin
 
   aBuilder.AppendSpaces(FNivelRecuo);
 
-  if aValor.ToUpper.Equals('SELECT') then
-    FClausula := clSelect
-  else if aValor.ToUpper.Equals('FROM') then
-    FClausula := clFrom
-  else if aValor.ToUpper.Equals('WHERE') then
-    FClausula := clWhere;
+  FDentroComandoUnico := False;
+  if aValor.ToUpper.Equals('WHERE') then
+    FDentroComandoUnico := True;
+end;
+
+procedure TFormatadorSQL.ProcessarComando(const aSubSelect: string; var aPosicaoToken: integer;
+  aBuilder: TStringBuilder; const aValor: string);
+var
+  lComando: string;
+begin
+  lComando := ObterTrechoComando(aSubSelect);
+  Inc(aPosicaoToken, lComando.Length - aValor.Length);
+  aBuilder.Append(lComando);
+  FDentroComandoUnico := False;
 end;
 
 procedure TFormatadorSQL.ProcessarJuncao(const aValor: string; aBuilder: TStringBuilder);
@@ -244,6 +258,9 @@ begin
   if aValor.ToUpper.Equals('ON') then
     aBuilder.Append(sESPACO);
 
+  if aValor.ToUpper.Equals('CAST') or aValor.ToUpper.Equals('CONVERT') then
+    FDentroComandoUnico := True;
+
   FPosicaoMesmaLinha := aValor.Length;
 end;
 
@@ -251,10 +268,8 @@ procedure TFormatadorSQL.ProcessarSubSelect(const aSubSelect: string;
       var aPosicaoToken: integer; aBuilder: TStringBuilder);
 var
   lRecuoAtual: integer;
-  lClausulaAtual: TClausulas;
 begin
   lRecuoAtual := FNivelRecuo;
-  lClausulaAtual := FClausula;
 
   // Configura o recuo das colunas do SubSelect
   Inc(FNivelRecuo, FPosicaoMesmaLinha + 2);
@@ -269,7 +284,7 @@ begin
     .Append(')');
 
   FNivelRecuo := lRecuoAtual;
-  FClausula := lClausulaAtual;
+  FDentroComandoUnico := False;
 end;
 
 function TFormatadorSQL.SubstituirString(const aTexto, aBusca,
@@ -283,7 +298,7 @@ var
   lUltimaLetraEhVirgula: boolean;
 begin
   lUltimaLetraEhVirgula := (aValor[aValor.Length] = ',');
-  result := lUltimaLetraEhVirgula and (FClausula <> clWhere);
+  result := lUltimaLetraEhVirgula and (not FDentroComandoUnico);
 end;
 
 constructor TFormatadorSQL.Create;
@@ -297,6 +312,7 @@ begin
   FStringListClausulas := TStringList.Create;
   FStringListJuncoes := TStringList.Create;
   FStringListOperadores := TStringList.Create;
+  FStringListComandos := TStringList.Create;
 end;
 
 procedure TFormatadorSQL.DecrementarRecuo(const aQtde: byte);
@@ -319,6 +335,7 @@ begin
   FStringListClausulas.Free;
   FStringListJuncoes.Free;
   FStringListOperadores.Free;
+  FStringListComandos.Free;
 end;
 
 function TFormatadorSQL.FormatarData(const aData: TDateTime): string;
@@ -392,6 +409,13 @@ begin
         Continue;
       end;
 
+      if lValor.ToUpper.StartsWith('CAST') or lValor.ToUpper.StartsWith('(CAST') or lValor.ToUpper.StartsWith('CAST(') then
+      begin
+        ProcessarComando(lSQL, lPosicaoToken, lBuilder, lValor);
+        RecortarSQL;
+        Continue;
+      end;
+
       Inc(FPosicaoMesmaLinha, Succ(lValor.Length));
 
       lBuilder.Append(lValor).Append(sESPACO);
@@ -408,6 +432,34 @@ begin
     result := lBuilder.ToString;
   finally
     lBuilder.Free;
+  end;
+end;
+
+function TFormatadorSQL.ObterTrechoComando(const aSQL: string): string;
+var
+  lContadorParenteses: integer;
+  lLetra: string;
+begin
+  result := EmptyStr;
+  lContadorParenteses := -1;
+
+  for lLetra in aSQL do
+  begin
+    if lLetra = '(' then
+    begin
+      if lContadorParenteses >= 0 then
+        Inc(lContadorParenteses)
+      else
+        lContadorParenteses := Abs(lContadorParenteses);
+    end;
+
+    if lLetra = ')' then
+      Dec(lContadorParenteses);
+
+    result := result + lLetra;
+
+    if lContadorParenteses = 0 then
+      Break;
   end;
 end;
 
