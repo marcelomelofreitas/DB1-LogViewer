@@ -3,5 +3,6 @@
 *.local
 *.identcache
 !.gitignore
-Win32
+Lib
+Bin
 __history

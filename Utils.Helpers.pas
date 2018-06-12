@@ -3,7 +3,7 @@ unit Utils.Helpers;
 interface
 
 uses
-  System.SysUtils, System.IniFiles, Vcl.StdCtrls;
+  System.SysUtils, System.Classes, System.IniFiles, Vcl.StdCtrls;
 
 type
   TIniFileHelper = class helper for TIniFile
@@ -19,10 +19,14 @@ type
     function AppendSpaces(const aCount: byte): TStringBuilder;
   end;
 
+  TStringListHelper = class helper for TStringList
+    function Exists(const aValue: string): boolean;
+  end;
+
 implementation
 
 uses
-  Utils.Constantes;
+  Utils.Constants;
 
 { TIniFileHelper }
 
@@ -47,7 +51,14 @@ end;
 
 function TStringBuilderHelper.AppendSpaces(const aCount: byte): TStringBuilder;
 begin
-  result := Self.AppendLine.Append(StringOfChar(sESPACO, aCount));
+  result := Self.AppendLine.Append(StringOfChar(sSPACE, aCount));
+end;
+
+{ TStringListHelper }
+
+function TStringListHelper.Exists(const aValue: string): boolean;
+begin
+  result := Self.IndexOf(aValue.ToUpper) >= 0;
 end;
 
 end.

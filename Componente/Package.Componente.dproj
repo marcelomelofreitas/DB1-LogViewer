@@ -1,25 +1,20 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{892E3373-7043-4891-BF2C-62B92015EF80}</ProjectGuid>
+        <ProjectGuid>{860B0BE9-BF3D-4891-9311-F63DBE4083F5}</ProjectGuid>
+        <MainSource>Package.Componente.dpk</MainSource>
         <ProjectVersion>18.4</ProjectVersion>
-        <FrameworkType>VCL</FrameworkType>
-        <MainSource>spMonitor4.dpr</MainSource>
+        <FrameworkType>None</FrameworkType>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
-        <AppType>Application</AppType>
+        <AppType>Package</AppType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
         <Base_Win32>true</Base_Win32>
-        <CfgParent>Base</CfgParent>
-        <Base>true</Base>
-    </PropertyGroup>
-    <PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Base)'=='true') or '$(Base_Win64)'!=''">
-        <Base_Win64>true</Base_Win64>
         <CfgParent>Base</CfgParent>
         <Base>true</Base>
     </PropertyGroup>
@@ -39,12 +34,6 @@
         <CfgParent>Base</CfgParent>
         <Base>true</Base>
     </PropertyGroup>
-    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win32)'!=''">
-        <Cfg_2_Win32>true</Cfg_2_Win32>
-        <CfgParent>Cfg_2</CfgParent>
-        <Cfg_2>true</Cfg_2>
-        <Base>true</Base>
-    </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
@@ -53,24 +42,18 @@
         <DCC_S>false</DCC_S>
         <DCC_F>false</DCC_F>
         <DCC_K>false</DCC_K>
-        <DCC_UsePackage>RESTBackendComponents;CloudService;soaprtl;soapmidas;RESTComponents;emsclientfiredac;DataSnapFireDAC;FireDACIBDriver;emsclient;FireDACCommon;soapserver;FireDACCommonDriver;inet;FireDAC;FireDACSqliteDriver;$(DCC_UsePackage)</DCC_UsePackage>
-        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-        <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
-        <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
-        <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
-        <SanitizedProjectName>spMonitor4</SanitizedProjectName>
+        <GenDll>true</GenDll>
+        <GenPackage>true</GenPackage>
+        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
+        <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
+        <SanitizedProjectName>Package_Componente</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <DCC_UsePackage>DBXSqliteDriver;DBXDb2Driver;addictdb;dxExRw;smdCompletoDT;vclactnband;tb2k;vclFireDAC;RaveVCL;tethering;FireDACADSDriver;SAXKWR;EQGrid;OXml_R;JvPluginSystem;VarianWorkshop;FireDACMSSQLDriver;vcltouch;JvBands;PKIPDFBBox;vcldb;dxsb;svn;PGPMIMEBBox;SFTPBBoxSrv;JvJans;spVCL;sppCompleto;pg5Completo;PGPBBox;JvDotNetCtrls;rbRTL1617;sgcCompleto;ASiCBBox;FireDACDBXDriver;dxExEL;vclx;spConsultas;DAVBBoxCli;cgoCompletoDT;ZIPBBox;EDIBBox;scmCompleto;VCLRESTComponents;rbTCUI1617;RvCore;pg5cPrettyLabel;Box;tbxrt;vclie;bindengine;addict;JvHMI;FireDACMySQLDriver;dxcomn;OctopusLog;SAMLBBoxSrv;smdCompleto;DataSnapClient;spAddict;bindcompdbx;DBXSybaseASEDriver;IndyIPServer;prcImpl;PngComponents;IndySystem;spTablet;XMLBBox;spVCL_DT;dsnapcon;VirtualTreesR;DBPlannerPkg;FireDACMSAccDriver;fmxFireDAC;FireDACInfxDriver;vclimg;RvStandard;Jcl;RvBarcode;spGravador;spDados;spDxInspector;emshosting;pg5cCompleto;RvReport;DsgnBBox;dxBarDBNavR;spCompletoDadosConsultas_DT;ccpCompleto;sasCompleto;DBXOdbcDriver;FireDACTDataDriver;FMXTee;DreamControls;DbxCommonDriver;intCompleto;JvManagedThreads;xmlrtl;DataSnapNativeClient;fmxobj;JvTimeFramework;spCompletoNew_DT;rtl;DbxClientDriver;DBXSybaseASADriver;dxDBEd;JvSystem;JvStdCtrls;spCentralNotificacoes;appanalytics;spCompressPDF;spdxExpressBar;IndyIPClient;WPTAddict_DT;dxdbtr;bindcompvcl;vcldbx;TeeUI;dxELib;dxGrEd;HtmlLabelPkg;JvPascalInterpreter;JvDocking;VclSmp;FireDACODBCDriver;spVCLStylesEditor;DataSnapIndy10ServerTransport;BaseBBox;JclVcl;edtCompleto;DataSnapProviderClient;MailBBox;FireDACMongoDBDriver;spActiveDirectory;SFTPBBoxCli;JvControls;JvPrintPreview;PacotespPrinter;spCompleto_DT;DataSnapServerMidas;TVidGrab;DBXInterBaseDriver;RvGraphics;PKIECtrl;SAMLBBox;svnui;JvGlobus;rbIDE1617;TMSLabelsButtonsPkg;DAVBBoxSrv;dxBarExtDBItemsR;DBXMSSQLDriver;JvMM;spQuickPDF;spUIDControlsDT;DatasnapConnectorsFreePascal;spViewPDF;rbBDE1617;bindcompfmx;SSHBBoxCli;JvNet;DBXOracleDriver;inetdb;JvAppFrm;spVCLStyles;FmxTeeUI;emsedge;PDFBBox;fmx;fmxdae;SSHBBoxSrv;EQDBTL;wflCompleto;CloudBBox;JvWizards;sajCompleto;PGPTLSBBox;digCompleto;dbexpress;IndyCore;smdPrettyListView;OfficeBBox;dsnap;DataSnapCommon;JvPageComps;sggCompleto;bdertl;JvDB;DataSnapConnectors;XDevice;SqlDir;EQTL;JclDeveloperTools;rbRCL1617;sarCompleto;SAXMSR;FTPSBBoxCli;FireDACOracleDriver;DBXMySQLDriver;JvCmp;ECQDBC;BurnCSP;DBXFirebirdDriver;XFormat;Json_RT;SOAPBBoxCli;FireDACCommonODBC;MIMEBBox;cgoCompleto;spImageEn;IndyIPCommon;JvCustom;ppWPToolsPack;vcl;XMLBBoxSec;FTPSBBoxSrv;JvXPCtrls;FireDACDb2Driver;PBFolderDialog;spUtils;XLSSuit;PKIBBox;HTTPBBoxCli;aipCompleto;TeeDB;PKISSHBBox;JvCore;VCLZipDT;dxForumLib;JvCrypt;FireDACPgDriver;proCompleto;FireDACASADriver;spLDAP;JvDlgs;JvRuntimeDesign;dxObjIns;WPTools;spCompletoBase;Tee;DataSnapServer;vclwinx;FireDACDSDriver;dxIns;RvEngine;CustomIPTransport;vcldsnap;spCompletoNew;spDxInspector_DT;bindcomp;SMIMECAdESBBox;dxBarExtItemsR;DBXInformixDriver;SSLBBoxCli;dxBarR;SSLBBoxSrv;HTTPBBoxSrv;SMIMEBBox;aclCompleto;dbxcds;SAXR;PGPSSHBBox;adortl;pg5cPrettyListView;spSecureBlackBox;dxEdtr;ggpCompleto;rbTDBC1617;dsnapxml;rbTC1617;dbrtl;inetdbxpress;IndyProtocols;LDAPBBox;spDUnit;JclContainers;SynEditR;fmxase;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <BT_BuildType>Debug</BT_BuildType>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Base_Win64)'!=''">
-        <DCC_UsePackage>DBXSqliteDriver;DBXDb2Driver;vclactnband;vclFireDAC;tethering;FireDACADSDriver;FireDACMSSQLDriver;vcltouch;PKIPDFBBox;vcldb;PGPMIMEBBox;SFTPBBoxSrv;PGPBBox;ASiCBBox;FireDACDBXDriver;vclx;DAVBBoxCli;ZIPBBox;EDIBBox;VCLRESTComponents;vclie;bindengine;FireDACMySQLDriver;SAMLBBoxSrv;DataSnapClient;bindcompdbx;DBXSybaseASEDriver;IndyIPServer;IndySystem;XMLBBox;dsnapcon;FireDACMSAccDriver;fmxFireDAC;FireDACInfxDriver;vclimg;emshosting;DsgnBBox;DBXOdbcDriver;FireDACTDataDriver;FMXTee;DbxCommonDriver;xmlrtl;DataSnapNativeClient;fmxobj;rtl;DbxClientDriver;DBXSybaseASADriver;appanalytics;IndyIPClient;bindcompvcl;TeeUI;VclSmp;FireDACODBCDriver;DataSnapIndy10ServerTransport;BaseBBox;DataSnapProviderClient;MailBBox;FireDACMongoDBDriver;SFTPBBoxCli;DataSnapServerMidas;DBXInterBaseDriver;SAMLBBox;DAVBBoxSrv;DBXMSSQLDriver;DatasnapConnectorsFreePascal;bindcompfmx;SSHBBoxCli;DBXOracleDriver;inetdb;FmxTeeUI;emsedge;PDFBBox;fmx;fmxdae;SSHBBoxSrv;CloudBBox;PGPTLSBBox;dbexpress;IndyCore;OfficeBBox;dsnap;DataSnapCommon;DataSnapConnectors;FTPSBBoxCli;FireDACOracleDriver;DBXMySQLDriver;DBXFirebirdDriver;SOAPBBoxCli;FireDACCommonODBC;MIMEBBox;IndyIPCommon;vcl;XMLBBoxSec;FTPSBBoxSrv;FireDACDb2Driver;PKIBBox;HTTPBBoxCli;TeeDB;PKISSHBBox;FireDACPgDriver;FireDACASADriver;Tee;DataSnapServer;vclwinx;FireDACDSDriver;CustomIPTransport;vcldsnap;bindcomp;SMIMECAdESBBox;DBXInformixDriver;SSLBBoxCli;SSLBBoxSrv;HTTPBBoxSrv;SMIMEBBox;dbxcds;PGPSSHBBox;adortl;dsnapxml;dbrtl;inetdbxpress;IndyProtocols;LDAPBBox;fmxase;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -82,15 +65,10 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
-        <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
-        <AppEnableHighDPI>true</AppEnableHighDPI>
+        <DCC_DcuOutput>..\Lib</DCC_DcuOutput>
+        <DCC_BplOutput>..\Lib</DCC_BplOutput>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <Icon_MainIcon>spMonitor4.ico</Icon_MainIcon>
-        <DCC_UnitSearchPath>Lib;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_DcuOutput>Lib</DCC_DcuOutput>
-        <DCC_Define>Lib;$(DCC_Define)</DCC_Define>
-        <DCC_ExeOutput>Bin</DCC_ExeOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -98,27 +76,14 @@
         <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
         <DCC_DebugInformation>0</DCC_DebugInformation>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
-        <AppEnableHighDPI>true</AppEnableHighDPI>
-        <DCC_ExeOutput>Bin</DCC_ExeOutput>
-        <DCC_UnitSearchPath>Lib;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_DcuOutput>Lib</DCC_DcuOutput>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Locale>1033</VerInfo_Locale>
-    </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="View.Monitor.pas">
-            <Form>fMonitor</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
-        <DCCReference Include="Utils.Options.pas"/>
-        <DCCReference Include="Utils.Helpers.pas"/>
-        <DCCReference Include="Utils.Constants.pas"/>
-        <DCCReference Include="Utils.SQLFormatter.pas"/>
+        <DCCReference Include="rtl.dcp"/>
+        <DCCReference Include="dbrtl.dcp"/>
+        <DCCReference Include="dsnap.dcp"/>
+        <DCCReference Include="Component.LogViewer.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -133,11 +98,11 @@
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Delphi.Personality.12</Borland.Personality>
-        <Borland.ProjectType>Application</Borland.ProjectType>
+        <Borland.ProjectType>Package</Borland.ProjectType>
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">spMonitor4.dpr</Source>
+                    <Source Name="MainSource">Package.Componente.dpk</Source>
                 </Source>
                 <Excluded_Packages>
                     <Excluded_Packages Name="C:\RTC\pg5Dev\SRC\3RD_PARTY\PACDEV\BIN\spTablet.bpl">spTablet</Excluded_Packages>
@@ -147,25 +112,40 @@
                     <Excluded_Packages Name="C:\RTC\pg5Dev\SRC\3RD_PARTY\PACDEV\BIN\spViewPDF.bpl">spViewPDF</Excluded_Packages>
                     <Excluded_Packages Name="C:\RTC\pg5Dev\SRC\3RD_PARTY\PACDEV\BIN\XDevice.bpl">TExtraDevices for ReportBuilder</Excluded_Packages>
                     <Excluded_Packages Name="C:\RTC\pg5Dev\SRC\3RD_PARTY\PACDEV\BIN\spAddict.bpl">SP4 Componente spAddictSpell</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\Package.Componente.bpl">(untitled)</Excluded_Packages>
                     <Excluded_Packages Name="C:\RTC\pg5Dev\bin\pg5CompletoDT.bpl">PG5 - Componentes Design Time</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k250.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp250.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
-                <DeployFile LocalName="Win32\Debug\spMonitor4.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
+                    <Platform Name="OSX32">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="$(BDS)\Redist\iossimulator\libcgunwind.1.0.dylib" Class="DependencyModule">
+                    <Platform Name="iOSSimulator">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="$(BDS)\Redist\iossimulator\libPCRE.dylib" Class="DependencyModule">
+                    <Platform Name="iOSSimulator">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="$(BDS)\Redist\osx32\libcgsqlite3.dylib" Class="DependencyModule">
+                    <Platform Name="OSX32">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\Package.Componente.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteName>spMonitor4.exe</RemoteName>
+                        <RemoteName>Package_Componente.bpl</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
                 <DeployClass Name="AdditionalDebugSymbols">
-                    <Platform Name="iOSSimulator">
-                        <Operation>1</Operation>
-                    </Platform>
                     <Platform Name="OSX32">
-                        <RemoteDir>Contents\MacOS</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
                     <Platform Name="Win32">
@@ -280,7 +260,6 @@
                         <Operation>1</Operation>
                     </Platform>
                     <Platform Name="OSX32">
-                        <RemoteDir>Contents\MacOS</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
                     <Platform Name="Win32">
@@ -289,7 +268,6 @@
                 </DeployClass>
                 <DeployClass Name="DependencyFramework">
                     <Platform Name="OSX32">
-                        <RemoteDir>Contents\MacOS</RemoteDir>
                         <Operation>1</Operation>
                         <Extensions>.framework</Extensions>
                     </Platform>
@@ -298,20 +276,7 @@
                     </Platform>
                 </DeployClass>
                 <DeployClass Name="DependencyModule">
-                    <Platform Name="iOSDevice32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                    <Platform Name="iOSDevice64">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                    <Platform Name="iOSSimulator">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
                     <Platform Name="OSX32">
-                        <RemoteDir>Contents\MacOS</RemoteDir>
                         <Operation>1</Operation>
                         <Extensions>.dylib</Extensions>
                     </Platform>
@@ -334,7 +299,6 @@
                         <Extensions>.dylib</Extensions>
                     </Platform>
                     <Platform Name="OSX32">
-                        <RemoteDir>Contents\MacOS</RemoteDir>
                         <Operation>1</Operation>
                         <Extensions>.dylib</Extensions>
                     </Platform>
@@ -357,7 +321,6 @@
                         <Operation>0</Operation>
                     </Platform>
                     <Platform Name="OSX32">
-                        <RemoteDir>Contents\Resources\StartUp\</RemoteDir>
                         <Operation>0</Operation>
                     </Platform>
                     <Platform Name="Win32">
@@ -456,35 +419,9 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectiOSDeviceResourceRules">
-                    <Platform Name="iOSDevice32">
-                        <Operation>1</Operation>
-                    </Platform>
-                    <Platform Name="iOSDevice64">
-                        <Operation>1</Operation>
-                    </Platform>
-                </DeployClass>
-                <DeployClass Name="ProjectiOSEntitlements">
-                    <Platform Name="iOSDevice32">
-                        <RemoteDir>..\</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                    <Platform Name="iOSDevice64">
-                        <RemoteDir>..\</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                </DeployClass>
-                <DeployClass Name="ProjectiOSInfoPList">
-                    <Platform Name="iOSDevice32">
-                        <Operation>1</Operation>
-                    </Platform>
-                    <Platform Name="iOSDevice64">
-                        <Operation>1</Operation>
-                    </Platform>
-                    <Platform Name="iOSSimulator">
-                        <Operation>1</Operation>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="ProjectiOSEntitlements"/>
+                <DeployClass Name="ProjectiOSInfoPList"/>
                 <DeployClass Name="ProjectiOSResource">
                     <Platform Name="iOSDevice32">
                         <Operation>1</Operation>
@@ -496,18 +433,8 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectOSXEntitlements">
-                    <Platform Name="OSX32">
-                        <RemoteDir>..\</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                </DeployClass>
-                <DeployClass Name="ProjectOSXInfoPList">
-                    <Platform Name="OSX32">
-                        <RemoteDir>Contents</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectOSXEntitlements"/>
+                <DeployClass Name="ProjectOSXInfoPList"/>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -532,7 +459,6 @@
                         <Operation>1</Operation>
                     </Platform>
                     <Platform Name="OSX32">
-                        <RemoteDir>Contents\MacOS</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
                     <Platform Name="Win32">
@@ -572,7 +498,7 @@
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Linux64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="Win32" Name="$(PROJECTNAME)"/>
-                <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="Android" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
             </Deployment>
@@ -580,7 +506,6 @@
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">False</Platform>
             </Platforms>
-            <ModelSupport>False</ModelSupport>
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>

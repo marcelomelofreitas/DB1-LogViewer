@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{95510D5B-C6FF-4FF6-8E15-442B5DD94BF2}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="spMonitor4.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Componente\Package.Componente.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="spMonitor4">
+        <MSBuild Projects="spMonitor4.dproj"/>
+    </Target>
+    <Target Name="spMonitor4:Clean">
+        <MSBuild Projects="spMonitor4.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="spMonitor4:Make">
+        <MSBuild Projects="spMonitor4.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Package_Componente">
+        <MSBuild Projects="Componente\Package.Componente.dproj"/>
+    </Target>
+    <Target Name="Package_Componente:Clean">
+        <MSBuild Projects="Componente\Package.Componente.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Package_Componente:Make">
+        <MSBuild Projects="Componente\Package.Componente.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="spMonitor4;Package_Componente"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="spMonitor4:Clean;Package_Componente:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="spMonitor4:Make;Package_Componente:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

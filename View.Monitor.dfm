@@ -22,7 +22,7 @@ object fMonitor: TfMonitor
     Top = 0
     Width = 1199
     Height = 567
-    ActivePage = TabSheetLog
+    ActivePage = TabSheetSQL
     Align = alClient
     TabOrder = 0
     TabWidth = 100
@@ -38,7 +38,7 @@ object fMonitor: TfMonitor
         ExplicitTop = 91
         ExplicitWidth = 338
       end
-      object PanelOpcoes: TPanel
+      object PanelOptions: TPanel
         Left = 0
         Top = 0
         Width = 1191
@@ -49,7 +49,7 @@ object fMonitor: TfMonitor
         DesignSize = (
           1191
           92)
-        object LabelInformacaoRegistro: TLabel
+        object LabelRecordInfo: TLabel
           Left = 1184
           Top = 72
           Width = 3
@@ -63,7 +63,7 @@ object fMonitor: TfMonitor
           Font.Style = [fsBold]
           ParentFont = False
         end
-        object EditArquivo: TEdit
+        object EditFileName: TEdit
           Left = 1
           Top = 63
           Width = 533
@@ -92,21 +92,21 @@ object fMonitor: TfMonitor
           ParentFont = False
           Spacing = 0
         end
-        object GroupBoxAtualizacaoAutomatica: TGroupBox
+        object GroupBoxAutoUpdate: TGroupBox
           Left = 349
           Top = 3
           Width = 185
           Height = 54
           Caption = 'Atualiza'#231#227'o autom'#225'tica       '
           TabOrder = 2
-          object LabelIntervalo: TLabel
+          object LabelInterval: TLabel
             Left = 9
             Top = 26
             Width = 81
             Height = 13
             Caption = 'Intervalo (segs):'
           end
-          object CheckBoxAtualizacaoAutomatica: TCheckBox
+          object CheckBoxAutoUpdate: TCheckBox
             Left = 124
             Top = -1
             Width = 20
@@ -114,9 +114,9 @@ object fMonitor: TfMonitor
             Checked = True
             State = cbChecked
             TabOrder = 0
-            OnClick = CheckBoxAtualizacaoAutomaticaClick
+            OnClick = CheckBoxAutoUpdateClick
           end
-          object SpinEditIntervalo: TSpinEdit
+          object SpinEditInterval: TSpinEdit
             Left = 96
             Top = 22
             Width = 61
@@ -127,14 +127,14 @@ object fMonitor: TfMonitor
             Value = 1
           end
         end
-        object GroupBoxFiltros: TGroupBox
+        object GroupBoxFilters: TGroupBox
           Left = 546
           Top = 3
           Width = 434
           Height = 81
           Caption = 'Filtros: '
           TabOrder = 3
-          object EditFiltroClasse: TEdit
+          object EditFilterClass: TEdit
             Left = 14
             Top = 50
             Width = 200
@@ -143,7 +143,7 @@ object fMonitor: TfMonitor
             TabOrder = 1
             TextHint = 'Classe'
           end
-          object ComboBoxTipo: TComboBox
+          object ComboBoxType: TComboBox
             Left = 14
             Top = 23
             Width = 100
@@ -153,7 +153,7 @@ object fMonitor: TfMonitor
             TabOrder = 0
             Text = '[Todos]'
             TextHint = 'Tipo'
-            OnChange = ComboBoxTipoChange
+            OnChange = ComboBoxTypeChange
             Items.Strings = (
               '[Todos]'
               'ENTRADA'
@@ -161,7 +161,7 @@ object fMonitor: TfMonitor
               'AVISO'
               'SQL')
           end
-          object EditFiltroMetodo: TEdit
+          object EditFilterMethod: TEdit
             Left = 222
             Top = 22
             Width = 200
@@ -170,7 +170,7 @@ object fMonitor: TfMonitor
             TabOrder = 2
             TextHint = 'M'#233'todo'
           end
-          object EditFiltroSQL: TEdit
+          object EditFilterSQL: TEdit
             Left = 222
             Top = 50
             Width = 200
@@ -210,19 +210,21 @@ object fMonitor: TfMonitor
           Columns = <
             item
               Expanded = False
-              FieldName = 'Tipo'
+              FieldName = 'Type'
+              Title.Caption = 'Tipo'
               Width = 70
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'Base'
+              FieldName = 'Database'
+              Title.Caption = 'Base'
               Width = 70
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'Usuario'
+              FieldName = 'User'
               Title.Caption = 'Usu'#225'rio'
               Width = 140
               Visible = True
@@ -235,26 +237,27 @@ object fMonitor: TfMonitor
             end
             item
               Expanded = False
-              FieldName = 'DataHora'
+              FieldName = 'DateTime'
               Title.Caption = 'Data/Hora'
               Width = 130
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'Classe'
+              FieldName = 'Class'
               Width = 180
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'Metodo'
+              FieldName = 'Method'
+              Title.Caption = 'M'#233'todo'
               Width = 420
               Visible = True
             end>
         end
       end
-      object PanelFiltro: TPanel
+      object PanelSQL: TPanel
         Left = 0
         Top = 404
         Width = 1191
@@ -278,6 +281,8 @@ object fMonitor: TfMonitor
           ScrollBars = ssBoth
           TabOrder = 0
           OnKeyPress = MemoSQLKeyPress
+          ExplicitLeft = 280
+          ExplicitTop = 42
         end
       end
     end
@@ -285,7 +290,7 @@ object fMonitor: TfMonitor
       Caption = 'SQL'
       ImageIndex = 2
       OnEnter = TabSheetSQLEnter
-      object MemoAbaSQL: TMemo
+      object MemoSQLTab: TMemo
         Left = 0
         Top = 0
         Width = 1191
@@ -300,10 +305,10 @@ object fMonitor: TfMonitor
         ReadOnly = True
         ScrollBars = ssBoth
         TabOrder = 0
-        OnKeyPress = MemoAbaSQLKeyPress
+        OnKeyPress = MemoSQLTabKeyPress
       end
     end
-    object TabSheetOpcoes: TTabSheet
+    object TabSheetOptions: TTabSheet
       Caption = 'Op'#231#245'es'
       object GroupBoxLog: TGroupBox
         Left = 18
@@ -312,110 +317,59 @@ object fMonitor: TfMonitor
         Height = 97
         Caption = 'Log: '
         TabOrder = 0
-        object CheckBoxExibirSomenteSQL: TCheckBox
+        object CheckBoxShowOnlySQL: TCheckBox
           Left = 8
           Top = 22
           Width = 189
           Height = 17
           Caption = 'Exibir somente logs do tipo "SQL"'
           TabOrder = 0
-          OnClick = CheckBoxExibirSomenteSQLClick
+          OnClick = CheckBoxShowOnlySQLClick
         end
-        object CheckBoxDestacarLinhasErros: TCheckBox
+        object CheckBoxHighlightErrors: TCheckBox
           Left = 8
           Top = 43
           Width = 189
           Height = 17
           Caption = 'Destacar linhas de erros'
           TabOrder = 1
-          OnClick = CheckBoxDestacarLinhasErrosClick
+          OnClick = CheckBoxHighlightErrorsClick
         end
-        object CheckBoxExibirPainelInferior: TCheckBox
+        object CheckBoxShowBottomPanel: TCheckBox
           Left = 8
           Top = 65
           Width = 169
           Height = 17
           Caption = 'Exibir Painel Inferior'
           TabOrder = 2
-          OnClick = CheckBoxExibirPainelInferiorClick
+          OnClick = CheckBoxShowBottomPanelClick
         end
       end
     end
   end
   object DataSource: TDataSource
-    DataSet = ClientDataSet
+    DataSet = LogViewer
     Left = 979
     Top = 371
   end
-  object TimerAtualizacaoAutomatica: TTimer
+  object TimerAutoUpdate: TTimer
     Enabled = False
-    OnTimer = TimerAtualizacaoAutomaticaTimer
+    OnTimer = TimerAutoUpdateTimer
     Left = 1040
     Top = 371
-  end
-  object ClientDataSet: TClientDataSet
-    PersistDataPacket.Data = {
-      030100009619E0BD010000001800000009000000000003000000030104546970
-      6F0100490000000100055749445448020002000A000442617365010049000000
-      0100055749445448020002001400075573756172696F01004900000001000557
-      4944544802000200320002495001004900000001000557494454480200020014
-      0006436C617373650100490000000100055749445448020002006400064D6574
-      6F646F01004900000001000557494454480200020064000353514C0200490000
-      00010005574944544802000200983A0844617461486F72610100490000000100
-      055749445448020002001400044572726F010049000000010005574944544802
-      00020001000000}
-    Active = True
-    Aggregates = <>
-    Params = <>
-    AfterScroll = ClientDataSetAfterScroll
-    Left = 1010
-    Top = 371
-    object ClientDataSetTipo: TStringField
-      FieldName = 'Tipo'
-      Size = 10
-    end
-    object ClientDataSetBase: TStringField
-      FieldName = 'Base'
-    end
-    object ClientDataSetUsuario: TStringField
-      FieldName = 'Usuario'
-      Size = 50
-    end
-    object ClientDataSetIP: TStringField
-      FieldName = 'IP'
-    end
-    object ClientDataSetClasse: TStringField
-      FieldName = 'Classe'
-      Size = 100
-    end
-    object ClientDataSetMetodo: TStringField
-      FieldName = 'Metodo'
-      Size = 100
-    end
-    object ClientDataSetSQL: TStringField
-      FieldName = 'SQL'
-      Size = 15000
-    end
-    object ClientDataSetDataHora: TStringField
-      FieldName = 'DataHora'
-    end
-    object ClientDataSetErro: TStringField
-      FieldName = 'Erro'
-      Size = 1
-    end
   end
   object PopupMenu: TPopupMenu
     Left = 1070
     Top = 371
-    object MenuItemCopiarColuna: TMenuItem
+    object MenuItemCopyColumnValue: TMenuItem
       Caption = 'Copiar Coluna'
       ShortCut = 16465
-      OnClick = MenuItemCopiarColunaClick
+      OnClick = MenuItemCopyColumnValueClick
     end
-    object MenuItemCopiarSQL: TMenuItem
+    object MenuItemCopySQL: TMenuItem
       Caption = 'Copiar SQL'
       ShortCut = 16451
-      OnClick = MenuItemCopiarSQLClick
+      OnClick = MenuItemCopySQLClick
     end
   end
   object ImageList: TImageList
@@ -965,7 +919,7 @@ object fMonitor: TfMonitor
       item
         Items = <
           item
-            Action = ActionAbrirLog
+            Action = ActionOpenFile
             Caption = '&Abrir Arquivo'
             ImageIndex = 0
             ShortCut = 16463
@@ -974,7 +928,7 @@ object fMonitor: TfMonitor
             Caption = '-'
           end
           item
-            Action = ActionAtualizarLog
+            Action = ActionReloadLog
             Caption = 'A&tualizar Log'
             ImageIndex = 1
             ShortCut = 16500
@@ -983,7 +937,7 @@ object fMonitor: TfMonitor
             Caption = '-'
           end
           item
-            Action = ActionLimparLog
+            Action = ActionClearLog
             Caption = '&Limpar Log'
             ImageIndex = 2
             ShortCut = 16460
@@ -995,44 +949,110 @@ object fMonitor: TfMonitor
     Left = 1130
     Top = 371
     StyleName = 'Platform Default'
-    object ActionAbrirLog: TAction
+    object ActionOpenFile: TAction
       Caption = 'Abrir Arquivo'
       ImageIndex = 0
       ShortCut = 16463
-      OnExecute = ActionAbrirLogExecute
+      OnExecute = ActionOpenFileExecute
     end
-    object ActionAtualizarLog: TAction
-      Caption = 'ActionAtualizarLog'
+    object ActionReloadLog: TAction
+      Caption = 'Atualizar Log'
       ImageIndex = 1
       ShortCut = 16500
-      OnExecute = ActionAtualizarLogExecute
+      OnExecute = ActionReloadLogExecute
     end
-    object ActionLimparLog: TAction
-      Caption = 'ActionLimparLog'
+    object ActionClearLog: TAction
+      Caption = 'Limpar Log'
       ImageIndex = 2
       ShortCut = 16460
-      OnExecute = ActionLimparLogExecute
+      OnExecute = ActionClearLogExecute
     end
   end
   object BindingsList: TBindingsList
     Methods = <>
     OutputConverters = <>
-    Left = 20
-    Top = 5
+    Left = 1160
+    Top = 371
     object LinkControlToPropertyLabel: TLinkControlToProperty
       Category = 'Quick Bindings'
-      Control = CheckBoxAtualizacaoAutomatica
+      Control = CheckBoxAutoUpdate
       Track = True
-      Component = LabelIntervalo
+      Component = LabelInterval
       ComponentProperty = 'Enabled'
     end
     object LinkControlToPropertySpinEdit: TLinkControlToProperty
       Category = 'Quick Bindings'
-      Control = CheckBoxAtualizacaoAutomatica
+      Control = CheckBoxAutoUpdate
       Track = True
-      Component = SpinEditIntervalo
+      Component = SpinEditInterval
       ComponentProperty = 'Enabled'
       InitializeControlValue = False
     end
+  end
+  object LogViewer: TLogViewer
+    PersistDataPacket.Data = {
+      040100009619E0BD010000001800000009000000000003000000040104547970
+      650100490000000100055749445448020002000A000844617461626173650100
+      4900000001000557494454480200020014000455736572010049000000010005
+      5749445448020002003200024950010049000000010005574944544802000200
+      140005436C6173730100490000000100055749445448020002006400064D6574
+      686F6401004900000001000557494454480200020064000353514C0200490000
+      00010005574944544802000200983A084461746554696D650100490000000100
+      055749445448020002001400054572726F720100490000000100055749445448
+      0200020001000000}
+    Active = True
+    Aggregates = <>
+    FieldDefs = <
+      item
+        Name = 'Type'
+        DataType = ftString
+        Size = 10
+      end
+      item
+        Name = 'Database'
+        DataType = ftString
+        Size = 20
+      end
+      item
+        Name = 'User'
+        DataType = ftString
+        Size = 50
+      end
+      item
+        Name = 'IP'
+        DataType = ftString
+        Size = 20
+      end
+      item
+        Name = 'Class'
+        DataType = ftString
+        Size = 100
+      end
+      item
+        Name = 'Method'
+        DataType = ftString
+        Size = 100
+      end
+      item
+        Name = 'SQL'
+        DataType = ftString
+        Size = 15000
+      end
+      item
+        Name = 'DateTime'
+        DataType = ftString
+        Size = 20
+      end
+      item
+        Name = 'Error'
+        DataType = ftString
+        Size = 1
+      end>
+    IndexDefs = <>
+    Params = <>
+    StoreDefs = True
+    AfterScroll = LogViewerAfterScroll
+    Left = 1010
+    Top = 371
   end
 end

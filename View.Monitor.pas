@@ -10,125 +10,104 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.ExtCtrls, Vcl.Grids,
   Vcl.DBGrids, Vcl.StdCtrls,
   Vcl.Buttons, Vcl.Samples.Spin, Datasnap.DBClient, Vcl.ComCtrls, Vcl.Menus,
-  Utils.FormatadorSQL, System.ImageList, Vcl.ImgList, System.Actions, Vcl.ActnList,
+  Utils.SQLFormatter, System.ImageList, Vcl.ImgList, System.Actions, Vcl.ActnList,
   Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan, Vcl.ToolWin, Vcl.ActnCtrls,
   Data.Bind.EngExt, Vcl.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs,
-  Vcl.Bind.Editors, Data.Bind.Components;
+  Vcl.Bind.Editors, Data.Bind.Components, Component.LogViewer;
 
 type
   TfMonitor = class(TForm)
-    ActionAbrirLog: TAction;
-    ActionAtualizarLog: TAction;
-    ActionLimparLog: TAction;
+    ActionOpenFile: TAction;
+    ActionReloadLog: TAction;
+    ActionClearLog: TAction;
     ActionManager: TActionManager;
     ActionToolBar: TActionToolBar;
-    CheckBoxAtualizacaoAutomatica: TCheckBox;
-    CheckBoxDestacarLinhasErros: TCheckBox;
-    CheckBoxExibirPainelInferior: TCheckBox;
-    CheckBoxExibirSomenteSQL: TCheckBox;
-    ClientDataSet: TClientDataSet;
-    ClientDataSetBase: TStringField;
-    ClientDataSetClasse: TStringField;
-    ClientDataSetDataHora: TStringField;
-    ClientDataSetErro: TStringField;
-    ClientDataSetIP: TStringField;
-    ClientDataSetMetodo: TStringField;
-    ClientDataSetSQL: TStringField;
-    ClientDataSetTipo: TStringField;
-    ClientDataSetUsuario: TStringField;
-    ComboBoxTipo: TComboBox;
+    CheckBoxAutoUpdate: TCheckBox;
+    CheckBoxHighlightErrors: TCheckBox;
+    CheckBoxShowBottomPanel: TCheckBox;
+    CheckBoxShowOnlySQL: TCheckBox;
+    ComboBoxType: TComboBox;
     DataSource: TDataSource;
     DBGrid: TDBGrid;
-    EditArquivo: TEdit;
-    EditFiltroClasse: TEdit;
-    EditFiltroMetodo: TEdit;
-    EditFiltroSQL: TEdit;
-    GroupBoxAtualizacaoAutomatica: TGroupBox;
-    GroupBoxFiltros: TGroupBox;
+    EditFileName: TEdit;
+    EditFilterClass: TEdit;
+    EditFilterMethod: TEdit;
+    EditFilterSQL: TEdit;
+    GroupBoxAutoUpdate: TGroupBox;
+    GroupBoxFilters: TGroupBox;
     GroupBoxLog: TGroupBox;
     ImageList: TImageList;
-    LabelInformacaoRegistro: TLabel;
-    LabelIntervalo: TLabel;
-    MemoAbaSQL: TMemo;
+    LabelRecordInfo: TLabel;
+    LabelInterval: TLabel;
+    MemoSQLTab: TMemo;
     MemoSQL: TMemo;
-    MenuItemCopiarColuna: TMenuItem;
-    MenuItemCopiarSQL: TMenuItem;
+    MenuItemCopyColumnValue: TMenuItem;
+    MenuItemCopySQL: TMenuItem;
     PageControl: TPageControl;
-    PanelFiltro: TPanel;
+    PanelSQL: TPanel;
     PanelGrid: TPanel;
-    PanelOpcoes: TPanel;
+    PanelOptions: TPanel;
     PopupMenu: TPopupMenu;
-    SpinEditIntervalo: TSpinEdit;
+    SpinEditInterval: TSpinEdit;
     Splitter: TSplitter;
     TabSheetLog: TTabSheet;
-    TabSheetOpcoes: TTabSheet;
+    TabSheetOptions: TTabSheet;
     TabSheetSQL: TTabSheet;
-    TimerAtualizacaoAutomatica: TTimer;
+    TimerAutoUpdate: TTimer;
     BindingsList: TBindingsList;
     LinkControlToPropertyLabel: TLinkControlToProperty;
     LinkControlToPropertySpinEdit: TLinkControlToProperty;
-    procedure ActionAbrirLogExecute(Sender: TObject);
-    procedure ActionAtualizarLogExecute(Sender: TObject);
-    procedure ActionLimparLogExecute(Sender: TObject);
-    procedure CheckBoxAtualizacaoAutomaticaClick(Sender: TObject);
-    procedure CheckBoxDestacarLinhasErrosClick(Sender: TObject);
-    procedure CheckBoxExibirPainelInferiorClick(Sender: TObject);
-    procedure CheckBoxExibirSomenteSQLClick(Sender: TObject);
-    procedure ClientDataSetAfterScroll(DataSet: TDataSet);
-    procedure ComboBoxTipoChange(Sender: TObject);
+    LogViewer: TLogViewer;
+    procedure ActionOpenFileExecute(Sender: TObject);
+    procedure ActionReloadLogExecute(Sender: TObject);
+    procedure ActionClearLogExecute(Sender: TObject);
+    procedure CheckBoxAutoUpdateClick(Sender: TObject);
+    procedure CheckBoxHighlightErrorsClick(Sender: TObject);
+    procedure CheckBoxShowBottomPanelClick(Sender: TObject);
+    procedure CheckBoxShowOnlySQLClick(Sender: TObject);
+    procedure ComboBoxTypeChange(Sender: TObject);
     procedure DBGridDblClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure MemoAbaSQLKeyPress(Sender: TObject; var Key: Char);
+    procedure MemoSQLTabKeyPress(Sender: TObject; var Key: Char);
     procedure MemoSQLKeyPress(Sender: TObject; var Key: Char);
-    procedure MenuItemCopiarColunaClick(Sender: TObject);
-    procedure MenuItemCopiarSQLClick(Sender: TObject);
-    procedure TimerAtualizacaoAutomaticaTimer(Sender: TObject);
+    procedure MenuItemCopyColumnValueClick(Sender: TObject);
+    procedure MenuItemCopySQLClick(Sender: TObject);
+    procedure TimerAutoUpdateTimer(Sender: TObject);
     procedure TabSheetSQLEnter(Sender: TObject);
     procedure DBGridKeyPress(Sender: TObject; var Key: Char);
+    procedure LogViewerAfterScroll(DataSet: TDataSet);
   private
     // Class Fields
-    FContador: integer;
-    FStringListArquivo: TStringList;
-    FStringListLinha: TStringList;
-    FFormatadorSQL: TFormatadorSQL;
+    FSQLFormatter: TSQLFormatter;
 
     // Event Handlers
-    procedure OnDrawColumnCellPintura(Sender: TObject; const Rect: TRect; DataCol: Integer;
+    procedure OnDrawColumnCellHighlight(Sender: TObject; const Rect: TRect; DataCol: Integer;
       Column: TColumn; State: TGridDrawState);
-    procedure OnKeyPressCamposFiltros(Sender: TObject; var Key: Char);
+    procedure OnKeyPressFilterComponents(Sender: TObject; var Key: Char);
 
     // Functions
-    function AbrirArquivo: string;
-    function FormatarSQL: string;
-    function ObterDataHora: string;
-    function ObterErro: string;
-    function ObterNomeCampo(aComponente: TEdit): string;
-    function VerificarDeveExibirSomenteSQL: boolean;
-    function VerificarLinhaEhSQL: boolean;
-    function VerificarArquivoEhValido: boolean;
+    function OpenFile: string;
+    function FormatSQL: string;
+    function GetFieldName(aComponent: TEdit): string;
+    function IsFileNameValid: boolean;
 
     // Procdures
-    procedure AbrirAbaSQL;
-    procedure AssociarEventosCheckBoxes;
-    procedure AssociarEventosFiltros;
-    procedure AssociarEventoPinturaDBGrid;
-    procedure AtualizarLog;
+    procedure OpenSQLTab;
+    procedure AssignCheckBoxesEvents;
+    procedure AssignFilterEvents;
+    procedure AssignGridDrawEvent;
     procedure BuscarLogMaisRecente;
-    procedure CarregarPreferencias;
-    procedure CarregarLog;
-    procedure CarregarSQLPainelInferior;
-    procedure CopiarColuna;
-    procedure ControlarTemporizador;
-    procedure CriarObjetosInternos;
-    procedure DestruirObjetosInternos;
-    procedure ExibirInformacaoRegistro;
-    procedure FiltrarRegistros(const aNomeCampo, aValor: string);
-    procedure GravarPreferencia(const aChave: string; const aValor: boolean);
-    procedure IncluirLinhaLog;
-    procedure InicializarPropriedades;
-    procedure LimparOutrosCamposFiltro(aComponente: TEdit);
-    procedure RemoverEventosCheckBoxes;
+    procedure LoadOptions;
+    procedure LoadLog;
+    procedure LoadSQLBottomPanel;
+    procedure CopyColumnValue;
+    procedure ManageTimer;
+    procedure ShowRecordInfo;
+    procedure FilterRecords(const aNomeCampo, aValor: string);
+    procedure SaveOption(const aKey: string; const aValue: boolean);
+    procedure ClearFilterComponents(aComponent: TEdit);
+    procedure RemoveCheckBoxesEvents;
   end;
 
 var
@@ -137,11 +116,11 @@ var
 implementation
 
 uses
-  ClipBrd, Utils.Helpers, Utils.Preferencias, Utils.Constantes;
+  ClipBrd, Utils.Helpers, Utils.Options, Utils.Constants;
 
 {$R *.dfm}
 
-function TfMonitor.AbrirArquivo: string;
+function TfMonitor.OpenFile: string;
 var
   lOpenDialog: TOpenDialog;
 begin
@@ -155,66 +134,59 @@ begin
       Exit;
 
     result := Trim(lOpenDialog.FileName);
-    EditArquivo.Text := Trim(lOpenDialog.FileName);
+    EditFileName.Text := Trim(lOpenDialog.FileName);
   finally
     lOpenDialog.Free;
   end;
 end;
 
-procedure TfMonitor.ActionAbrirLogExecute(Sender: TObject);
+procedure TfMonitor.ActionOpenFileExecute(Sender: TObject);
 var
-  lArquivo: string;
+  lFileName: string;
 begin
-  lArquivo := AbrirArquivo;
+  lFileName := OpenFile;
 
-  if lArquivo.IsEmpty then
+  if lFileName.IsEmpty then
     Exit;
 
-  EditArquivo.Text := lArquivo.Trim;
-  CarregarLog;
+  EditFileName.Text := lFileName.Trim;
+  LoadLog;
 end;
 
-procedure TfMonitor.ActionAtualizarLogExecute(Sender: TObject);
+procedure TfMonitor.ActionReloadLogExecute(Sender: TObject);
 begin
-  AtualizarLog;
+  LogViewer.ReloadLog;
 end;
 
-procedure TfMonitor.ActionLimparLogExecute(Sender: TObject);
+procedure TfMonitor.ActionClearLogExecute(Sender: TObject);
 begin
-  ClientDataSet.EmptyDataSet;
-  LabelInformacaoRegistro.Caption := EmptyStr;
+  LogViewer.EmptyDataSet;
+  LabelRecordInfo.Caption := EmptyStr;
 end;
 
-procedure TfMonitor.AssociarEventoPinturaDBGrid;
+procedure TfMonitor.AssignGridDrawEvent;
 begin
   DBGrid.OnDrawColumnCell := nil;
-  if CheckBoxDestacarLinhasErros.Checked then
-    DBGrid.OnDrawColumnCell := OnDrawColumnCellPintura;
+  if CheckBoxHighlightErrors.Checked then
+    DBGrid.OnDrawColumnCell := OnDrawColumnCellHighlight;
 end;
 
-procedure TfMonitor.AssociarEventosCheckBoxes;
+procedure TfMonitor.AssignCheckBoxesEvents;
 begin
-  CheckBoxAtualizacaoAutomatica.OnClick := CheckBoxAtualizacaoAutomaticaClick;
-  CheckBoxExibirSomenteSQL.OnClick := CheckBoxExibirSomenteSQLClick;
-  CheckBoxDestacarLinhasErros.OnClick := CheckBoxDestacarLinhasErrosClick;
-  CheckBoxExibirPainelInferior.OnClick := CheckBoxExibirPainelInferiorClick;
+  CheckBoxAutoUpdate.OnClick := CheckBoxAutoUpdateClick;
+  CheckBoxShowOnlySQL.OnClick := CheckBoxShowOnlySQLClick;
+  CheckBoxHighlightErrors.OnClick := CheckBoxHighlightErrorsClick;
+  CheckBoxShowBottomPanel.OnClick := CheckBoxShowBottomPanelClick;
 end;
 
-procedure TfMonitor.AssociarEventosFiltros;
+procedure TfMonitor.AssignFilterEvents;
 begin
-  EditFiltroClasse.OnKeyPress := OnKeyPressCamposFiltros;
-  EditFiltroMetodo.OnKeyPress := OnKeyPressCamposFiltros;
-  EditFiltroSQL.OnKeyPress := OnKeyPressCamposFiltros;
+  EditFilterClass.OnKeyPress := OnKeyPressFilterComponents;
+  EditFilterMethod.OnKeyPress := OnKeyPressFilterComponents;
+  EditFilterSQL.OnKeyPress := OnKeyPressFilterComponents;
 end;
 
-procedure TfMonitor.AtualizarLog;
-begin
-  ClientDataSet.EmptyDataSet;
-  FContador := 0;
-  CarregarLog;
-end;
-
-procedure TfMonitor.AbrirAbaSQL;
+procedure TfMonitor.OpenSQLTab;
 begin
   PageControl.ActivePage := TabSheetSQL;
 end;
@@ -222,338 +194,276 @@ end;
 procedure TfMonitor.BuscarLogMaisRecente;
 var
   lSearchRec: TSearchRec;
-  lHoraArquivo: TFileTime;
-  lNomeArquivo: string;
+  lFileTime: TFileTime;
+  lFileName: string;
 begin
   if FindFirst('Q:\Bin\spLogMetodoServidor*.txt', faNormal, lSearchRec) <> 0 then
     Exit;
 
-  lHoraArquivo.dwLowDateTime := 0;
-  lHoraArquivo.dwHighDateTime := 0;
+  lFileTime.dwLowDateTime := 0;
+  lFileTime.dwHighDateTime := 0;
 
   repeat
-    if CompareFileTime(lSearchRec.FindData.ftCreationTime, lHoraArquivo) = 1 then
+    if CompareFileTime(lSearchRec.FindData.ftCreationTime, lFileTime) = 1 then
     begin
-      lHoraArquivo := lSearchRec.FindData.ftCreationTime;
-      lNomeArquivo := lSearchRec.Name;
+      lFileTime := lSearchRec.FindData.ftCreationTime;
+      lFileName := lSearchRec.Name;
     end;
   until FindNext(lSearchRec) <> 0;
 
   FindClose(lSearchRec);
-  EditArquivo.Text := 'Q:\bin\' + lNomeArquivo.Trim;
-  CarregarLog;
+  EditFileName.Text := 'Q:\bin\' + lFileName.Trim;
+  LoadLog;
 end;
 
-procedure TfMonitor.CarregarLog;
-var
-  lContador: integer;
+procedure TfMonitor.LoadLog;
 begin
-  if not VerificarArquivoEhValido then
+  if not IsFileNameValid then
     Exit;
 
-  ClientDataSet.AfterScroll := nil;
-  ClientDataSet.DisableControls;
-  TimerAtualizacaoAutomatica.Enabled := False;
-  try
-    FStringListArquivo.LoadFromStream(
-      TFileStream.Create(EditArquivo.Text, fmOpenRead or fmShareDenyNone));
+  TimerAutoUpdate.Enabled := False;
+  LogViewer.LogFileName := EditFileName.Text;
+  LogViewer.LoadLog;
 
-    for lContador := FContador to Pred(FStringListArquivo.Count) do
-    begin
-      FStringListLinha.DelimitedText := FStringListArquivo[lContador];
-
-      if VerificarDeveExibirSomenteSQL and (not VerificarLinhaEhSQL) then
-        Continue;
-
-      IncluirLinhaLog;
-    end;
-  finally
-    ClientDataSet.AfterScroll := ClientDataSetAfterScroll;
-    ClientDataSet.EnableControls;
-  end;
-
-  ExibirInformacaoRegistro;
-  FContador := FStringListArquivo.Count;
-  ControlarTemporizador;
-  CarregarSQLPainelInferior;
+  ShowRecordInfo;
+  ManageTimer;
+  LoadSQLBottomPanel;
 end;
 
-procedure TfMonitor.CarregarPreferencias;
+procedure TfMonitor.LoadOptions;
 var
-  lPreferencias: TPreferencias;
+  lOptions: TOptions;
 begin
-  RemoverEventosCheckBoxes;
-  lPreferencias := TPreferencias.Create;
+  RemoveCheckBoxesEvents;
+  lOptions := TOptions.Create;
   try
-    CheckBoxAtualizacaoAutomatica.Checked := lPreferencias.HabilitarAtualizacaoAutomatica;
-    LabelIntervalo.Enabled := lPreferencias.HabilitarAtualizacaoAutomatica;
-    SpinEditIntervalo.Enabled := lPreferencias.HabilitarAtualizacaoAutomatica;
-    CheckBoxExibirSomenteSQL.Checked := lPreferencias.ExibirSomenteSQL;
-    CheckBoxDestacarLinhasErros.Checked := lPreferencias.DestacarLinhasErro;
-    CheckBoxExibirPainelInferior.Checked := lPreferencias.ExibirPainelInferior;
+    CheckBoxAutoUpdate.Checked := lOptions.AutoUpdateEnabled;
+    LabelInterval.Enabled := lOptions.AutoUpdateEnabled;
+    SpinEditInterval.Enabled := lOptions.AutoUpdateEnabled;
+    CheckBoxShowOnlySQL.Checked := lOptions.ShowOnlySQL;
+    LogViewer.ShowOnlySQL := lOptions.ShowOnlySQL;
+    CheckBoxHighlightErrors.Checked := lOptions.HighlightErrors;
+    CheckBoxShowBottomPanel.Checked := lOptions.ShowBottomPanel;
+    PanelSQL.Visible := lOptions.ShowBottomPanel;
   finally
-    lPreferencias.Free;
-    AssociarEventosCheckBoxes;
+    lOptions.Free;
+    AssignCheckBoxesEvents;
   end;
 end;
 
-procedure TfMonitor.CarregarSQLPainelInferior;
+procedure TfMonitor.LoadSQLBottomPanel;
 begin
+  if not CheckBoxShowBottomPanel.Checked then
+    Exit;
+
   MemoSQL.Lines.Clear;
-  if not ClientDataSetSQL.AsString.IsEmpty then
-    MemoSQL.Lines.Text := FormatarSQL;
+  if not LogViewer.IsSQLEmpty then
+    MemoSQL.Lines.Text := FormatSQL;
 end;
 
-procedure TfMonitor.CheckBoxExibirPainelInferiorClick(Sender: TObject);
+procedure TfMonitor.CheckBoxShowBottomPanelClick(Sender: TObject);
 begin
-  GravarPreferencia(sEXIBIR_PAINEL_INFERIOR, CheckBoxExibirPainelInferior.Checked);
+  SaveOption(sSHOW_BOTTOM_PANEL, CheckBoxShowBottomPanel.Checked);
 end;
 
-procedure TfMonitor.CheckBoxAtualizacaoAutomaticaClick(Sender: TObject);
+procedure TfMonitor.CheckBoxAutoUpdateClick(Sender: TObject);
 var
-  lHabilitar: boolean;
+  lEnable: boolean;
 begin
-  lHabilitar := CheckBoxAtualizacaoAutomatica.Checked;
-  TimerAtualizacaoAutomatica.Enabled := lHabilitar;
-  GravarPreferencia(sHABILITAR_ATUALIZACAO_AUTOMATICA, lHabilitar);
+  lEnable := CheckBoxAutoUpdate.Checked;
+  TimerAutoUpdate.Enabled := lEnable;
+  SaveOption(sAUTO_UPDATE_ENABLED, lEnable);
 end;
 
-procedure TfMonitor.CheckBoxDestacarLinhasErrosClick(Sender: TObject);
+procedure TfMonitor.CheckBoxHighlightErrorsClick(Sender: TObject);
 var
-  lHabilitar: boolean;
+  lEnable: boolean;
 begin
-  lHabilitar := CheckBoxDestacarLinhasErros.Checked;
-  GravarPreferencia(sDESTACAR_LINHAS_ERRO, lHabilitar);
-  AssociarEventoPinturaDBGrid;
+  lEnable := CheckBoxHighlightErrors.Checked;
+  SaveOption(sHIGHLIGHT_ERRORS, lEnable);
+  AssignGridDrawEvent;
 end;
 
-procedure TfMonitor.CheckBoxExibirSomenteSQLClick(Sender: TObject);
-begin
-  GravarPreferencia(sEXIBIR_SOMENTE_SQL, CheckBoxExibirSomenteSQL.Checked);
-  AtualizarLog;
-end;
-
-procedure TfMonitor.ClientDataSetAfterScroll(DataSet: TDataSet);
-begin
-  ExibirInformacaoRegistro;
-  CarregarSQLPainelInferior;
-end;
-
-procedure TfMonitor.ComboBoxTipoChange(Sender: TObject);
+procedure TfMonitor.CheckBoxShowOnlySQLClick(Sender: TObject);
 var
-  lValor: string;
+  lEnable: boolean;
 begin
-  lValor := EmptyStr;
-  if ComboBoxTipo.ItemIndex > 0 then
-    lValor := ComboBoxTipo.Text;
-
-  FiltrarRegistros('Tipo', lValor);
+  lEnable := CheckBoxShowOnlySQL.Checked;
+  SaveOption(sSHOW_ONLY_SQL, lEnable);
+  LogViewer.ShowOnlySQL := lEnable;
+  LogViewer.ReloadLog;
 end;
 
-procedure TfMonitor.ControlarTemporizador;
-begin
-  TimerAtualizacaoAutomatica.Interval := SpinEditIntervalo.Value * 1000;
-  TimerAtualizacaoAutomatica.Enabled := CheckBoxAtualizacaoAutomatica.Checked;
-end;
-
-procedure TfMonitor.CopiarColuna;
+procedure TfMonitor.ComboBoxTypeChange(Sender: TObject);
 var
-  lNomeColuna: string;
+  lValue: string;
 begin
-  lNomeColuna := DBGrid.SelectedField.FieldName;
-  Clipboard.AsText := ClientDataSet.FieldByName(lNomeColuna).AsString;
+  lValue := EmptyStr;
+  if ComboBoxType.ItemIndex > 0 then
+    lValue := ComboBoxType.Text;
+
+  FilterRecords('Type', lValue);
 end;
 
-procedure TfMonitor.CriarObjetosInternos;
+procedure TfMonitor.ManageTimer;
 begin
-  FStringListArquivo := TStringList.Create;
-  FStringListLinha := TStringList.Create;
-  FFormatadorSQL := TFormatadorSQL.Create;
+  TimerAutoUpdate.Interval := SpinEditInterval.Value * 1000;
+  TimerAutoUpdate.Enabled := CheckBoxAutoUpdate.Checked;
+end;
+
+procedure TfMonitor.CopyColumnValue;
+var
+  lFieldName: string;
+begin
+  lFieldName := DBGrid.SelectedField.FieldName;
+  Clipboard.AsText := LogViewer.CopyValue(lFieldName);
 end;
 
 procedure TfMonitor.DBGridDblClick(Sender: TObject);
 begin
-  AbrirAbaSQL;
+  OpenSQLTab;
 end;
 
 procedure TfMonitor.DBGridKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = #13 then
-    AbrirAbaSQL;
+    OpenSQLTab;
 end;
 
-procedure TfMonitor.DestruirObjetosInternos;
-begin
-  FStringListArquivo.Free;
-  FStringListLinha.Free;
-  FFormatadorSQL.Free;
-end;
-
-procedure TfMonitor.OnKeyPressCamposFiltros(Sender: TObject; var Key: Char);
+procedure TfMonitor.OnKeyPressFilterComponents(Sender: TObject; var Key: Char);
 var
-  lComponente: TEdit;
-  lNomeCampo: string;
+  lComponent: TEdit;
+  lFieldName: string;
 begin
   if Key = #13 then
   begin
     Key := #0;
-    lComponente := (Sender as TEdit);
-    lNomeCampo := ObterNomeCampo(lComponente);
-    LimparOutrosCamposFiltro(lComponente);
-    FiltrarRegistros(lNomeCampo, lComponente.Text);
+    lComponent := (Sender as TEdit);
+    lFieldName := GetFieldName(lComponent);
+    ClearFilterComponents(lComponent);
+    FilterRecords(lFieldName, lComponent.Text);
    end;
 end;
 
-procedure TfMonitor.OnDrawColumnCellPintura(Sender: TObject; const Rect: TRect; DataCol: Integer;
+procedure TfMonitor.OnDrawColumnCellHighlight(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
-  if ClientDataSetErro.AsString = 'S' then
+  if LogViewer.IsErrorLine then
   begin
     DBGrid.Canvas.Brush.Color := $00B9B9FF;
     DBGrid.DefaultDrawColumnCell(Rect, DataCol, Column, State);
   end;
 end;
 
-procedure TfMonitor.ExibirInformacaoRegistro;
+procedure TfMonitor.ShowRecordInfo;
 begin
-  if ClientDataSet.IsEmpty then
+  if LogViewer.IsEmpty then
   begin
-    LabelInformacaoRegistro.Caption := EmptyStr;
+    LabelRecordInfo.Caption := EmptyStr;
     Exit;
   end;
 
-  LabelInformacaoRegistro.Caption := Format('Registro %d / %d',
-    [ClientDataSet.RecNo, ClientdataSet.RecordCount]);
+  LabelRecordInfo.Caption := LogViewer.GetRecordCounter;
 end;
 
-function TfMonitor.VerificarArquivoEhValido: boolean;
+function TfMonitor.IsFileNameValid: boolean;
 begin
   result := False;
 
-  if EditArquivo.IsEmpty then
+  if EditFileName.IsEmpty then
     Exit;
 
-  if not FileExists(EditArquivo.Text) then
+  if not FileExists(EditFileName.Text) then
     Exit;
 
   result := True;
 end;
 
-function TfMonitor.VerificarDeveExibirSomenteSQL: boolean;
-begin
-  result := CheckBoxExibirSomenteSQL.Checked;
-end;
-
-procedure TfMonitor.FiltrarRegistros(const aNomeCampo, aValor: string);
+procedure TfMonitor.FilterRecords(const aNomeCampo, aValor: string);
 var
-  lFiltro: string;
-  lValor: string;
+  lFilter: string;
+  lValue: string;
 begin
   if aValor.IsEmpty then
   begin
-    ClientDataSet.Filter := EmptyStr;
-    ClientDataSet.Filtered := False;
-    ClientDataSet.Last;
+    LogViewer.RemoveFilter;
+    Exit;
   end;
 
-  lFiltro := EmptyStr;
+  lFilter := EmptyStr;
   if aNomeCampo = 'SQL' then
-    lFiltro := Format('Tipo = %s AND ', ['SQL'.QuotedString]);
+    lFilter := Format('Type = %s AND ', ['SQL'.QuotedString]);
 
-  lValor := '%' + aValor + '%';
-  lFiltro := lFiltro + Format('%s like %s', [aNomeCampo, lValor.QuotedString]);
-  ClientDataSet.Filter := lFiltro;
-  ClientDataSet.Filtered := True;
-  ClientDataSet.Last;
+  lValue := '%' + aValor + '%';
+  lFilter := lFilter + Format('%s like %s', [aNomeCampo, lValue.QuotedString]);
+
+  LogViewer.SetLogFilter(lFilter);
 end;
 
-function TfMonitor.FormatarSQL: string;
+function TfMonitor.FormatSQL: string;
 begin
-  result := FFormatadorSQL.FormatarSQL(ClientDataSetSQL.AsString);
+  result := FSQLFormatter.FormatSQL(LogViewer.GetSQL);
 end;
 
 procedure TfMonitor.FormCreate(Sender: TObject);
 var
   k: char;
 begin
-  CriarObjetosInternos;
-  InicializarPropriedades;
-  CarregarPreferencias;
+  FSQLFormatter := TSQLFormatter.Create;
+  LoadOptions;
   BuscarLogMaisRecente;
-  AssociarEventosCheckBoxes;
-  AssociarEventosFiltros;
-  AssociarEventoPinturaDBGrid;
+  AssignCheckBoxesEvents;
+  AssignFilterEvents;
+  AssignGridDrawEvent;
 
-  EditArquivo.Text := 'C:\Andre.Celestino\logErro.txt';
-  CarregarLog;
+  EditFileName.Text := 'C:\Andre.Celestino\logErro.txt';
+  LoadLog;
   k := #13;
-  EditFiltroMetodo.Text := 'pesquise';
-  EditFiltroMetodo.OnKeyPress(EditFiltroMetodo, k);
+  EditFilterMethod.Text := 'pesquise';
+  EditFilterMethod.OnKeyPress(EditFilterMethod, k);
 end;
 
 procedure TfMonitor.FormDestroy(Sender: TObject);
 begin
-  DestruirObjetosInternos;
+  FSQLFormatter.Free;
 end;
 
-procedure TfMonitor.GravarPreferencia(const aChave: string;
-  const aValor: boolean);
+procedure TfMonitor.SaveOption(const aKey: string; const aValue: boolean);
 var
-  lPreferencias: TPreferencias;
+  lOptions: TOptions;
 begin
-  lPreferencias := TPreferencias.Create;
+  lOptions := TOptions.Create;
   try
-    lPreferencias.GravarPreferencia(aChave, aValor);
+    lOptions.SaveOption(aKey, aValue);
   finally
-    lPreferencias.Free;
+    lOptions.Free;
   end;
 end;
 
-procedure TfMonitor.IncluirLinhaLog;
+procedure TfMonitor.ClearFilterComponents(aComponent: TEdit);
 begin
-  ClientDataSet.Append;
-  ClientDataSetTipo.AsString := FStringListLinha[5];
-  ClientDataSetBase.AsString := FStringListLinha[6];
-  ClientDataSetUsuario.AsString := FStringListLinha[9];
-  ClientDataSetIP.AsString := FStringListLinha[10];
-  ClientDataSetDataHora.AsString := ObterDataHora;
-  ClientDataSetClasse.AsString := FStringListLinha[13];
-  ClientDataSetMetodo.AsString := FStringListLinha[14];
-  ClientDataSetSQL.AsString := FStringListLinha[15];
-  ClientDataSetErro.AsString := ObterErro;
-  ClientDataSet.Post;
+  ComboBoxType.ItemIndex := 0;
+
+  if EditFilterClass.Name <> aComponent.Name then
+    EditFilterClass.Clear;
+
+  if EditFilterMethod.Name <> aComponent.Name then
+    EditFilterMethod.Clear;
+
+  if EditFilterSQL.Name <> aComponent.Name then
+    EditFilterSQL.Clear;
 end;
 
-procedure TfMonitor.InicializarPropriedades;
+procedure TfMonitor.LogViewerAfterScroll(DataSet: TDataSet);
 begin
-  ClientDataSet.LogChanges := False;
-  ClientDataSet.FilterOptions := [foCaseInsensitive];
-  FStringListLinha.Delimiter := ';';
-  FStringListLinha.StrictDelimiter := True;
-  FContador := 0;
+  ShowRecordInfo;
+  LoadSQLBottomPanel;
 end;
 
-procedure TfMonitor.LimparOutrosCamposFiltro(aComponente: TEdit);
+procedure TfMonitor.MemoSQLTabKeyPress(Sender: TObject; var Key: Char);
 begin
-  ComboBoxTipo.ItemIndex := 0;
-
-  if EditFiltroClasse.Name <> aComponente.Name then
-    EditFiltroClasse.Clear;
-
-  if EditFiltroMetodo.Name <> aComponente.Name then
-    EditFiltroMetodo.Clear;
-
-  if EditFiltroSQL.Name <> aComponente.Name then
-    EditFiltroSQL.Clear;
-end;
-
-procedure TfMonitor.MemoAbaSQLKeyPress(Sender: TObject; var Key: Char);
-begin
-  if Key = ^C then
-    ClipBoard.AsText := MemoAbaSQL.Lines.Text;
-
   if Key = ^A then
-    MemoAbaSQL.SelectAll;
+    MemoSQLTab.SelectAll;
 end;
 
 procedure TfMonitor.MemoSQLKeyPress(Sender: TObject; var Key: Char);
@@ -565,55 +475,37 @@ begin
     MemoSQL.SelectAll;
 end;
 
-procedure TfMonitor.MenuItemCopiarColunaClick(Sender: TObject);
+procedure TfMonitor.MenuItemCopyColumnValueClick(Sender: TObject);
 begin
-  CopiarColuna;
+  CopyColumnValue;
 end;
 
-procedure TfMonitor.MenuItemCopiarSQLClick(Sender: TObject);
+procedure TfMonitor.MenuItemCopySQLClick(Sender: TObject);
 begin
-  Clipboard.AsText := FormatarSQL;
+  Clipboard.AsText := FormatSQL;
 end;
 
-function TfMonitor.VerificarLinhaEhSQL: boolean;
+function TfMonitor.GetFieldName(aComponent: TEdit): string;
 begin
-  result := FStringListLinha[5] = 'SQL';
+  result := StringReplace(aComponent.Name, 'EditFilter', EmptyStr, []);
 end;
 
-function TfMonitor.ObterDataHora: string;
+procedure TfMonitor.RemoveCheckBoxesEvents;
 begin
-  result := Format('%s  %s', [FStringListLinha[11],
-    Copy(FStringListLinha[12], 0, 8)]);
-end;
-
-function TfMonitor.ObterErro: string;
-begin
-  result := EmptyStr;
-  if (FStringListLinha[5] = 'SAIDA') and (FStringListLinha[15] <> EmptyStr) then
-    result := 'S';
-end;
-
-function TfMonitor.ObterNomeCampo(aComponente: TEdit): string;
-begin
-  result := StringReplace(aComponente.Name, 'EditFiltro', EmptyStr, []);
-end;
-
-procedure TfMonitor.RemoverEventosCheckBoxes;
-begin
-  CheckBoxAtualizacaoAutomatica.OnClick := nil;
-  CheckBoxExibirSomenteSQL.OnClick := nil;
-  CheckBoxDestacarLinhasErros.OnClick := nil;
-  CheckBoxExibirPainelInferior.OnClick := nil;
+  CheckBoxAutoUpdate.OnClick := nil;
+  CheckBoxShowOnlySQL.OnClick := nil;
+  CheckBoxHighlightErrors.OnClick := nil;
+  CheckBoxShowBottomPanel.OnClick := nil;
 end;
 
 procedure TfMonitor.TabSheetSQLEnter(Sender: TObject);
 begin
-  MemoAbaSQL.Lines.Text := FormatarSQL;
+  MemoSQLTab.Lines.Text := FormatSQL;
 end;
 
-procedure TfMonitor.TimerAtualizacaoAutomaticaTimer(Sender: TObject);
+procedure TfMonitor.TimerAutoUpdateTimer(Sender: TObject);
 begin
-  CarregarLog;
+  LoadLog;
 end;
 
 end.
