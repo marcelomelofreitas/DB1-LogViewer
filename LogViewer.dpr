@@ -1,4 +1,4 @@
-program spMonitor4;
+program LogViewer;
 
 uses
   Vcl.Forms,
@@ -13,7 +13,8 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.Title := 'spMonitor4';
+  Application.Title := 'DB1 Log Viewer';
   Application.CreateForm(TfMonitor, fMonitor);
+  ReportMemoryLeaksOnShutdown := True;
   Application.Run;
 end.

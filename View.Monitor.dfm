@@ -1,7 +1,7 @@
 object fMonitor: TfMonitor
   Left = 488
   Top = 0
-  Caption = 'spMonitor4 - DB1 Global Software'
+  Caption = 'DB1 Log Viewer'
   ClientHeight = 567
   ClientWidth = 1199
   Color = clBtnFace
@@ -22,7 +22,7 @@ object fMonitor: TfMonitor
     Top = 0
     Width = 1199
     Height = 567
-    ActivePage = TabSheetSQL
+    ActivePage = TabSheetLog
     Align = alClient
     TabOrder = 0
     TabWidth = 100
@@ -281,8 +281,6 @@ object fMonitor: TfMonitor
           ScrollBars = ssBoth
           TabOrder = 0
           OnKeyPress = MemoSQLKeyPress
-          ExplicitLeft = 280
-          ExplicitTop = 42
         end
       end
     end

@@ -203,8 +203,15 @@ begin
 end;
 
 procedure TLogViewer.LoadFile;
+var
+  lFileStream: TFileStream;
 begin
-  FStringListFile.LoadFromStream(TFileStream.Create(FLogFileName, fmOpenRead or fmShareDenyNone));
+  lFileStream := TFileStream.Create(FLogFileName, fmOpenRead or fmShareDenyNone);
+  try
+    FStringListFile.LoadFromStream(lFileStream);
+  finally
+    lFileStream.Free;
+  end;
 end;
 
 procedure TLogViewer.LoadLog;
@@ -212,6 +219,9 @@ var
   lContador: integer;
   lOriginalAfterScroll: TDataSetNotifyEvent;
 begin
+  if FLogFileName.IsEmpty then
+    Exit;
+
   lOriginalAfterScroll := Self.AfterScroll;
   Self.AfterScroll := nil;
   Self.DisableControls;

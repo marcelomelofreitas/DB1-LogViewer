@@ -12,38 +12,47 @@ type
     FStringListJoins: TStringList;
     FStringListOperators: TStringList;
     FStringListCommands: TStringList;
-    FMarginLevel: integer;
-    FMarginHeap: integer;
-    FSameLinePosition: integer;
+    FStringListParameters: TStringList;
+    FStringListValues: TStringList;
+
+    FMarginLevel: smallint;
+    FMarginHeap: smallint;
+    FSameLinePosition: smallint;
     FSingleCommand: boolean;
 
+    // private functions
+    function BreakLineNeeded(const aValue: string): boolean;
+    function ExtractCommand(const aSQL: string): string;
+    function ExtractSubSelect(const aSQL: string): string;
     function FormatDate(const aDate: TDateTime): string;
     function IdentSQL(const aPreparedSQL: string): string;
-    function WriteSQLParameters(const aSQL: string): string;
+    function IsCommand(const aValue: string): boolean;
+    function PrepareSQL(const aSQL: string): string;
+    function ProcessParameters(const aSQL: string): string;
     function RemovedUnusedSpaces(const aSQL: string): string;
     function ReplaceAllStrings(const aText, aOldPattern, aNewPattern: string): string;
-    function VerificarDeveQuebrarLinha(const aValue: string): boolean;
-    function VerificarEhComando(const aValue: string): boolean;
+    function ReplaceParametersWithValues: string;
 
+    // private procedures
     procedure CreateInternalObjects;
     procedure DestroyInternalObjects;
     procedure DecMargin(const aQtde: byte);
+    procedure ExtractParamsList(const aSQL: string; const aParamsPosition: smallint);
     procedure InitializeStringLists;
 
+    // SQL processing
     procedure ProcessClause(const aValue: string; aBuilder: TStringBuilder);
     procedure ProcessJoin(const aValue: string; aBuilder: TStringBuilder);
     procedure ProcessOperator(const aValue: string; aBuilder: TStringBuilder);
     procedure ProcessSubSelect(const aSQL: string;
-      var aTokenPosition: integer; aBuilder: TStringBuilder);
-    procedure ProcessCommand(const aSQL, aValue: string; var aTokenPosition: integer;
+      var aTokenPosition: smallint; aBuilder: TStringBuilder);
+    procedure ProcessCommand(const aSQL, aValue: string; var aTokenPosition: smallint;
       aBuilder: TStringBuilder);
-
-    function ExtractCommand(const aSQL: string): string;
-    function ExtractSubSelect(const aSQL: string): string;
-    function PrepareSQL(const aSQL: string): string;
   public
     constructor Create;
     destructor Destroy; override;
+
+    // main function
     function FormatSQL(const aSQL: string): string;
   end;
 
@@ -56,7 +65,7 @@ uses
 
 function TSQLFormatter.ExtractSubSelect(const aSQL: string): string;
 var
-  lParenthesesCount: integer;
+  lParenthesesCount: smallint;
   lCharacter: string;
 begin
   result := EmptyStr;
@@ -76,7 +85,7 @@ begin
       Break;
   end;
 
-  // Remove o '(' e ')'
+  // Remove '(' e ')'
   result := Copy(result, 2, result.Length - 2);
 end;
 
@@ -108,87 +117,21 @@ begin
   FStringListCommands.Add('(CONVERT');
 end;
 
-function TSQLFormatter.WriteSQLParameters(const aSQL: string): string;
+function TSQLFormatter.ProcessParameters(const aSQL: string): string;
 var
-  nCont, nPosParams: integer;
-  sSQL, sParams: string;
-  lParametersList, lValuesList: TStringList;
-  lName, lType, lValue, lFormattedValue, lCopy, lCharacter: string;
-  lInsideParameter: boolean;
+  lParamsPosition: smallint;
 begin
   result := aSQL;
-  nPosParams := AnsiPos('PARAMS=', aSQL.ToUpper);
+  lParamsPosition := Pos('PARAMS=', aSQL.ToUpper);
 
-  if nPosParams = 0 then
+  if lParamsPosition = 0 then
     Exit;
 
-  sSQL := Copy(aSQL, 1, Pred(nPosParams));
-  sParams := Copy(aSQL, nPosParams, Length(aSQL) - nPosParams + 1);
+  result := Copy(aSQL, 1, Pred(lParamsPosition));
+  FStringListValues.Clear;
 
-  Result := sSQL;
-
-  lParametersList := TStringList.Create;
-  lValuesList := TStringList.Create;
-  try
-    lInsideParameter := False;
-    lCopy := EmptyStr;
-
-    for lCharacter in sParams do
-    begin
-      if lCharacter = '[' then
-      begin
-        lInsideParameter := True;
-        Continue;
-      end;
-
-      if lCharacter = ']' then
-      begin
-        lParametersList.Add(lCopy);
-        lInsideParameter := False;
-        lCopy := EmptyStr;
-        Continue;
-      end;
-
-      if lInsideParameter then
-        lCopy := lCopy + lCharacter;
-    end;
-
-    lParametersList.Sort;
-    lValuesList.StrictDelimiter := True;
-    lValuesList.Delimiter := ',';
-
-    for nCont := Pred(lParametersList.Count) downto 0 do
-    begin
-      lValuesList.DelimitedText := lParametersList[nCont];
-      lName := ':' + lValuesList[0];
-      lType := lValuesList[1].ToUpper;
-      lValue := lValuesList[2];
-
-      if lValuesList.Count < 3 then
-      begin
-        lFormattedValue := 'null';
-        Result := ReplaceAllStrings(Result, lName, lFormattedValue);
-        Continue;
-      end;
-
-      if ((lType = 'FTFIXEDCHAR') or (lType = 'FTSTRING')) and (QuotedStr(Copy(lValue, 2, Length(lValue) - 2)) <> lValue) then
-        lFormattedValue := QuotedStr(lValue)
-      else if (lType = 'FTDATETIME') or (lType = 'FTDATE') then
-      begin
-        if AnsiPos('/', lValue) = 0 then
-          lValue := DateTimeToStr(lValue.ToInteger);
-        lFormattedValue := FormatDate(StrToDateTime(lValue));
-      end
-      else
-        lFormattedValue := lValue;
-
-      Result := ReplaceAllStrings(Result, lName, lFormattedValue);
-    end;
-
-  finally
-    lParametersList.Free;
-    lValuesList.Free;
-  end;
+  ExtractParamsList(aSQL, lParamsPosition);
+  result := ReplaceParametersWithValues;
 end;
 
 function TSQLFormatter.PrepareSQL(const aSQL: string): string;
@@ -229,7 +172,7 @@ begin
   end;
 end;
 
-procedure TSQLFormatter.ProcessCommand(const aSQL, aValue: string; var aTokenPosition: integer;
+procedure TSQLFormatter.ProcessCommand(const aSQL, aValue: string; var aTokenPosition: smallint;
       aBuilder: TStringBuilder);
 var
   lCommand: string;
@@ -254,7 +197,7 @@ end;
 
 procedure TSQLFormatter.ProcessOperator(const aValue: string; aBuilder: TStringBuilder);
 var
-  lOperatorMarginLevel: integer;
+  lOperatorMarginLevel: smallint;
 begin
   if (not aValue.Equals('AND')) and (not aValue.Equals('OR')) then
   begin
@@ -276,11 +219,11 @@ begin
 end;
 
 procedure TSQLFormatter.ProcessSubSelect(const aSQL: string;
-      var aTokenPosition: integer; aBuilder: TStringBuilder);
+      var aTokenPosition: smallint; aBuilder: TStringBuilder);
 var
   lSubSelect: string;
-  lActualMargin: integer;
-  lActualHeap: integer;
+  lActualMargin: smallint;
+  lActualHeap: smallint;
   lActualSingleCommand: boolean;
 begin
   lSubSelect := ExtractSubSelect(aSQL);
@@ -288,10 +231,10 @@ begin
   lActualHeap := FMarginHeap;
   lActualSingleCommand := FSingleCommand;
 
-  // Configura o recuo das colunas do SubSelect
-  Inc(FMarginLevel, FSameLinePosition + 1);
+  // Set the margin of the SubSelect columns
+  Inc(FMarginLevel, Succ(FSameLinePosition));
 
-  // "-5" é o offset da palavra SELECT
+  // "-5" is the offset of the keyword SELECT
   Inc(aTokenPosition, lSubSelect.Length - 5);
 
   aBuilder
@@ -315,7 +258,44 @@ begin
   result := StringReplace(aText, aOldPattern, aNewPattern, [rfReplaceAll, rfIgnoreCase]);
 end;
 
-function TSQLFormatter.VerificarDeveQuebrarLinha(const aValue: string): boolean;
+function TSQLFormatter.ReplaceParametersWithValues: string;
+var
+  lName: string;
+  lType: string;
+  lValue: string;
+  lCont: smallint;
+
+  function IsDateTimeParameter: boolean;
+  begin
+    result := (lType = 'FTDATETIME') or (lType = 'FTDATE');
+  end;
+
+begin
+  FStringListValues.StrictDelimiter := True;
+  FStringListValues.Delimiter := ',';
+
+  for lCont := Pred(FStringListParameters.Count) downto 0 do
+  begin
+    FStringListValues.DelimitedText := FStringListParameters[lCont];
+    lName := ':' + FStringListValues[0];
+    lType := FStringListValues[1].ToUpper;
+    lValue := FStringListValues[2];
+
+    if FStringListValues.Count < 3 then
+    begin
+      lValue := 'null';
+      result := ReplaceAllStrings(result, lName, lValue);
+      Continue;
+    end;
+
+    if IsDateTimeParameter then
+      lValue := FormatDate(StrToDateTime(lValue));
+
+    result := ReplaceAllStrings(result, lName, lValue);
+  end;
+end;
+
+function TSQLFormatter.BreakLineNeeded(const aValue: string): boolean;
 var
   lLastCharacterIsComma: boolean;
 begin
@@ -323,7 +303,7 @@ begin
   result := lLastCharacterIsComma and (not FSingleCommand);
 end;
 
-function TSQLFormatter.VerificarEhComando(const aValue: string): boolean;
+function TSQLFormatter.IsCommand(const aValue: string): boolean;
 var
   lCommand: string;
 begin
@@ -350,6 +330,8 @@ begin
   FStringListJoins := TStringList.Create;
   FStringListOperators := TStringList.Create;
   FStringListCommands := TStringList.Create;
+  FStringListParameters := TStringList.Create;
+  FStringListValues := TStringList.Create;
 end;
 
 procedure TSQLFormatter.DecMargin(const aQtde: byte);
@@ -373,6 +355,8 @@ begin
   FStringListJoins.Free;
   FStringListOperators.Free;
   FStringListCommands.Free;
+  FStringListParameters.Free;
+  FStringListValues.Free;
 end;
 
 function TSQLFormatter.FormatDate(const aDate: TDateTime): string;
@@ -385,7 +369,7 @@ var
   lPreparedSQL: string;
 begin
   FMarginLevel := 0;
-  lPreparedSQL := WriteSQLParameters(aSQL);
+  lPreparedSQL := ProcessParameters(aSQL);
   lPreparedSQL := PrepareSQL(lPreparedSQL);
   result := IdentSQL(lPreparedSQL);
 end;
@@ -395,9 +379,9 @@ var
   lValue: string;
   lSQL: string;
   lBuilder: TStringBuilder;
-  lTokenPosition: integer;
+  lTokenPosition: smallint;
 
-  procedure RecortarSQL;
+  procedure ClipSQL;
   begin
     lSQL := Copy(lSQL, lTokenPosition, lSQL.Length).Trim;
   end;
@@ -421,35 +405,35 @@ begin
       if lValue.ToUpper.Equals(sSUBSELECT) then
       begin
         ProcessSubSelect(lSQL, lTokenPosition, lBuilder);
-        RecortarSQL;
+        ClipSQL;
         Continue;
       end;
 
       if FStringListClauses.Exists(lValue) then
       begin
         ProcessClause(lValue.ToUpper, lBuilder);
-        RecortarSQL;
+        ClipSQL;
         Continue;
       end;
 
       if FStringListJoins.Exists(lValue) then
       begin
         ProcessJoin(lValue.ToUpper, lBuilder);
-        RecortarSQL;
+        ClipSQL;
         Continue;
       end;
 
       if FStringListOperators.Exists(lValue) then
       begin
         ProcessOperator(lValue.ToUpper, lBuilder);
-        RecortarSQL;
+        ClipSQL;
         Continue;
       end;
 
-      if VerificarEhComando(lValue.ToUpper) then
+      if IsCommand(lValue.ToUpper) then
       begin
         ProcessCommand(lSQL, lValue, lTokenPosition, lBuilder);
-        RecortarSQL;
+        ClipSQL;
         Continue;
       end;
 
@@ -457,13 +441,13 @@ begin
 
       lBuilder.Append(lValue).Append(sSPACE);
 
-      if VerificarDeveQuebrarLinha(lValue) then
+      if BreakLineNeeded(lValue) then
       begin
         lBuilder.AppendSpaces(FMarginLevel);
         FSameLinePosition := 0;
       end;
 
-      RecortarSQL;
+      ClipSQL;
     end;
 
     result := lBuilder.ToString;
@@ -475,7 +459,7 @@ end;
 
 function TSQLFormatter.ExtractCommand(const aSQL: string): string;
 var
-  lParenthesesCount: integer;
+  lParenthesesCount: smallint;
   lCharacter: string;
 begin
   result := EmptyStr;
@@ -499,6 +483,31 @@ begin
     if lParenthesesCount = 0 then
       Break;
   end;
+end;
+
+procedure TSQLFormatter.ExtractParamsList(const aSQL: string; const aParamsPosition: smallint);
+var
+  lParamsSection: string;
+  lParam: string;
+  lOffSet: smallint;
+  lStartPosition: smallint;
+  lEndPosition: smallint;
+begin
+  lParamsSection := Copy(aSQL, aParamsPosition, Length(aSQL) - aParamsPosition + 1);
+
+  lOffSet := Pos('[', lParamsSection);
+  while Pos('[', lParamsSection, lOffSet) > 0 do
+  begin
+    lStartPosition := Pos('[', lParamsSection, lOffSet);
+    lEndPosition := Pos(']', lParamsSection, lOffSet);
+
+    lParam := Copy(lParamsSection, Succ(lStartPosition), Pred(lEndPosition - lStartPosition));
+    FStringListParameters.Add(lParam);
+
+    lOffSet := Succ(lEndPosition);
+  end;
+
+  FStringListParameters.Sort;
 end;
 
 end.

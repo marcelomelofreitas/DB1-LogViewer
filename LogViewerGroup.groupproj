@@ -3,10 +3,10 @@
         <ProjectGuid>{95510D5B-C6FF-4FF6-8E15-442B5DD94BF2}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="spMonitor4.dproj">
+        <Projects Include="LogViewer.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Componente\Package.Componente.dproj">
+        <Projects Include="Componente\LogViewerPackage.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -17,32 +17,32 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="spMonitor4">
-        <MSBuild Projects="spMonitor4.dproj"/>
+    <Target Name="LogViewer">
+        <MSBuild Projects="LogViewer.dproj"/>
     </Target>
-    <Target Name="spMonitor4:Clean">
-        <MSBuild Projects="spMonitor4.dproj" Targets="Clean"/>
+    <Target Name="LogViewer:Clean">
+        <MSBuild Projects="LogViewer.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="spMonitor4:Make">
-        <MSBuild Projects="spMonitor4.dproj" Targets="Make"/>
+    <Target Name="LogViewer:Make">
+        <MSBuild Projects="LogViewer.dproj" Targets="Make"/>
     </Target>
-    <Target Name="Package_Componente">
-        <MSBuild Projects="Componente\Package.Componente.dproj"/>
+    <Target Name="LogViewerPackage">
+        <MSBuild Projects="Componente\LogViewerPackage.dproj"/>
     </Target>
-    <Target Name="Package_Componente:Clean">
-        <MSBuild Projects="Componente\Package.Componente.dproj" Targets="Clean"/>
+    <Target Name="LogViewerPackage:Clean">
+        <MSBuild Projects="Componente\LogViewerPackage.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="Package_Componente:Make">
-        <MSBuild Projects="Componente\Package.Componente.dproj" Targets="Make"/>
+    <Target Name="LogViewerPackage:Make">
+        <MSBuild Projects="Componente\LogViewerPackage.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="spMonitor4;Package_Componente"/>
+        <CallTarget Targets="LogViewer;LogViewerPackage"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="spMonitor4:Clean;Package_Componente:Clean"/>
+        <CallTarget Targets="LogViewer:Clean;LogViewerPackage:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="spMonitor4:Make;Package_Componente:Make"/>
+        <CallTarget Targets="LogViewer:Make;LogViewerPackage:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{860B0BE9-BF3D-4891-9311-F63DBE4083F5}</ProjectGuid>
-        <MainSource>Package.Componente.dpk</MainSource>
+        <MainSource>LogViewerPackage.dpk</MainSource>
         <ProjectVersion>18.4</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
@@ -46,7 +46,7 @@
         <GenPackage>true</GenPackage>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <SanitizedProjectName>Package_Componente</SanitizedProjectName>
+        <SanitizedProjectName>LogViewerPackage</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
@@ -102,7 +102,7 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">Package.Componente.dpk</Source>
+                    <Source Name="MainSource">LogViewerPackage.dpk</Source>
                 </Source>
                 <Excluded_Packages>
                     <Excluded_Packages Name="C:\RTC\pg5Dev\SRC\3RD_PARTY\PACDEV\BIN\spTablet.bpl">spTablet</Excluded_Packages>
@@ -138,9 +138,9 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\Package.Componente.bpl" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="..\Lib\LogViewerPackage.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteName>Package_Componente.bpl</RemoteName>
+                        <RemoteName>LogViewerPackage.bpl</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

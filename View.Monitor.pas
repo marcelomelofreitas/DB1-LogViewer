@@ -97,14 +97,14 @@ type
     procedure AssignCheckBoxesEvents;
     procedure AssignFilterEvents;
     procedure AssignGridDrawEvent;
-    procedure BuscarLogMaisRecente;
+    procedure GetMostRecentLog;
     procedure LoadOptions;
     procedure LoadLog;
     procedure LoadSQLBottomPanel;
     procedure CopyColumnValue;
     procedure ManageTimer;
     procedure ShowRecordInfo;
-    procedure FilterRecords(const aNomeCampo, aValor: string);
+    procedure FilterRecords(const aFieldName, aValue: string);
     procedure SaveOption(const aKey: string; const aValue: boolean);
     procedure ClearFilterComponents(aComponent: TEdit);
     procedure RemoveCheckBoxesEvents;
@@ -191,7 +191,7 @@ begin
   PageControl.ActivePage := TabSheetSQL;
 end;
 
-procedure TfMonitor.BuscarLogMaisRecente;
+procedure TfMonitor.GetMostRecentLog;
 var
   lSearchRec: TSearchRec;
   lFileTime: TFileTime;
@@ -237,12 +237,19 @@ begin
   RemoveCheckBoxesEvents;
   lOptions := TOptions.Create;
   try
+    // Auto Update
     CheckBoxAutoUpdate.Checked := lOptions.AutoUpdateEnabled;
     LabelInterval.Enabled := lOptions.AutoUpdateEnabled;
     SpinEditInterval.Enabled := lOptions.AutoUpdateEnabled;
+
+    // Show Only SQL
     CheckBoxShowOnlySQL.Checked := lOptions.ShowOnlySQL;
     LogViewer.ShowOnlySQL := lOptions.ShowOnlySQL;
+
+    // Highlight Errors
     CheckBoxHighlightErrors.Checked := lOptions.HighlightErrors;
+
+    // Show Bottom Panel
     CheckBoxShowBottomPanel.Checked := lOptions.ShowBottomPanel;
     PanelSQL.Visible := lOptions.ShowBottomPanel;
   finally
@@ -264,6 +271,7 @@ end;
 procedure TfMonitor.CheckBoxShowBottomPanelClick(Sender: TObject);
 begin
   SaveOption(sSHOW_BOTTOM_PANEL, CheckBoxShowBottomPanel.Checked);
+  PanelSQL.Visible := CheckBoxShowBottomPanel.Checked;
 end;
 
 procedure TfMonitor.CheckBoxAutoUpdateClick(Sender: TObject);
@@ -379,23 +387,23 @@ begin
   result := True;
 end;
 
-procedure TfMonitor.FilterRecords(const aNomeCampo, aValor: string);
+procedure TfMonitor.FilterRecords(const aFieldName, aValue: string);
 var
   lFilter: string;
   lValue: string;
 begin
-  if aValor.IsEmpty then
+  if aValue.IsEmpty then
   begin
     LogViewer.RemoveFilter;
     Exit;
   end;
 
   lFilter := EmptyStr;
-  if aNomeCampo = 'SQL' then
-    lFilter := Format('Type = %s AND ', ['SQL'.QuotedString]);
+  if aFieldName = 'SQL' then
+    lFilter := Format('Type = %s AND ', [aFieldName.QuotedString]);
 
-  lValue := '%' + aValor + '%';
-  lFilter := lFilter + Format('%s like %s', [aNomeCampo, lValue.QuotedString]);
+  lValue := '%' + aValue + '%';
+  lFilter := lFilter.Format('%s like %s', [aFieldName, lValue.QuotedString]);
 
   LogViewer.SetLogFilter(lFilter);
 end;
@@ -411,7 +419,7 @@ var
 begin
   FSQLFormatter := TSQLFormatter.Create;
   LoadOptions;
-  BuscarLogMaisRecente;
+  GetMostRecentLog;
   AssignCheckBoxesEvents;
   AssignFilterEvents;
   AssignGridDrawEvent;
@@ -419,7 +427,7 @@ begin
   EditFileName.Text := 'C:\Andre.Celestino\logErro.txt';
   LoadLog;
   k := #13;
-  EditFilterMethod.Text := 'pesquise';
+  EditFilterMethod.Text := 'RetornarDocumentosQueDevemSerLiberadosParaEdicao';
   EditFilterMethod.OnKeyPress(EditFilterMethod, k);
 end;
 

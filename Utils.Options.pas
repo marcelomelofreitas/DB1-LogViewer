@@ -34,7 +34,7 @@ uses
 
 constructor TOptions.Create;
 begin
-  FINIFile := TIniFile.Create(GetCurrentDir + '\LogViewer.ini');
+  FINIFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) + '\LogViewer.ini');
 end;
 
 destructor TOptions.Destroy;

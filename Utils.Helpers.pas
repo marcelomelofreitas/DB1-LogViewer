@@ -32,12 +32,12 @@ uses
 
 function TIniFileHelper.ReadValue(const aKey: string): boolean;
 begin
-  result := Self.ReadBool('Opcoes', aKey, False);
+  result := Self.ReadBool('Options', aKey, False);
 end;
 
 procedure TIniFileHelper.WriteValue(const aKey: string; const aValue: boolean);
 begin
-  Self.WriteBool('Opcoes', aKey, aValue);
+  Self.WriteBool('Options', aKey, aValue);
 end;
 
 { TEditHelper }
