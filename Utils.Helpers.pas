@@ -7,12 +7,8 @@ uses
 
 type
   TIniFileHelper = class helper for TIniFile
-    function ReadValue(const aKey: string): boolean;
-    procedure WriteValue(const aKey: string; const aValue: boolean);
-  end;
-
-  TEditHelper = class helper for TEdit
-    function IsEmpty: boolean;
+    function ReadValue(const aKey: string): string;
+    procedure WriteValue(const aKey: string; const aValue: string);
   end;
 
   TStringBuilderHelper = class helper for TStringBuilder
@@ -30,21 +26,14 @@ uses
 
 { TIniFileHelper }
 
-function TIniFileHelper.ReadValue(const aKey: string): boolean;
+function TIniFileHelper.ReadValue(const aKey: string): string;
 begin
-  result := Self.ReadBool('Options', aKey, False);
+  result := Self.ReadString('Options', aKey, EmptyStr);
 end;
 
-procedure TIniFileHelper.WriteValue(const aKey: string; const aValue: boolean);
+procedure TIniFileHelper.WriteValue(const aKey: string; const aValue: string);
 begin
-  Self.WriteBool('Options', aKey, aValue);
-end;
-
-{ TEditHelper }
-
-function TEditHelper.IsEmpty: boolean;
-begin
-  result := Trim(Self.Text) = EmptyStr;
+  Self.WriteString('Options', aKey, aValue);
 end;
 
 { TStringBuilderHelper }

@@ -9,20 +9,18 @@ type
   TOptions = class
   private
     FINIFile: TIniFile;
-
-    function GetAutoUpdateEnabled: boolean;
-    function GetShowOnlySQL: boolean;
-    function GetHighlightErrors: boolean;
-    function GetShowBottomPanel: boolean;
   public
     constructor Create;
     destructor Destroy; override;
-    procedure SaveOption(const aKey: string; const aValue: boolean);
 
-    property AutoUpdateEnabled: boolean read GetAutoUpdateEnabled;
-    property ShowOnlySQL: boolean read GetShowOnlySQL;
-    property HighlightErrors: boolean read GetHighlightErrors;
-    property ShowBottomPanel: boolean read GetShowBottomPanel;
+    // writes the value in the INI file
+    procedure SaveOption(const aKey: string; const aValue: string);
+
+    // reads the value from the INI file
+    function ReadValue(const aKey: string): string;
+
+    // reads the value from the INI file and compares it with 1 (True)
+    function ReadEnabled(const aKey: string): boolean;
   end;
 
 implementation
@@ -43,27 +41,17 @@ begin
   inherited;
 end;
 
-function TOptions.GetHighlightErrors: boolean;
+function TOptions.ReadEnabled(const aKey: string): boolean;
 begin
-  result := FINIFile.ReadValue(sHIGHLIGHT_ERRORS);
+  result := Self.ReadValue(aKey) = '1';
 end;
 
-function TOptions.GetShowBottomPanel: boolean;
+function TOptions.ReadValue(const aKey: string): string;
 begin
-  result := FINIFile.ReadValue(sSHOW_BOTTOM_PANEL);
+  result := FINIFile.ReadValue(aKey);
 end;
 
-function TOptions.GetShowOnlySQL: boolean;
-begin
-  result := FINIFile.ReadValue(sSHOW_ONLY_SQL);
-end;
-
-function TOptions.GetAutoUpdateEnabled: boolean;
-begin
-  result := FINIFile.ReadValue(sAUTO_UPDATE_ENABLED);
-end;
-
-procedure TOptions.SaveOption(const aKey: string; const aValue: boolean);
+procedure TOptions.SaveOption(const aKey: string; const aValue: string);
 begin
   FINIFile.WriteValue(aKey, aValue);
 end;

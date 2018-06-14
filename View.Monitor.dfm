@@ -22,7 +22,7 @@ object fMonitor: TfMonitor
     Top = 0
     Width = 1199
     Height = 567
-    ActivePage = TabSheetLog
+    ActivePage = TabSheetOptions
     Align = alClient
     TabOrder = 0
     TabWidth = 100
@@ -114,7 +114,6 @@ object fMonitor: TfMonitor
             Checked = True
             State = cbChecked
             TabOrder = 0
-            OnClick = CheckBoxAutoUpdateClick
           end
           object SpinEditInterval: TSpinEdit
             Left = 96
@@ -130,7 +129,7 @@ object fMonitor: TfMonitor
         object GroupBoxFilters: TGroupBox
           Left = 546
           Top = 3
-          Width = 434
+          Width = 517
           Height = 81
           Caption = 'Filtros: '
           TabOrder = 3
@@ -164,7 +163,7 @@ object fMonitor: TfMonitor
           object EditFilterMethod: TEdit
             Left = 222
             Top = 22
-            Width = 200
+            Width = 283
             Height = 21
             MaxLength = 200
             TabOrder = 2
@@ -173,7 +172,7 @@ object fMonitor: TfMonitor
           object EditFilterSQL: TEdit
             Left = 222
             Top = 50
-            Width = 200
+            Width = 283
             Height = 21
             MaxLength = 200
             TabOrder = 3
@@ -322,7 +321,6 @@ object fMonitor: TfMonitor
           Height = 17
           Caption = 'Exibir somente logs do tipo "SQL"'
           TabOrder = 0
-          OnClick = CheckBoxShowOnlySQLClick
         end
         object CheckBoxHighlightErrors: TCheckBox
           Left = 8
@@ -331,7 +329,6 @@ object fMonitor: TfMonitor
           Height = 17
           Caption = 'Destacar linhas de erros'
           TabOrder = 1
-          OnClick = CheckBoxHighlightErrorsClick
         end
         object CheckBoxShowBottomPanel: TCheckBox
           Left = 8
@@ -340,7 +337,30 @@ object fMonitor: TfMonitor
           Height = 17
           Caption = 'Exibir Painel Inferior'
           TabOrder = 2
-          OnClick = CheckBoxShowBottomPanelClick
+        end
+      end
+      object GroupBoxVisual: TGroupBox
+        Left = 18
+        Top = 134
+        Width = 213
+        Height = 89
+        Caption = 'Visual: '
+        TabOrder = 1
+        object LabelStyle: TLabel
+          Left = 8
+          Top = 32
+          Width = 30
+          Height = 13
+          Caption = 'Tema:'
+        end
+        object ComboBoxStyles: TComboBox
+          Left = 8
+          Top = 48
+          Width = 189
+          Height = 21
+          Style = csDropDownList
+          TabOrder = 0
+          OnSelect = ComboBoxStylesSelect
         end
       end
     end

@@ -263,7 +263,7 @@ var
   lName: string;
   lType: string;
   lValue: string;
-  lCont: smallint;
+  lParam: string;
 
   function IsDateTimeParameter: boolean;
   begin
@@ -274,9 +274,9 @@ begin
   FStringListValues.StrictDelimiter := True;
   FStringListValues.Delimiter := ',';
 
-  for lCont := Pred(FStringListParameters.Count) downto 0 do
+  for lParam in FStringListParameters do
   begin
-    FStringListValues.DelimitedText := FStringListParameters[lCont];
+    FStringListValues.DelimitedText := lParam;
     lName := ':' + FStringListValues[0];
     lType := FStringListValues[1].ToUpper;
     lValue := FStringListValues[2];

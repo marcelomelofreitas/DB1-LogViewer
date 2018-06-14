@@ -58,6 +58,9 @@ type
     LinkControlToPropertyLabel: TLinkControlToProperty;
     LinkControlToPropertySpinEdit: TLinkControlToProperty;
     LogViewer: TLogViewer;
+    GroupBoxVisual: TGroupBox;
+    LabelStyle: TLabel;
+    ComboBoxStyles: TComboBox;
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
     procedure ActionClearLogExecute(Sender: TObject);
@@ -77,6 +80,7 @@ type
     procedure TabSheetSQLEnter(Sender: TObject);
     procedure DBGridKeyPress(Sender: TObject; var Key: Char);
     procedure LogViewerAfterScroll(DataSet: TDataSet);
+    procedure ComboBoxStylesSelect(Sender: TObject);
   private
     // Class Fields
     FSQLFormatter: TSQLFormatter;
@@ -99,15 +103,16 @@ type
     procedure AssignGridDrawEvent;
     procedure GetMostRecentLog;
     procedure LoadOptions;
+    procedure LoadStylesList;
+    procedure LoadSelectedStyle(const aSelectedStyle: string);
     procedure LoadLog;
     procedure LoadSQLBottomPanel;
     procedure CopyColumnValue;
     procedure ManageTimer;
     procedure ShowRecordInfo;
     procedure FilterRecords(const aFieldName, aValue: string);
-    procedure SaveOption(const aKey: string; const aValue: boolean);
+    procedure SaveOption(const aKey: string; const aValue: string);
     procedure ClearFilterComponents(aComponent: TEdit);
-    procedure RemoveCheckBoxesEvents;
   end;
 
 var
@@ -116,7 +121,7 @@ var
 implementation
 
 uses
-  ClipBrd, Utils.Helpers, Utils.Options, Utils.Constants;
+  VCL.Themes, ClipBrd, Utils.Helpers, Utils.Options, Utils.Constants;
 
 {$R *.dfm}
 
@@ -234,28 +239,41 @@ procedure TfMonitor.LoadOptions;
 var
   lOptions: TOptions;
 begin
-  RemoveCheckBoxesEvents;
   lOptions := TOptions.Create;
   try
     // Auto Update
-    CheckBoxAutoUpdate.Checked := lOptions.AutoUpdateEnabled;
-    LabelInterval.Enabled := lOptions.AutoUpdateEnabled;
-    SpinEditInterval.Enabled := lOptions.AutoUpdateEnabled;
+    CheckBoxAutoUpdate.Checked := lOptions.ReadEnabled(sAUTO_UPDATE_ENABLED);
+    LabelInterval.Enabled := lOptions.ReadEnabled(sAUTO_UPDATE_ENABLED);
+    SpinEditInterval.Enabled := lOptions.ReadEnabled(sAUTO_UPDATE_ENABLED);
 
     // Show Only SQL
-    CheckBoxShowOnlySQL.Checked := lOptions.ShowOnlySQL;
-    LogViewer.ShowOnlySQL := lOptions.ShowOnlySQL;
+    CheckBoxShowOnlySQL.Checked := lOptions.ReadEnabled(sSHOW_ONLY_SQL);
+    LogViewer.ShowOnlySQL := lOptions.ReadEnabled(sSHOW_ONLY_SQL);
 
     // Highlight Errors
-    CheckBoxHighlightErrors.Checked := lOptions.HighlightErrors;
+    CheckBoxHighlightErrors.Checked := lOptions.ReadEnabled(sHIGHLIGHT_ERRORS);
 
     // Show Bottom Panel
-    CheckBoxShowBottomPanel.Checked := lOptions.ShowBottomPanel;
-    PanelSQL.Visible := lOptions.ShowBottomPanel;
+    CheckBoxShowBottomPanel.Checked := lOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
+    PanelSQL.Visible := lOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
+
+    // Theme
+    LoadSelectedStyle(lOptions.ReadValue(sSELECTED_THEME));
   finally
     lOptions.Free;
-    AssignCheckBoxesEvents;
   end;
+end;
+
+procedure TfMonitor.LoadSelectedStyle(const aSelectedStyle: string);
+var
+  lStyleName: string;
+begin
+  lStyleName := aSelectedStyle;
+  if lStyleName.IsEmpty then
+    lStyleName := 'Windows';
+
+  ComboBoxStyles.ItemIndex := ComboBoxStyles.Items.IndexOf(lStyleName);
+  TStyleManager.SetStyle(lStyleName);
 end;
 
 procedure TfMonitor.LoadSQLBottomPanel;
@@ -268,10 +286,23 @@ begin
     MemoSQL.Lines.Text := FormatSQL;
 end;
 
-procedure TfMonitor.CheckBoxShowBottomPanelClick(Sender: TObject);
+procedure TfMonitor.LoadStylesList;
+var
+  lStyle :String;
 begin
-  SaveOption(sSHOW_BOTTOM_PANEL, CheckBoxShowBottomPanel.Checked);
-  PanelSQL.Visible := CheckBoxShowBottomPanel.Checked;
+  ComboBoxStyles.Clear;
+
+  for lStyle in TStyleManager.StyleNames do
+    ComboBoxStyles.Items.Add(lStyle);
+end;
+
+procedure TfMonitor.CheckBoxShowBottomPanelClick(Sender: TObject);
+var
+  lEnable: boolean;
+begin
+  lEnable := CheckBoxShowBottomPanel.Checked;
+  PanelSQL.Visible := lEnable;
+  SaveOption(sSHOW_BOTTOM_PANEL, lEnable.ToString);
 end;
 
 procedure TfMonitor.CheckBoxAutoUpdateClick(Sender: TObject);
@@ -280,7 +311,7 @@ var
 begin
   lEnable := CheckBoxAutoUpdate.Checked;
   TimerAutoUpdate.Enabled := lEnable;
-  SaveOption(sAUTO_UPDATE_ENABLED, lEnable);
+  SaveOption(sAUTO_UPDATE_ENABLED, lEnable.ToString);
 end;
 
 procedure TfMonitor.CheckBoxHighlightErrorsClick(Sender: TObject);
@@ -288,7 +319,7 @@ var
   lEnable: boolean;
 begin
   lEnable := CheckBoxHighlightErrors.Checked;
-  SaveOption(sHIGHLIGHT_ERRORS, lEnable);
+  SaveOption(sHIGHLIGHT_ERRORS, lEnable.ToString);
   AssignGridDrawEvent;
 end;
 
@@ -297,9 +328,15 @@ var
   lEnable: boolean;
 begin
   lEnable := CheckBoxShowOnlySQL.Checked;
-  SaveOption(sSHOW_ONLY_SQL, lEnable);
+  SaveOption(sSHOW_ONLY_SQL, lEnable.ToString);
   LogViewer.ShowOnlySQL := lEnable;
   LogViewer.ReloadLog;
+end;
+
+procedure TfMonitor.ComboBoxStylesSelect(Sender: TObject);
+begin
+  TStyleManager.SetStyle(ComboBoxStyles.Text);
+  SaveOption(sSELECTED_THEME, ComboBoxStyles.Text);
 end;
 
 procedure TfMonitor.ComboBoxTypeChange(Sender: TObject);
@@ -378,7 +415,7 @@ function TfMonitor.IsFileNameValid: boolean;
 begin
   result := False;
 
-  if EditFileName.IsEmpty then
+  if Trim(EditFileName.Text).IsEmpty then
     Exit;
 
   if not FileExists(EditFileName.Text) then
@@ -418,6 +455,7 @@ var
   k: char;
 begin
   FSQLFormatter := TSQLFormatter.Create;
+  LoadStylesList;
   LoadOptions;
   GetMostRecentLog;
   AssignCheckBoxesEvents;
@@ -436,7 +474,7 @@ begin
   FSQLFormatter.Free;
 end;
 
-procedure TfMonitor.SaveOption(const aKey: string; const aValue: boolean);
+procedure TfMonitor.SaveOption(const aKey: string; const aValue: string);
 var
   lOptions: TOptions;
 begin
@@ -496,14 +534,6 @@ end;
 function TfMonitor.GetFieldName(aComponent: TEdit): string;
 begin
   result := StringReplace(aComponent.Name, 'EditFilter', EmptyStr, []);
-end;
-
-procedure TfMonitor.RemoveCheckBoxesEvents;
-begin
-  CheckBoxAutoUpdate.OnClick := nil;
-  CheckBoxShowOnlySQL.OnClick := nil;
-  CheckBoxHighlightErrors.OnClick := nil;
-  CheckBoxShowBottomPanel.OnClick := nil;
 end;
 
 procedure TfMonitor.TabSheetSQLEnter(Sender: TObject);
