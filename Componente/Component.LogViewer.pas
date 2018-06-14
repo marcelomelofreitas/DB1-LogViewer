@@ -16,15 +16,15 @@ type
     FShowOnlySQL: boolean;
 
     // DataSet Fields
-    FType: TField;
-    FDatabase: TField;
-    FUser: TField;
-    FIP: TField;
-    FClass: TField;
-    FMethod: TField;
-    FSQL: TField;
-    FDateTime: TField;
-    FError: TField;
+    FFieldType: TField;
+    FFieldDatabase: TField;
+    FFieldUser: TField;
+    FFieldIP: TField;
+    FFieldClass: TField;
+    FFieldMethod: TField;
+    FFieldSQL: TField;
+    FFieldDateTime: TField;
+    FFieldError: TField;
 
     // private functions
     function GetType: string;
@@ -84,29 +84,29 @@ end;
 procedure TLogViewer.AppendLineToDataSet;
 begin
   Self.Append;
-  FType.AsString := FStringListLine[POSITION_TYPE];
-  FDataBase.AsString := FStringListLine[POSITION_DATABASE];
-  FUser.AsString := FStringListLine[POSITION_USER];
-  FIP.AsString := FStringListLine[POSITION_IP];
-  FDateTime.AsString := GetDateTime;
-  FClass.AsString := FStringListLine[POSITION_CLASS];
-  FMethod.AsString := FStringListLine[POSITION_METHOD];
-  FSQL.AsString := FStringListLine[POSITION_SQL];
-  FError.AsString := GetError;
+  FFieldType.AsString := FStringListLine[POSITION_TYPE];
+  FFieldDatabase.AsString := FStringListLine[POSITION_DATABASE];
+  FFieldUser.AsString := FStringListLine[POSITION_USER];
+  FFieldIP.AsString := FStringListLine[POSITION_IP];
+  FFieldDateTime.AsString := GetDateTime;
+  FFieldClass.AsString := FStringListLine[POSITION_CLASS];
+  FFieldMethod.AsString := FStringListLine[POSITION_METHOD];
+  FFieldSQL.AsString := FStringListLine[POSITION_SQL];
+  FFieldError.AsString := GetError;
   Self.Post;
 end;
 
 procedure TLogViewer.AssignFields;
 begin
-  FType := Self.FieldByName('Type');
-  FDatabase := Self.FieldByName('Database');
-  FUser := Self.FieldByName('User');
-  FIP := Self.FieldByName('IP');
-  FClass := Self.FieldByName('Class');
-  FMethod := Self.FieldByName('Method');
-  FSQL := Self.FieldByName('SQL');
-  FDateTime := Self.FieldByName('DateTime');
-  FError := Self.FieldByName('Error');
+  FFieldType := Self.FieldByName('Type');
+  FFieldDatabase := Self.FieldByName('Database');
+  FFieldUser := Self.FieldByName('User');
+  FFieldIP := Self.FieldByName('IP');
+  FFieldClass := Self.FieldByName('Class');
+  FFieldMethod := Self.FieldByName('Method');
+  FFieldSQL := Self.FieldByName('SQL');
+  FFieldDateTime := Self.FieldByName('DateTime');
+  FFieldError := Self.FieldByName('Error');
 end;
 
 function TLogViewer.CopyValue(const aField: string): string;
@@ -138,6 +138,7 @@ begin
     Add('Error', ftString, 1);
   end;
   Self.CreateDataSet;
+
   Self.FilterOptions := [foCaseInsensitive];
   Self.LogChanges := False;
 end;
@@ -158,10 +159,9 @@ end;
 function TLogViewer.GetError: string;
 begin
   result := EmptyStr;
+
   if (GetType.Equals('SAIDA')) and (not FStringListLine[POSITION_SQL].IsEmpty) then
-  begin
     result := 'S';
-  end;
 end;
 
 function TLogViewer.GetRecordCounter: string;
@@ -171,7 +171,7 @@ end;
 
 function TLogViewer.GetSQL: string;
 begin
-  result := FSQL.AsString;
+  result := FFieldSQL.AsString;
 end;
 
 function TLogViewer.GetType: string;
@@ -194,12 +194,12 @@ end;
 
 function TLogViewer.IsErrorLine: boolean;
 begin
-  result := FError.AsString = 'S';
+  result := FFieldError.AsString = 'S';
 end;
 
 function TLogViewer.IsSQLEmpty: boolean;
 begin
-  result := FSQL.AsString.IsEmpty;
+  result := FFieldSQL.AsString.IsEmpty;
 end;
 
 procedure TLogViewer.LoadFile;

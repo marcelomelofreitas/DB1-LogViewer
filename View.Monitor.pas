@@ -303,6 +303,9 @@ begin
   lEnable := CheckBoxShowBottomPanel.Checked;
   PanelSQL.Visible := lEnable;
   SaveOption(sSHOW_BOTTOM_PANEL, lEnable.ToString);
+
+  if lEnable then
+    MemoSQL.Lines.Text := FormatSQL;
 end;
 
 procedure TfMonitor.CheckBoxAutoUpdateClick(Sender: TObject);
@@ -451,8 +454,6 @@ begin
 end;
 
 procedure TfMonitor.FormCreate(Sender: TObject);
-var
-  k: char;
 begin
   FSQLFormatter := TSQLFormatter.Create;
   LoadStylesList;
@@ -461,12 +462,6 @@ begin
   AssignCheckBoxesEvents;
   AssignFilterEvents;
   AssignGridDrawEvent;
-
-  EditFileName.Text := 'C:\Andre.Celestino\logErro.txt';
-  LoadLog;
-  k := #13;
-  EditFilterMethod.Text := 'RetornarDocumentosQueDevemSerLiberadosParaEdicao';
-  EditFilterMethod.OnKeyPress(EditFilterMethod, k);
 end;
 
 procedure TfMonitor.FormDestroy(Sender: TObject);

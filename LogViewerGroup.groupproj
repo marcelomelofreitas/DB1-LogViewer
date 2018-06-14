@@ -3,10 +3,10 @@
         <ProjectGuid>{95510D5B-C6FF-4FF6-8E15-442B5DD94BF2}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="LogViewer.dproj">
+        <Projects Include="Componente\LogViewerPackage.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Componente\LogViewerPackage.dproj">
+        <Projects Include="LogViewer.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -17,15 +17,6 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="LogViewer">
-        <MSBuild Projects="LogViewer.dproj"/>
-    </Target>
-    <Target Name="LogViewer:Clean">
-        <MSBuild Projects="LogViewer.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="LogViewer:Make">
-        <MSBuild Projects="LogViewer.dproj" Targets="Make"/>
-    </Target>
     <Target Name="LogViewerPackage">
         <MSBuild Projects="Componente\LogViewerPackage.dproj"/>
     </Target>
@@ -35,14 +26,23 @@
     <Target Name="LogViewerPackage:Make">
         <MSBuild Projects="Componente\LogViewerPackage.dproj" Targets="Make"/>
     </Target>
+    <Target Name="LogViewer">
+        <MSBuild Projects="LogViewer.dproj"/>
+    </Target>
+    <Target Name="LogViewer:Clean">
+        <MSBuild Projects="LogViewer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="LogViewer:Make">
+        <MSBuild Projects="LogViewer.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="LogViewer;LogViewerPackage"/>
+        <CallTarget Targets="LogViewerPackage;LogViewer"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="LogViewer:Clean;LogViewerPackage:Clean"/>
+        <CallTarget Targets="LogViewerPackage:Clean;LogViewer:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="LogViewer:Make;LogViewerPackage:Make"/>
+        <CallTarget Targets="LogViewerPackage:Make;LogViewer:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
