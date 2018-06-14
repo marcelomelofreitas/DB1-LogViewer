@@ -132,7 +132,7 @@ begin
   lOpenDialog := TOpenDialog.Create(nil);
   try
     lOpenDialog.InitialDir := 'Q:\bin';
-    lOpenDialog.Filter := 'Log de métodos do servidor|*.txt';
+    lOpenDialog.Filter := 'Log de métodos do servidor|spLogMetodoServidor*.txt';
     lOpenDialog.DefaultExt := 'txt';
 
     if not lOpenDialog.Execute then
@@ -305,7 +305,7 @@ begin
   SaveOption(sSHOW_BOTTOM_PANEL, lEnable.ToString);
 
   if lEnable then
-    MemoSQL.Lines.Text := FormatSQL;
+    LoadSQLBottomPanel;
 end;
 
 procedure TfMonitor.CheckBoxAutoUpdateClick(Sender: TObject);

@@ -22,7 +22,7 @@ object fMonitor: TfMonitor
     Top = 0
     Width = 1199
     Height = 567
-    ActivePage = TabSheetOptions
+    ActivePage = TabSheetLog
     Align = alClient
     TabOrder = 0
     TabWidth = 100
@@ -287,6 +287,10 @@ object fMonitor: TfMonitor
       Caption = 'SQL'
       ImageIndex = 2
       OnEnter = TabSheetSQLEnter
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object MemoSQLTab: TMemo
         Left = 0
         Top = 0
@@ -307,6 +311,10 @@ object fMonitor: TfMonitor
     end
     object TabSheetOptions: TTabSheet
       Caption = 'Op'#231#245'es'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBoxLog: TGroupBox
         Left = 18
         Top = 16
@@ -359,6 +367,7 @@ object fMonitor: TfMonitor
           Width = 189
           Height = 21
           Style = csDropDownList
+          DropDownCount = 20
           TabOrder = 0
           OnSelect = ComboBoxStylesSelect
         end

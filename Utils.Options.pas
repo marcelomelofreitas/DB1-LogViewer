@@ -32,7 +32,7 @@ uses
 
 constructor TOptions.Create;
 begin
-  FINIFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) + '\LogViewer.ini');
+  FINIFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'LogViewer.ini');
 end;
 
 destructor TOptions.Destroy;
@@ -43,7 +43,7 @@ end;
 
 function TOptions.ReadEnabled(const aKey: string): boolean;
 begin
-  result := Self.ReadValue(aKey) = '1';
+  result := Self.ReadValue(aKey) = '-1';
 end;
 
 function TOptions.ReadValue(const aKey: string): string;
