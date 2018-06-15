@@ -26,7 +26,7 @@ type
 implementation
 
 uses
-  System.SysUtils, Utils.Helpers, Utils.Constants, Dialogs;
+  System.SysUtils, Utils.Helpers, Dialogs;
 
 { TOpcoes }
 

@@ -30,9 +30,15 @@ package LogViewerPackage;
 requires
   rtl,
   dbrtl,
-  dsnap;
+  dsnap,
+  FireDAC,
+  FireDACCommonDriver,
+  FireDACCommon,
+  FireDACSqliteDriver,
+  xmlrtl;
 
 contains
-  Component.LogViewer in 'Component.LogViewer.pas';
+  Component.FDLogViewer in 'Component.FDLogViewer.pas';
 
 end.
+

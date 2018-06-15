@@ -1,12 +1,12 @@
-unit Component.LogViewer;
+unit Component.FDLogViewer;
 
 interface
 
 uses
-  System.SysUtils, System.Classes, Data.DB, Datasnap.DBClient;
+  System.SysUtils, System.Classes, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
 
 type
-  TLogViewer = class(TClientDataSet)
+  TFDLogViewer = class(TFDMemTable)
   private
     // Class Fields
     FLogFileName: string;
@@ -76,12 +76,12 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('LogViewer', [TLogViewer]);
+  RegisterComponents('LogViewer', [TFDLogViewer]);
 end;
 
-{ TLogViewer }
+{ TFDLogViewer }
 
-procedure TLogViewer.AppendLineToDataSet;
+procedure TFDLogViewer.AppendLineToDataSet;
 begin
   Self.Append;
   FFieldType.AsString := FStringListLine[POSITION_TYPE];
@@ -96,7 +96,7 @@ begin
   Self.Post;
 end;
 
-procedure TLogViewer.AssignFields;
+procedure TFDLogViewer.AssignFields;
 begin
   FFieldType := Self.FieldByName('Type');
   FFieldDatabase := Self.FieldByName('Database');
@@ -109,12 +109,12 @@ begin
   FFieldError := Self.FieldByName('Error');
 end;
 
-function TLogViewer.CopyValue(const aField: string): string;
+function TFDLogViewer.CopyValue(const aField: string): string;
 begin
   result := Self.FieldByName(aField).AsString.Trim;
 end;
 
-constructor TLogViewer.Create(AOwner: TComponent);
+constructor TFDLogViewer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
@@ -123,7 +123,7 @@ begin
   AssignFields;
 end;
 
-procedure TLogViewer.DefineFields;
+procedure TFDLogViewer.DefineFields;
 begin
   with Self.FieldDefs do
   begin
@@ -143,20 +143,20 @@ begin
   Self.LogChanges := False;
 end;
 
-destructor TLogViewer.Destroy;
+destructor TFDLogViewer.Destroy;
 begin
   FStringListLine.Free;
   FStringListFile.Free;
   inherited;
 end;
 
-function TLogViewer.GetDateTime: string;
+function TFDLogViewer.GetDateTime: string;
 begin
   result := Format('%s  %s', [FStringListLine[POSITION_DATE],
     Copy(FStringListLine[POSITION_TIME], 0, 8)]);
 end;
 
-function TLogViewer.GetError: string;
+function TFDLogViewer.GetError: string;
 begin
   result := EmptyStr;
 
@@ -164,22 +164,22 @@ begin
     result := 'S';
 end;
 
-function TLogViewer.GetRecordCounter: string;
+function TFDLogViewer.GetRecordCounter: string;
 begin
   result := Format('Registro %d / %d', [Self.RecNo, Self.RecordCount]);
 end;
 
-function TLogViewer.GetSQL: string;
+function TFDLogViewer.GetSQL: string;
 begin
   result := FFieldSQL.AsString;
 end;
 
-function TLogViewer.GetType: string;
+function TFDLogViewer.GetType: string;
 begin
   result := FStringListLine[POSITION_TYPE];
 end;
 
-procedure TLogViewer.Initialize;
+procedure TFDLogViewer.Initialize;
 begin
   FStringListFile := TStringList.Create;
   FStringListLine := TStringList.Create;
@@ -192,17 +192,17 @@ begin
   FStringListLine.StrictDelimiter := True;
 end;
 
-function TLogViewer.IsErrorLine: boolean;
+function TFDLogViewer.IsErrorLine: boolean;
 begin
   result := FFieldError.AsString = 'S';
 end;
 
-function TLogViewer.IsSQLEmpty: boolean;
+function TFDLogViewer.IsSQLEmpty: boolean;
 begin
   result := FFieldSQL.AsString.IsEmpty;
 end;
 
-procedure TLogViewer.LoadFile;
+procedure TFDLogViewer.LoadFile;
 var
   lFileStream: TFileStream;
 begin
@@ -214,7 +214,7 @@ begin
   end;
 end;
 
-procedure TLogViewer.LoadLog;
+procedure TFDLogViewer.LoadLog;
 var
   lContador: integer;
   lOriginalAfterScroll: TDataSetNotifyEvent;
@@ -244,21 +244,21 @@ begin
   FCounter := FStringListFile.Count;
 end;
 
-procedure TLogViewer.ReloadLog;
+procedure TFDLogViewer.ReloadLog;
 begin
   Self.EmptyDataSet;
   FCounter := 0;
   LoadLog;
 end;
 
-procedure TLogViewer.RemoveFilter;
+procedure TFDLogViewer.RemoveFilter;
 begin
   Self.Filter := EmptyStr;
   Self.Filtered := False;
   Self.Last;
 end;
 
-procedure TLogViewer.SetLogFilter(const aFilter: string);
+procedure TFDLogViewer.SetLogFilter(const aFilter: string);
 begin
   Self.Filter := aFilter;
   Self.Filtered := True;

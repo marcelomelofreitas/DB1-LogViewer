@@ -3,7 +3,7 @@ unit Utils.Helpers;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IniFiles, Vcl.StdCtrls;
+  System.SysUtils, System.Classes, System.IniFiles;
 
 type
   TIniFileHelper = class helper for TIniFile

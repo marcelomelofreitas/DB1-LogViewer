@@ -9,11 +9,14 @@ uses
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.ExtCtrls, Vcl.Grids,
   Vcl.DBGrids, Vcl.StdCtrls,
-  Vcl.Buttons, Vcl.Samples.Spin, Datasnap.DBClient, Vcl.ComCtrls, Vcl.Menus,
-  Utils.SQLFormatter, System.ImageList, Vcl.ImgList, System.Actions, Vcl.ActnList,
-  Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan, Vcl.ToolWin, Vcl.ActnCtrls,
+  Vcl.Buttons, Vcl.Samples.Spin, Vcl.ComCtrls, Vcl.Menus,
+  Utils.SQLFormatter, System.Actions, Vcl.ActnList,
+  Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan, Vcl.ActnCtrls,
   Data.Bind.EngExt, Vcl.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs,
-  Vcl.Bind.Editors, Data.Bind.Components, Component.LogViewer;
+  Vcl.Bind.Editors, Data.Bind.Components, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Component.FDLogViewer, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, System.ImageList, Vcl.ImgList, Vcl.ToolWin;
 
 type
   TfMonitor = class(TForm)
@@ -57,10 +60,10 @@ type
     BindingsList: TBindingsList;
     LinkControlToPropertyLabel: TLinkControlToProperty;
     LinkControlToPropertySpinEdit: TLinkControlToProperty;
-    LogViewer: TLogViewer;
     GroupBoxVisual: TGroupBox;
     LabelStyle: TLabel;
     ComboBoxStyles: TComboBox;
+    LogViewer: TFDLogViewer;
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
     procedure ActionClearLogExecute(Sender: TObject);
@@ -121,7 +124,7 @@ var
 implementation
 
 uses
-  VCL.Themes, ClipBrd, Utils.Helpers, Utils.Options, Utils.Constants;
+  VCL.Themes, ClipBrd, Utils.Options, Utils.Constants;
 
 {$R *.dfm}
 
@@ -167,6 +170,7 @@ procedure TfMonitor.ActionClearLogExecute(Sender: TObject);
 begin
   LogViewer.EmptyDataSet;
   LabelRecordInfo.Caption := EmptyStr;
+  MemoMemoSQL.Lines.Clear;
 end;
 
 procedure TfMonitor.AssignGridDrawEvent;

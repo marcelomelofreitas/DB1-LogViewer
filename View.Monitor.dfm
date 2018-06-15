@@ -287,10 +287,6 @@ object fMonitor: TfMonitor
       Caption = 'SQL'
       ImageIndex = 2
       OnEnter = TabSheetSQLEnter
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object MemoSQLTab: TMemo
         Left = 0
         Top = 0
@@ -311,10 +307,6 @@ object fMonitor: TfMonitor
     end
     object TabSheetOptions: TTabSheet
       Caption = 'Op'#231#245'es'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBoxLog: TGroupBox
         Left = 18
         Top = 16
@@ -1016,19 +1008,10 @@ object fMonitor: TfMonitor
       InitializeControlValue = False
     end
   end
-  object LogViewer: TLogViewer
-    PersistDataPacket.Data = {
-      040100009619E0BD010000001800000009000000000003000000040104547970
-      650100490000000100055749445448020002000A000844617461626173650100
-      4900000001000557494454480200020014000455736572010049000000010005
-      5749445448020002003200024950010049000000010005574944544802000200
-      140005436C6173730100490000000100055749445448020002006400064D6574
-      686F6401004900000001000557494454480200020064000353514C0200490000
-      00010005574944544802000200983A084461746554696D650100490000000100
-      055749445448020002001400054572726F720100490000000100055749445448
-      0200020001000000}
+  object LogViewer: TFDLogViewer
     Active = True
-    Aggregates = <>
+    AfterScroll = LogViewerAfterScroll
+    FilterOptions = [foCaseInsensitive]
     FieldDefs = <
       item
         Name = 'Type'
@@ -1076,9 +1059,14 @@ object fMonitor: TfMonitor
         Size = 1
       end>
     IndexDefs = <>
-    Params = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
     StoreDefs = True
-    AfterScroll = LogViewerAfterScroll
     Left = 1010
     Top = 371
   end
