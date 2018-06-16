@@ -64,13 +64,11 @@ type
     LabelStyle: TLabel;
     ComboBoxStyles: TComboBox;
     LogViewer: TFDLogViewer;
+    CheckBoxAlwaysOnTop: TCheckBox;
+    CheckBoxDontLoadBasicLog: TCheckBox;
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
     procedure ActionClearLogExecute(Sender: TObject);
-    procedure CheckBoxAutoUpdateClick(Sender: TObject);
-    procedure CheckBoxHighlightErrorsClick(Sender: TObject);
-    procedure CheckBoxShowBottomPanelClick(Sender: TObject);
-    procedure CheckBoxShowOnlySQLClick(Sender: TObject);
     procedure ComboBoxTypeChange(Sender: TObject);
     procedure DBGridDblClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -85,21 +83,29 @@ type
     procedure LogViewerAfterScroll(DataSet: TDataSet);
     procedure ComboBoxStylesSelect(Sender: TObject);
   private
-    // Class Fields
+    // class fields
     FSQLFormatter: TSQLFormatter;
 
-    // Event Handlers
+    // event handlers
     procedure OnDrawColumnCellHighlight(Sender: TObject; const Rect: TRect; DataCol: Integer;
       Column: TColumn; State: TGridDrawState);
     procedure OnKeyPressFilterComponents(Sender: TObject; var Key: Char);
 
-    // Functions
+    // checkboxes event handlers
+    procedure CheckBoxAutoUpdateClick(Sender: TObject);
+    procedure CheckBoxHighlightErrorsClick(Sender: TObject);
+    procedure CheckBoxShowBottomPanelClick(Sender: TObject);
+    procedure CheckBoxShowOnlySQLClick(Sender: TObject);
+    procedure CheckBoxAlwaysOnTopClick(Sender: TObject);
+    procedure CheckBoxDontLoadBasicLogClick(Sender: TObject);
+
+    // private functions
     function OpenFile: string;
     function FormatSQL: string;
     function GetFieldName(aComponent: TEdit): string;
     function IsFileNameValid: boolean;
 
-    // Procdures
+    // private procedures
     procedure OpenSQLTab;
     procedure AssignCheckBoxesEvents;
     procedure AssignFilterEvents;
@@ -170,7 +176,7 @@ procedure TfMonitor.ActionClearLogExecute(Sender: TObject);
 begin
   LogViewer.EmptyDataSet;
   LabelRecordInfo.Caption := EmptyStr;
-  MemoMemoSQL.Lines.Clear;
+  MemoSQL.Lines.Clear;
 end;
 
 procedure TfMonitor.AssignGridDrawEvent;
@@ -186,6 +192,8 @@ begin
   CheckBoxShowOnlySQL.OnClick := CheckBoxShowOnlySQLClick;
   CheckBoxHighlightErrors.OnClick := CheckBoxHighlightErrorsClick;
   CheckBoxShowBottomPanel.OnClick := CheckBoxShowBottomPanelClick;
+  CheckBoxAlwaysOnTop.OnClick := CheckBoxAlwaysOnTopClick;
+  CheckBoxDontLoadBasicLog.OnClick := CheckBoxDontLoadBasicLogClick;
 end;
 
 procedure TfMonitor.AssignFilterEvents;
@@ -261,6 +269,15 @@ begin
     CheckBoxShowBottomPanel.Checked := lOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
     PanelSQL.Visible := lOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
 
+    // Don't Load Basic Log (TfpgServidorDM)
+    CheckBoxDontLoadBasicLog.Checked := lOptions.ReadEnabled(sDONT_LOAD_BASIC_LOG);
+    LogViewer.DontLoadBasicLog := lOptions.ReadEnabled(sDONT_LOAD_BASIC_LOG);
+
+    // AlwaysOnTop
+    CheckBoxAlwaysOnTop.Checked := lOptions.ReadEnabled(sALWAYS_ON_TOP);
+    if CheckBoxAlwaysOnTop.Checked then
+      Self.FormStyle := fsStayOnTop;
+
     // Theme
     LoadSelectedStyle(lOptions.ReadValue(sSELECTED_THEME));
   finally
@@ -312,6 +329,18 @@ begin
     LoadSQLBottomPanel;
 end;
 
+procedure TfMonitor.CheckBoxAlwaysOnTopClick(Sender: TObject);
+var
+  lEnable: boolean;
+begin
+  lEnable := CheckBoxAlwaysOnTop.Checked;
+  SaveOption(sALWAYS_ON_TOP, lEnable.ToString);
+
+  Self.FormStyle := fsNormal;
+  if lEnable then
+    Self.FormStyle := fsStayOnTop;
+end;
+
 procedure TfMonitor.CheckBoxAutoUpdateClick(Sender: TObject);
 var
   lEnable: boolean;
@@ -319,6 +348,16 @@ begin
   lEnable := CheckBoxAutoUpdate.Checked;
   TimerAutoUpdate.Enabled := lEnable;
   SaveOption(sAUTO_UPDATE_ENABLED, lEnable.ToString);
+end;
+
+procedure TfMonitor.CheckBoxDontLoadBasicLogClick(Sender: TObject);
+var
+  lEnable: boolean;
+begin
+  lEnable := CheckBoxDontLoadBasicLog.Checked;
+  SaveOption(sDONT_LOAD_BASIC_LOG, lEnable.ToString);
+  LogViewer.DontLoadBasicLog := lEnable;
+  LogViewer.ReloadLog;
 end;
 
 procedure TfMonitor.CheckBoxHighlightErrorsClick(Sender: TObject);

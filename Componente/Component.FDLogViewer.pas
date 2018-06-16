@@ -14,6 +14,7 @@ type
     FStringListFile: TStringList;
     FStringListLine: TStringList;
     FShowOnlySQL: boolean;
+    FDontLoadBasicLog: boolean;
 
     // DataSet Fields
     FFieldType: TField;
@@ -30,6 +31,7 @@ type
     function GetType: string;
     function GetDateTime: string;
     function GetError: string;
+    function GetClass: string;
 
     // private procedures
     procedure AppendLineToDataSet;
@@ -57,6 +59,7 @@ type
     // properties
     property LogFileName: string read FLogFileName write FLogFileName;
     property ShowOnlySQL: boolean read FShowOnlySQL write FShowOnlySQL;
+    property DontLoadBasicLog: boolean read FDontLoadBasicLog write FDontLoadBasicLog;
   end;
 
 procedure Register;
@@ -150,6 +153,11 @@ begin
   inherited;
 end;
 
+function TFDLogViewer.GetClass: string;
+begin
+  result := FStringListLine[POSITION_CLASS];
+end;
+
 function TFDLogViewer.GetDateTime: string;
 begin
   result := Format('%s  %s', [FStringListLine[POSITION_DATE],
@@ -233,6 +241,9 @@ begin
       FStringListLine.DelimitedText := FStringListFile[lContador];
 
       if FShowOnlySQL and (not GetType.Equals('SQL')) then
+        Continue;
+
+      if FDontLoadBasicLog and (GetClass.ToUpper.Equals('TFPGSERVIDORDM')) then
         Continue;
 
       AppendLineToDataSet;

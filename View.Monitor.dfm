@@ -22,7 +22,7 @@ object fMonitor: TfMonitor
     Top = 0
     Width = 1199
     Height = 567
-    ActivePage = TabSheetLog
+    ActivePage = TabSheetOptions
     Align = alClient
     TabOrder = 0
     TabWidth = 100
@@ -310,8 +310,8 @@ object fMonitor: TfMonitor
       object GroupBoxLog: TGroupBox
         Left = 18
         Top = 16
-        Width = 213
-        Height = 97
+        Width = 255
+        Height = 132
         Caption = 'Log: '
         TabOrder = 0
         object CheckBoxShowOnlySQL: TCheckBox
@@ -338,30 +338,46 @@ object fMonitor: TfMonitor
           Caption = 'Exibir Painel Inferior'
           TabOrder = 2
         end
+        object CheckBoxDontLoadBasicLog: TCheckBox
+          Left = 8
+          Top = 88
+          Width = 236
+          Height = 17
+          Caption = 'N'#227'o carregar logs da classe TfpgServidorDM'
+          TabOrder = 3
+        end
       end
       object GroupBoxVisual: TGroupBox
         Left = 18
-        Top = 134
-        Width = 213
-        Height = 89
+        Top = 169
+        Width = 255
+        Height = 107
         Caption = 'Visual: '
         TabOrder = 1
         object LabelStyle: TLabel
           Left = 8
-          Top = 32
+          Top = 56
           Width = 30
           Height = 13
           Caption = 'Tema:'
         end
         object ComboBoxStyles: TComboBox
           Left = 8
-          Top = 48
+          Top = 72
           Width = 189
           Height = 21
           Style = csDropDownList
           DropDownCount = 20
           TabOrder = 0
           OnSelect = ComboBoxStylesSelect
+        end
+        object CheckBoxAlwaysOnTop: TCheckBox
+          Left = 8
+          Top = 24
+          Width = 199
+          Height = 17
+          Caption = 'Manter na frente de outras janelas'
+          TabOrder = 1
         end
       end
     end
