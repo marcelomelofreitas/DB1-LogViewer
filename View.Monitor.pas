@@ -20,15 +20,19 @@ uses
 
 type
   TfMonitor = class(TForm)
-    ActionOpenFile: TAction;
-    ActionReloadLog: TAction;
     ActionClearLog: TAction;
     ActionManager: TActionManager;
+    ActionOpenFile: TAction;
+    ActionReloadLog: TAction;
     ActionToolBar: TActionToolBar;
+    BindingsList: TBindingsList;
+    CheckBoxAlwaysOnTop: TCheckBox;
     CheckBoxAutoUpdate: TCheckBox;
     CheckBoxHighlightErrors: TCheckBox;
+    CheckBoxIgnoreBasicLog: TCheckBox;
     CheckBoxShowBottomPanel: TCheckBox;
     CheckBoxShowOnlySQL: TCheckBox;
+    ComboBoxStyles: TComboBox;
     ComboBoxType: TComboBox;
     DataSource: TDataSource;
     DBGrid: TDBGrid;
@@ -39,17 +43,22 @@ type
     GroupBoxAutoUpdate: TGroupBox;
     GroupBoxFilters: TGroupBox;
     GroupBoxLog: TGroupBox;
+    GroupBoxVisual: TGroupBox;
     ImageList: TImageList;
-    LabelRecordInfo: TLabel;
     LabelInterval: TLabel;
-    MemoSQLTab: TMemo;
+    LabelRecordInfo: TLabel;
+    LabelStyle: TLabel;
+    LinkControlToPropertyLabel: TLinkControlToProperty;
+    LinkControlToPropertySpinEdit: TLinkControlToProperty;
+    LogViewer: TFDLogViewer;
     MemoSQL: TMemo;
+    MemoSQLTab: TMemo;
     MenuItemCopyColumnValue: TMenuItem;
     MenuItemCopySQL: TMenuItem;
     PageControl: TPageControl;
-    PanelSQL: TPanel;
     PanelGrid: TPanel;
     PanelOptions: TPanel;
+    PanelSQL: TPanel;
     PopupMenu: TPopupMenu;
     SpinEditInterval: TSpinEdit;
     Splitter: TSplitter;
@@ -57,31 +66,23 @@ type
     TabSheetOptions: TTabSheet;
     TabSheetSQL: TTabSheet;
     TimerAutoUpdate: TTimer;
-    BindingsList: TBindingsList;
-    LinkControlToPropertyLabel: TLinkControlToProperty;
-    LinkControlToPropertySpinEdit: TLinkControlToProperty;
-    GroupBoxVisual: TGroupBox;
-    LabelStyle: TLabel;
-    ComboBoxStyles: TComboBox;
-    LogViewer: TFDLogViewer;
-    CheckBoxAlwaysOnTop: TCheckBox;
-    CheckBoxDontLoadBasicLog: TCheckBox;
+    procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
-    procedure ActionClearLogExecute(Sender: TObject);
+    procedure ComboBoxStylesSelect(Sender: TObject);
     procedure ComboBoxTypeChange(Sender: TObject);
     procedure DBGridDblClick(Sender: TObject);
+    procedure DBGridKeyPress(Sender: TObject; var Key: Char);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure MemoSQLTabKeyPress(Sender: TObject; var Key: Char);
+    procedure LogViewerAfterScroll(DataSet: TDataSet);
     procedure MemoSQLKeyPress(Sender: TObject; var Key: Char);
+    procedure MemoSQLTabKeyPress(Sender: TObject; var Key: Char);
     procedure MenuItemCopyColumnValueClick(Sender: TObject);
     procedure MenuItemCopySQLClick(Sender: TObject);
-    procedure TimerAutoUpdateTimer(Sender: TObject);
     procedure TabSheetSQLEnter(Sender: TObject);
-    procedure DBGridKeyPress(Sender: TObject; var Key: Char);
-    procedure LogViewerAfterScroll(DataSet: TDataSet);
-    procedure ComboBoxStylesSelect(Sender: TObject);
+    procedure TimerAutoUpdateTimer(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     // class fields
     FSQLFormatter: TSQLFormatter;
@@ -97,31 +98,31 @@ type
     procedure CheckBoxShowBottomPanelClick(Sender: TObject);
     procedure CheckBoxShowOnlySQLClick(Sender: TObject);
     procedure CheckBoxAlwaysOnTopClick(Sender: TObject);
-    procedure CheckBoxDontLoadBasicLogClick(Sender: TObject);
+    procedure CheckBoxIgnoreBasicLogClick(Sender: TObject);
 
     // private functions
-    function OpenFile: string;
     function FormatSQL: string;
     function GetFieldName(aComponent: TEdit): string;
     function IsFileNameValid: boolean;
+    function OpenFile: string;
 
     // private procedures
-    procedure OpenSQLTab;
     procedure AssignCheckBoxesEvents;
     procedure AssignFilterEvents;
     procedure AssignGridDrawEvent;
-    procedure GetMostRecentLog;
-    procedure LoadOptions;
-    procedure LoadStylesList;
-    procedure LoadSelectedStyle(const aSelectedStyle: string);
-    procedure LoadLog;
-    procedure LoadSQLBottomPanel;
-    procedure CopyColumnValue;
-    procedure ManageTimer;
-    procedure ShowRecordInfo;
-    procedure FilterRecords(const aFieldName, aValue: string);
-    procedure SaveOption(const aKey: string; const aValue: string);
     procedure ClearFilterComponents(aComponent: TEdit);
+    procedure CopyColumnValue;
+    procedure FilterRecords(const aFieldName, aValue: string);
+    procedure GetMostRecentLog;
+    procedure LoadLog;
+    procedure LoadOptions;
+    procedure LoadSelectedStyle(const aSelectedStyle: string);
+    procedure LoadSQLBottomPanel;
+    procedure LoadStylesList;
+    procedure ManageTimer;
+    procedure OpenSQLTab;
+    procedure SaveOption(const aKey: string; const aValue: string);
+    procedure ShowRecordInfo;
   end;
 
 var
@@ -130,7 +131,7 @@ var
 implementation
 
 uses
-  VCL.Themes, ClipBrd, Utils.Options, Utils.Constants;
+  VCL.Themes, ClipBrd, Utils.Options, Utils.Constants, View.Loading;
 
 {$R *.dfm}
 
@@ -193,7 +194,7 @@ begin
   CheckBoxHighlightErrors.OnClick := CheckBoxHighlightErrorsClick;
   CheckBoxShowBottomPanel.OnClick := CheckBoxShowBottomPanelClick;
   CheckBoxAlwaysOnTop.OnClick := CheckBoxAlwaysOnTopClick;
-  CheckBoxDontLoadBasicLog.OnClick := CheckBoxDontLoadBasicLogClick;
+  CheckBoxIgnoreBasicLog.OnClick := CheckBoxIgnoreBasicLogClick;
 end;
 
 procedure TfMonitor.AssignFilterEvents;
@@ -234,13 +235,23 @@ begin
 end;
 
 procedure TfMonitor.LoadLog;
+var
+  fLoading: TfLoading;
 begin
   if not IsFileNameValid then
     Exit;
 
   TimerAutoUpdate.Enabled := False;
-  LogViewer.LogFileName := EditFileName.Text;
-  LogViewer.LoadLog;
+
+  fLoading := TfLoading.Create(nil);
+  try
+    fLoading.Show;
+    Application.ProcessMessages;
+    LogViewer.LogFileName := EditFileName.Text;
+    LogViewer.LoadLog;
+  finally
+    fLoading.Free;
+  end;
 
   ShowRecordInfo;
   ManageTimer;
@@ -270,8 +281,8 @@ begin
     PanelSQL.Visible := lOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
 
     // Don't Load Basic Log (TfpgServidorDM)
-    CheckBoxDontLoadBasicLog.Checked := lOptions.ReadEnabled(sDONT_LOAD_BASIC_LOG);
-    LogViewer.DontLoadBasicLog := lOptions.ReadEnabled(sDONT_LOAD_BASIC_LOG);
+    CheckBoxIgnoreBasicLog.Checked := lOptions.ReadEnabled(sIGNORE_BASIC_LOG);
+    LogViewer.IgnoreBasicLog := lOptions.ReadEnabled(sIGNORE_BASIC_LOG);
 
     // AlwaysOnTop
     CheckBoxAlwaysOnTop.Checked := lOptions.ReadEnabled(sALWAYS_ON_TOP);
@@ -350,13 +361,13 @@ begin
   SaveOption(sAUTO_UPDATE_ENABLED, lEnable.ToString);
 end;
 
-procedure TfMonitor.CheckBoxDontLoadBasicLogClick(Sender: TObject);
+procedure TfMonitor.CheckBoxIgnoreBasicLogClick(Sender: TObject);
 var
   lEnable: boolean;
 begin
-  lEnable := CheckBoxDontLoadBasicLog.Checked;
-  SaveOption(sDONT_LOAD_BASIC_LOG, lEnable.ToString);
-  LogViewer.DontLoadBasicLog := lEnable;
+  lEnable := CheckBoxIgnoreBasicLog.Checked;
+  SaveOption(sIGNORE_BASIC_LOG, lEnable.ToString);
+  LogViewer.IgnoreBasicLog := lEnable;
   LogViewer.ReloadLog;
 end;
 
@@ -510,6 +521,19 @@ end;
 procedure TfMonitor.FormDestroy(Sender: TObject);
 begin
   FSQLFormatter.Free;
+end;
+
+procedure TfMonitor.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Shift = [ssAlt]) and (Key = 49) then
+    PageControl.ActivePage := TabSheetLog;
+
+  if (Shift = [ssAlt]) and (Key = 50) then
+  PageControl.ActivePage := TabSheetSQL;
+
+  if (Shift = [ssAlt]) and (Key = 51) then
+  PageControl.ActivePage := TabSheetOptions;
 end;
 
 procedure TfMonitor.SaveOption(const aKey: string; const aValue: string);

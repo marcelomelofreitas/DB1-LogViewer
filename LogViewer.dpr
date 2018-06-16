@@ -8,7 +8,8 @@ uses
   Utils.Constants in 'Utils.Constants.pas',
   Utils.SQLFormatter in 'Utils.SQLFormatter.pas',
   Vcl.Themes,
-  Vcl.Styles;
+  Vcl.Styles,
+  View.Loading in 'View.Loading.pas' {fLoading};
 
 {$R *.res}
 

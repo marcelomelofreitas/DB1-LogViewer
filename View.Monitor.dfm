@@ -10,11 +10,13 @@ object fMonitor: TfMonitor
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poDesigned
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
   object PageControl: TPageControl
@@ -310,8 +312,8 @@ object fMonitor: TfMonitor
       object GroupBoxLog: TGroupBox
         Left = 18
         Top = 16
-        Width = 255
-        Height = 132
+        Width = 230
+        Height = 115
         Caption = 'Log: '
         TabOrder = 0
         object CheckBoxShowOnlySQL: TCheckBox
@@ -324,7 +326,7 @@ object fMonitor: TfMonitor
         end
         object CheckBoxHighlightErrors: TCheckBox
           Left = 8
-          Top = 43
+          Top = 44
           Width = 189
           Height = 17
           Caption = 'Destacar linhas de erros'
@@ -332,25 +334,25 @@ object fMonitor: TfMonitor
         end
         object CheckBoxShowBottomPanel: TCheckBox
           Left = 8
-          Top = 65
+          Top = 66
           Width = 169
           Height = 17
-          Caption = 'Exibir Painel Inferior'
+          Caption = 'Exibir painel inferior com a SQL'
           TabOrder = 2
         end
-        object CheckBoxDontLoadBasicLog: TCheckBox
+        object CheckBoxIgnoreBasicLog: TCheckBox
           Left = 8
           Top = 88
-          Width = 236
+          Width = 209
           Height = 17
-          Caption = 'N'#227'o carregar logs da classe TfpgServidorDM'
+          Caption = 'Ignorar logs da classe TfpgServidorDM'
           TabOrder = 3
         end
       end
       object GroupBoxVisual: TGroupBox
         Left = 18
-        Top = 169
-        Width = 255
+        Top = 153
+        Width = 230
         Height = 107
         Caption = 'Visual: '
         TabOrder = 1

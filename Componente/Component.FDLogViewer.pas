@@ -14,7 +14,7 @@ type
     FStringListFile: TStringList;
     FStringListLine: TStringList;
     FShowOnlySQL: boolean;
-    FDontLoadBasicLog: boolean;
+    FIgnoreBasicLog: boolean;
 
     // DataSet Fields
     FFieldType: TField;
@@ -59,7 +59,7 @@ type
     // properties
     property LogFileName: string read FLogFileName write FLogFileName;
     property ShowOnlySQL: boolean read FShowOnlySQL write FShowOnlySQL;
-    property DontLoadBasicLog: boolean read FDontLoadBasicLog write FDontLoadBasicLog;
+    property IgnoreBasicLog: boolean read FIgnoreBasicLog write FIgnoreBasicLog;
   end;
 
 procedure Register;
@@ -233,6 +233,7 @@ begin
   lOriginalAfterScroll := Self.AfterScroll;
   Self.AfterScroll := nil;
   Self.DisableControls;
+  Self.EmptyDataSet;
   try
     LoadFile;
 
@@ -243,7 +244,7 @@ begin
       if FShowOnlySQL and (not GetType.Equals('SQL')) then
         Continue;
 
-      if FDontLoadBasicLog and (GetClass.ToUpper.Equals('TFPGSERVIDORDM')) then
+      if FIgnoreBasicLog and (GetClass.ToUpper.Equals('TFPGSERVIDORDM')) then
         Continue;
 
       AppendLineToDataSet;

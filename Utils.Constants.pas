@@ -9,7 +9,7 @@ const
   sHIGHLIGHT_ERRORS = 'HighlightErrors';
   sSHOW_BOTTOM_PANEL = 'ShowBottomPanel';
   sALWAYS_ON_TOP = 'AlwaysOnTop';
-  sDONT_LOAD_BASIC_LOG = 'DontLoadBasicLog';
+  sIGNORE_BASIC_LOG = 'IgnoreBasicLog';
 
   sSELECTED_THEME = 'SelectedTheme';
   sSPACE = ' ';

@@ -121,6 +121,10 @@
         <DCCReference Include="Utils.Helpers.pas"/>
         <DCCReference Include="Utils.Constants.pas"/>
         <DCCReference Include="Utils.SQLFormatter.pas"/>
+        <DCCReference Include="View.Loading.pas">
+            <Form>fLoading</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -142,9 +146,6 @@
                     <Source Name="MainSource">LogViewer.dpr</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\RTC\pg5Dev\SRC\3RD_PARTY\PACDEV\BIN\VCLZipDT.bpl">VCLZip</Excluded_Packages>
-                    <Excluded_Packages Name="C:\RTC\pg5Dev\SRC\3RD_PARTY\PACDEV\BIN\spSecureBlackBox.bpl">spSecureBlackBox</Excluded_Packages>
-                    <Excluded_Packages Name="C:\RTC\pg5Dev\bin\pg5CompletoDT.bpl">PG5 - Componentes Design Time</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k250.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp250.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
