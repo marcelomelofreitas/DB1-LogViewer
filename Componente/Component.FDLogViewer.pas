@@ -10,7 +10,7 @@ type
   private
     // Class Fields
     FLogFileName: string;
-    FCounter: smallint;
+    FCounter: integer;
     FStringListFile: TStringList;
     FStringListLine: TStringList;
     FShowOnlySQL: boolean;
@@ -233,7 +233,6 @@ begin
   lOriginalAfterScroll := Self.AfterScroll;
   Self.AfterScroll := nil;
   Self.DisableControls;
-  Self.EmptyDataSet;
   try
     LoadFile;
 

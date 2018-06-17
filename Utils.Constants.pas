@@ -11,7 +11,8 @@ const
   sALWAYS_ON_TOP = 'AlwaysOnTop';
   sIGNORE_BASIC_LOG = 'IgnoreBasicLog';
 
-  sSELECTED_THEME = 'SelectedTheme';
+  sDEFAULT_STYLE = 'Windows';
+  sSELECTED_STYLE = 'SelectedStyle';
   sSPACE = ' ';
   sSEPARATOR = '((ESPACO))';
   nMARGIN = 2;

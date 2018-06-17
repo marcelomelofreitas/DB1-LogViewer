@@ -24,7 +24,7 @@ object fMonitor: TfMonitor
     Top = 0
     Width = 1199
     Height = 567
-    ActivePage = TabSheetOptions
+    ActivePage = TabSheetLog
     Align = alClient
     TabOrder = 0
     TabWidth = 100
@@ -289,6 +289,10 @@ object fMonitor: TfMonitor
       Caption = 'SQL'
       ImageIndex = 2
       OnEnter = TabSheetSQLEnter
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object MemoSQLTab: TMemo
         Left = 0
         Top = 0
@@ -309,6 +313,10 @@ object fMonitor: TfMonitor
     end
     object TabSheetOptions: TTabSheet
       Caption = 'Op'#231#245'es'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBoxLog: TGroupBox
         Left = 18
         Top = 16
@@ -382,6 +390,188 @@ object fMonitor: TfMonitor
           TabOrder = 1
         end
       end
+      object GroupBoxShortCuts: TGroupBox
+        Left = 264
+        Top = 16
+        Width = 217
+        Height = 201
+        Caption = 'Atalhos: '
+        TabOrder = 2
+        object LabelCtrlO: TLabel
+          Left = 17
+          Top = 24
+          Width = 51
+          Height = 13
+          Caption = 'CTRL + O'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object LabelCtrlL: TLabel
+          Left = 19
+          Top = 43
+          Width = 49
+          Height = 13
+          Caption = 'CTRL + L'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object LabelF5: TLabel
+          Left = 55
+          Top = 62
+          Width = 13
+          Height = 13
+          Caption = 'F5'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object LabelCtrlC: TLabel
+          Left = 18
+          Top = 89
+          Width = 50
+          Height = 13
+          Caption = 'CTRL + C'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object LabelCtrlQ: TLabel
+          Left = 17
+          Top = 108
+          Width = 51
+          Height = 13
+          Caption = 'CTRL + Q'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object LabelAlt1: TLabel
+          Left = 25
+          Top = 135
+          Width = 43
+          Height = 13
+          Caption = 'ALT + 1'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object LabelAlt2: TLabel
+          Left = 25
+          Top = 154
+          Width = 43
+          Height = 13
+          Caption = 'ALT + 2'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object LabelAlt3: TLabel
+          Left = 25
+          Top = 173
+          Width = 43
+          Height = 13
+          Caption = 'ALT + 3'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object LabelOpenFile: TLabel
+          Left = 72
+          Top = 24
+          Width = 70
+          Height = 13
+          Caption = ': Abrir Arquivo'
+        end
+        object LabelClearLog: TLabel
+          Left = 72
+          Top = 43
+          Width = 58
+          Height = 13
+          Caption = ': Limpar Log'
+        end
+        object LabelReloadLog: TLabel
+          Left = 72
+          Top = 62
+          Width = 69
+          Height = 13
+          Caption = ': Atualizar Log'
+        end
+        object LabelCopyColumnValue: TLabel
+          Left = 72
+          Top = 89
+          Width = 116
+          Height = 13
+          Caption = ': Copiar Valor da Coluna'
+        end
+        object LabelCopySQL: TLabel
+          Left = 72
+          Top = 108
+          Width = 60
+          Height = 13
+          Caption = ': Copiar SQL'
+        end
+        object LabelShowLogTab: TLabel
+          Left = 72
+          Top = 135
+          Width = 83
+          Height = 13
+          Caption = ': Exibir Aba "Log"'
+        end
+        object LabelShowSQLTab: TLabel
+          Left = 72
+          Top = 154
+          Width = 85
+          Height = 13
+          Caption = ': Exibir Aba "SQL"'
+        end
+        object LabelShowOptionsTab: TLabel
+          Left = 72
+          Top = 173
+          Width = 102
+          Height = 13
+          Caption = ': Exibir Aba "Op'#231#245'es"'
+        end
+        object BevelSeparator1: TBevel
+          Left = 13
+          Top = 81
+          Width = 191
+          Height = 10
+          Shape = bsTopLine
+        end
+        object BevelSeparator2: TBevel
+          Left = 13
+          Top = 127
+          Width = 191
+          Height = 10
+          Shape = bsTopLine
+        end
+      end
     end
   end
   object DataSource: TDataSource
@@ -400,12 +590,12 @@ object fMonitor: TfMonitor
     Top = 371
     object MenuItemCopyColumnValue: TMenuItem
       Caption = 'Copiar Coluna'
-      ShortCut = 16465
+      ShortCut = 16451
       OnClick = MenuItemCopyColumnValueClick
     end
     object MenuItemCopySQL: TMenuItem
       Caption = 'Copiar SQL'
-      ShortCut = 16451
+      ShortCut = 16465
       OnClick = MenuItemCopySQLClick
     end
   end

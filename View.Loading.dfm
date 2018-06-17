@@ -28,7 +28,7 @@ object fLoading: TfLoading
     TabOrder = 0
     object LabelLoading: TLabel
       Left = 65
-      Top = 14
+      Top = 10
       Width = 139
       Height = 32
       Caption = 'Carregando...'

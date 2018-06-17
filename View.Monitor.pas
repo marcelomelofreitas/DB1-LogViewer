@@ -66,6 +66,25 @@ type
     TabSheetOptions: TTabSheet;
     TabSheetSQL: TTabSheet;
     TimerAutoUpdate: TTimer;
+    GroupBoxShortCuts: TGroupBox;
+    LabelCtrlO: TLabel;
+    LabelCtrlL: TLabel;
+    LabelF5: TLabel;
+    LabelCtrlC: TLabel;
+    LabelCtrlQ: TLabel;
+    LabelAlt1: TLabel;
+    LabelAlt2: TLabel;
+    LabelAlt3: TLabel;
+    LabelOpenFile: TLabel;
+    LabelClearLog: TLabel;
+    LabelReloadLog: TLabel;
+    LabelCopyColumnValue: TLabel;
+    LabelCopySQL: TLabel;
+    LabelShowLogTab: TLabel;
+    LabelShowSQLTab: TLabel;
+    LabelShowOptionsTab: TLabel;
+    BevelSeparator1: TBevel;
+    BevelSeparator2: TBevel;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
@@ -242,6 +261,7 @@ begin
     Exit;
 
   TimerAutoUpdate.Enabled := False;
+  LogViewer.EmptyDataSet;
 
   fLoading := TfLoading.Create(nil);
   try
@@ -280,7 +300,7 @@ begin
     CheckBoxShowBottomPanel.Checked := lOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
     PanelSQL.Visible := lOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
 
-    // Don't Load Basic Log (TfpgServidorDM)
+    // Ignore Basic Log (TfpgServidorDM)
     CheckBoxIgnoreBasicLog.Checked := lOptions.ReadEnabled(sIGNORE_BASIC_LOG);
     LogViewer.IgnoreBasicLog := lOptions.ReadEnabled(sIGNORE_BASIC_LOG);
 
@@ -290,7 +310,7 @@ begin
       Self.FormStyle := fsStayOnTop;
 
     // Theme
-    LoadSelectedStyle(lOptions.ReadValue(sSELECTED_THEME));
+    LoadSelectedStyle(lOptions.ReadValue(sSELECTED_STYLE));
   finally
     lOptions.Free;
   end;
@@ -302,7 +322,7 @@ var
 begin
   lStyleName := aSelectedStyle;
   if lStyleName.IsEmpty then
-    lStyleName := 'Windows';
+    lStyleName := sDEFAULT_STYLE;
 
   ComboBoxStyles.ItemIndex := ComboBoxStyles.Items.IndexOf(lStyleName);
   TStyleManager.SetStyle(lStyleName);
@@ -334,6 +354,7 @@ var
 begin
   lEnable := CheckBoxShowBottomPanel.Checked;
   PanelSQL.Visible := lEnable;
+  Splitter.Visible := lEnable;
   SaveOption(sSHOW_BOTTOM_PANEL, lEnable.ToString);
 
   if lEnable then
@@ -393,7 +414,7 @@ end;
 procedure TfMonitor.ComboBoxStylesSelect(Sender: TObject);
 begin
   TStyleManager.SetStyle(ComboBoxStyles.Text);
-  SaveOption(sSELECTED_THEME, ComboBoxStyles.Text);
+  SaveOption(sSELECTED_STYLE, ComboBoxStyles.Text);
 end;
 
 procedure TfMonitor.ComboBoxTypeChange(Sender: TObject);
@@ -576,9 +597,6 @@ end;
 
 procedure TfMonitor.MemoSQLKeyPress(Sender: TObject; var Key: Char);
 begin
-  if Key = ^C then
-    ClipBoard.AsText := MemoSQL.Lines.Text;
-
   if Key = ^A then
     MemoSQL.SelectAll;
 end;
@@ -600,7 +618,8 @@ end;
 
 procedure TfMonitor.TabSheetSQLEnter(Sender: TObject);
 begin
-  MemoSQLTab.Lines.Text := FormatSQL;
+  if not LogViewer.IsSQLEmpty then
+    MemoSQLTab.Lines.Text := FormatSQL;
 end;
 
 procedure TfMonitor.TimerAutoUpdateTimer(Sender: TObject);
