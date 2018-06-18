@@ -6,17 +6,16 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.ExtCtrls, Vcl.Grids,
-  Vcl.DBGrids, Vcl.StdCtrls,
+  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Data.DB, Vcl.ExtCtrls, Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls,
   Vcl.Buttons, Vcl.Samples.Spin, Vcl.ComCtrls, Vcl.Menus,
   Utils.SQLFormatter, System.Actions, Vcl.ActnList,
   Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan, Vcl.ActnCtrls,
   Data.Bind.EngExt, Vcl.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs,
   Vcl.Bind.Editors, Data.Bind.Components, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Component.FDLogViewer, FireDAC.Phys.Intf,
-  FireDAC.DApt.Intf, System.ImageList, Vcl.ImgList, Vcl.ToolWin;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Component.FDLogViewer,
+  Vcl.WinXCtrls;
 
 type
   TfMonitor = class(TForm)
@@ -25,13 +24,10 @@ type
     ActionOpenFile: TAction;
     ActionReloadLog: TAction;
     ActionToolBar: TActionToolBar;
+    BevelSeparator1: TBevel;
+    BevelSeparator2: TBevel;
     BindingsList: TBindingsList;
-    CheckBoxAlwaysOnTop: TCheckBox;
     CheckBoxAutoUpdate: TCheckBox;
-    CheckBoxHighlightErrors: TCheckBox;
-    CheckBoxIgnoreBasicLog: TCheckBox;
-    CheckBoxShowBottomPanel: TCheckBox;
-    CheckBoxShowOnlySQL: TCheckBox;
     ComboBoxStyles: TComboBox;
     ComboBoxType: TComboBox;
     DataSource: TDataSource;
@@ -43,10 +39,27 @@ type
     GroupBoxAutoUpdate: TGroupBox;
     GroupBoxFilters: TGroupBox;
     GroupBoxLog: TGroupBox;
+    GroupBoxShortCuts: TGroupBox;
     GroupBoxVisual: TGroupBox;
     ImageList: TImageList;
+    LabelAlt1: TLabel;
+    LabelAlt2: TLabel;
+    LabelAlt3: TLabel;
+    LabelClearLog: TLabel;
+    LabelCopyColumnValue: TLabel;
+    LabelCopySQL: TLabel;
+    LabelCtrlC: TLabel;
+    LabelCtrlL: TLabel;
+    LabelCtrlO: TLabel;
+    LabelCtrlQ: TLabel;
+    LabelF5: TLabel;
     LabelInterval: TLabel;
+    LabelOpenFile: TLabel;
     LabelRecordInfo: TLabel;
+    LabelReloadLog: TLabel;
+    LabelShowLogTab: TLabel;
+    LabelShowOptionsTab: TLabel;
+    LabelShowSQLTab: TLabel;
     LabelStyle: TLabel;
     LinkControlToPropertyLabel: TLinkControlToProperty;
     LinkControlToPropertySpinEdit: TLinkControlToProperty;
@@ -66,34 +79,22 @@ type
     TabSheetOptions: TTabSheet;
     TabSheetSQL: TTabSheet;
     TimerAutoUpdate: TTimer;
-    GroupBoxShortCuts: TGroupBox;
-    LabelCtrlO: TLabel;
-    LabelCtrlL: TLabel;
-    LabelF5: TLabel;
-    LabelCtrlC: TLabel;
-    LabelCtrlQ: TLabel;
-    LabelAlt1: TLabel;
-    LabelAlt2: TLabel;
-    LabelAlt3: TLabel;
-    LabelOpenFile: TLabel;
-    LabelClearLog: TLabel;
-    LabelReloadLog: TLabel;
-    LabelCopyColumnValue: TLabel;
-    LabelCopySQL: TLabel;
-    LabelShowLogTab: TLabel;
-    LabelShowSQLTab: TLabel;
-    LabelShowOptionsTab: TLabel;
-    BevelSeparator1: TBevel;
-    BevelSeparator2: TBevel;
+    ToggleSwitchHighlightErrors: TToggleSwitch;
+    ToggleSwitchIgnoreBasicLog: TToggleSwitch;
+    ToggleSwitchShowBottomPanel: TToggleSwitch;
+    ToggleSwitchShowOnlySQL: TToggleSwitch;
+    ToggleSwitchStayOnTop: TToggleSwitch;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
+    procedure CheckBoxAutoUpdateClick(Sender: TObject);
     procedure ComboBoxStylesSelect(Sender: TObject);
     procedure ComboBoxTypeChange(Sender: TObject);
     procedure DBGridDblClick(Sender: TObject);
     procedure DBGridKeyPress(Sender: TObject; var Key: Char);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure LogViewerAfterScroll(DataSet: TDataSet);
     procedure MemoSQLKeyPress(Sender: TObject; var Key: Char);
     procedure MemoSQLTabKeyPress(Sender: TObject; var Key: Char);
@@ -101,23 +102,20 @@ type
     procedure MenuItemCopySQLClick(Sender: TObject);
     procedure TabSheetSQLEnter(Sender: TObject);
     procedure TimerAutoUpdateTimer(Sender: TObject);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure ToggleSwitchHighlightErrorsClick(Sender: TObject);
+    procedure ToggleSwitchIgnoreBasicLogClick(Sender: TObject);
+    procedure ToggleSwitchShowBottomPanelClick(Sender: TObject);
+    procedure ToggleSwitchShowOnlySQLClick(Sender: TObject);
+    procedure ToggleSwitchStayOnTopClick(Sender: TObject);
   private
     // class fields
     FSQLFormatter: TSQLFormatter;
+    FLoadingOptionsAtStartup: boolean;
 
     // event handlers
     procedure OnDrawColumnCellHighlight(Sender: TObject; const Rect: TRect; DataCol: Integer;
       Column: TColumn; State: TGridDrawState);
     procedure OnKeyPressFilterComponents(Sender: TObject; var Key: Char);
-
-    // checkboxes event handlers
-    procedure CheckBoxAutoUpdateClick(Sender: TObject);
-    procedure CheckBoxHighlightErrorsClick(Sender: TObject);
-    procedure CheckBoxShowBottomPanelClick(Sender: TObject);
-    procedure CheckBoxShowOnlySQLClick(Sender: TObject);
-    procedure CheckBoxAlwaysOnTopClick(Sender: TObject);
-    procedure CheckBoxIgnoreBasicLogClick(Sender: TObject);
 
     // private functions
     function FormatSQL: string;
@@ -126,7 +124,6 @@ type
     function OpenFile: string;
 
     // private procedures
-    procedure AssignCheckBoxesEvents;
     procedure AssignFilterEvents;
     procedure AssignGridDrawEvent;
     procedure ClearFilterComponents(aComponent: TEdit);
@@ -134,6 +131,7 @@ type
     procedure FilterRecords(const aFieldName, aValue: string);
     procedure GetMostRecentLog;
     procedure LoadLog;
+    procedure LoadLogAtTimer;
     procedure LoadOptions;
     procedure LoadSelectedStyle(const aSelectedStyle: string);
     procedure LoadSQLBottomPanel;
@@ -150,7 +148,8 @@ var
 implementation
 
 uses
-  VCL.Themes, ClipBrd, Utils.Options, Utils.Constants, View.Loading;
+  VCL.Themes, ClipBrd, Utils.Options, Utils.Constants, Utils.Helpers,
+  View.Loading;
 
 {$R *.dfm}
 
@@ -167,8 +166,8 @@ begin
     if not lOpenDialog.Execute then
       Exit;
 
-    result := Trim(lOpenDialog.FileName);
     EditFileName.Text := Trim(lOpenDialog.FileName);
+    result := EditFileName.Text;
   finally
     lOpenDialog.Free;
   end;
@@ -202,18 +201,8 @@ end;
 procedure TfMonitor.AssignGridDrawEvent;
 begin
   DBGrid.OnDrawColumnCell := nil;
-  if CheckBoxHighlightErrors.Checked then
+  if ToggleSwitchHighlightErrors.IsOn then
     DBGrid.OnDrawColumnCell := OnDrawColumnCellHighlight;
-end;
-
-procedure TfMonitor.AssignCheckBoxesEvents;
-begin
-  CheckBoxAutoUpdate.OnClick := CheckBoxAutoUpdateClick;
-  CheckBoxShowOnlySQL.OnClick := CheckBoxShowOnlySQLClick;
-  CheckBoxHighlightErrors.OnClick := CheckBoxHighlightErrorsClick;
-  CheckBoxShowBottomPanel.OnClick := CheckBoxShowBottomPanelClick;
-  CheckBoxAlwaysOnTop.OnClick := CheckBoxAlwaysOnTopClick;
-  CheckBoxIgnoreBasicLog.OnClick := CheckBoxIgnoreBasicLogClick;
 end;
 
 procedure TfMonitor.AssignFilterEvents;
@@ -278,41 +267,33 @@ begin
   LoadSQLBottomPanel;
 end;
 
+procedure TfMonitor.LoadLogAtTimer;
+begin
+  if not IsFileNameValid then
+    Exit;
+
+  LogViewer.LoadLog;
+  ShowRecordInfo;
+  LoadSQLBottomPanel;
+end;
+
 procedure TfMonitor.LoadOptions;
 var
   lOptions: TOptions;
 begin
+  FLoadingOptionsAtStartup := True;
   lOptions := TOptions.Create;
   try
-    // Auto Update
     CheckBoxAutoUpdate.Checked := lOptions.ReadEnabled(sAUTO_UPDATE_ENABLED);
-    LabelInterval.Enabled := lOptions.ReadEnabled(sAUTO_UPDATE_ENABLED);
-    SpinEditInterval.Enabled := lOptions.ReadEnabled(sAUTO_UPDATE_ENABLED);
-
-    // Show Only SQL
-    CheckBoxShowOnlySQL.Checked := lOptions.ReadEnabled(sSHOW_ONLY_SQL);
-    LogViewer.ShowOnlySQL := lOptions.ReadEnabled(sSHOW_ONLY_SQL);
-
-    // Highlight Errors
-    CheckBoxHighlightErrors.Checked := lOptions.ReadEnabled(sHIGHLIGHT_ERRORS);
-
-    // Show Bottom Panel
-    CheckBoxShowBottomPanel.Checked := lOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
-    PanelSQL.Visible := lOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
-
-    // Ignore Basic Log (TfpgServidorDM)
-    CheckBoxIgnoreBasicLog.Checked := lOptions.ReadEnabled(sIGNORE_BASIC_LOG);
-    LogViewer.IgnoreBasicLog := lOptions.ReadEnabled(sIGNORE_BASIC_LOG);
-
-    // AlwaysOnTop
-    CheckBoxAlwaysOnTop.Checked := lOptions.ReadEnabled(sALWAYS_ON_TOP);
-    if CheckBoxAlwaysOnTop.Checked then
-      Self.FormStyle := fsStayOnTop;
-
-    // Theme
+    ToggleSwitchShowOnlySQL.Checked := lOptions.ReadEnabled(sSHOW_ONLY_SQL);
+    ToggleSwitchHighlightErrors.Checked := lOptions.ReadEnabled(sHIGHLIGHT_ERRORS);
+    ToggleSwitchShowBottomPanel.Checked := lOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
+    ToggleSwitchIgnoreBasicLog.Checked := lOptions.ReadEnabled(sIGNORE_BASIC_LOG);
+    ToggleSwitchStayOnTop.Checked := lOptions.ReadEnabled(sSTAY_ON_TOP);
     LoadSelectedStyle(lOptions.ReadValue(sSELECTED_STYLE));
   finally
     lOptions.Free;
+    FLoadingOptionsAtStartup := False;
   end;
 end;
 
@@ -330,7 +311,7 @@ end;
 
 procedure TfMonitor.LoadSQLBottomPanel;
 begin
-  if not CheckBoxShowBottomPanel.Checked then
+  if not ToggleSwitchShowBottomPanel.IsOn then
     Exit;
 
   MemoSQL.Lines.Clear;
@@ -341,36 +322,21 @@ end;
 procedure TfMonitor.LoadStylesList;
 var
   lStyle :String;
+  lStringListStyles: TStringList;
 begin
-  ComboBoxStyles.Clear;
+  lStringListStyles := TStringList.Create;
+  try
+    for lStyle in TStyleManager.StyleNames do
+      lStringListStyles.Add(lStyle);
 
-  for lStyle in TStyleManager.StyleNames do
-    ComboBoxStyles.Items.Add(lStyle);
-end;
+    lStringListStyles.Sort;
+    ComboBoxStyles.Clear;
 
-procedure TfMonitor.CheckBoxShowBottomPanelClick(Sender: TObject);
-var
-  lEnable: boolean;
-begin
-  lEnable := CheckBoxShowBottomPanel.Checked;
-  PanelSQL.Visible := lEnable;
-  Splitter.Visible := lEnable;
-  SaveOption(sSHOW_BOTTOM_PANEL, lEnable.ToString);
-
-  if lEnable then
-    LoadSQLBottomPanel;
-end;
-
-procedure TfMonitor.CheckBoxAlwaysOnTopClick(Sender: TObject);
-var
-  lEnable: boolean;
-begin
-  lEnable := CheckBoxAlwaysOnTop.Checked;
-  SaveOption(sALWAYS_ON_TOP, lEnable.ToString);
-
-  Self.FormStyle := fsNormal;
-  if lEnable then
-    Self.FormStyle := fsStayOnTop;
+    for lStyle in lStringListStyles do
+      ComboBoxStyles.Items.Add(lStyle);
+  finally
+    lStringListStyles.Free;
+  end;
 end;
 
 procedure TfMonitor.CheckBoxAutoUpdateClick(Sender: TObject);
@@ -380,35 +346,6 @@ begin
   lEnable := CheckBoxAutoUpdate.Checked;
   TimerAutoUpdate.Enabled := lEnable;
   SaveOption(sAUTO_UPDATE_ENABLED, lEnable.ToString);
-end;
-
-procedure TfMonitor.CheckBoxIgnoreBasicLogClick(Sender: TObject);
-var
-  lEnable: boolean;
-begin
-  lEnable := CheckBoxIgnoreBasicLog.Checked;
-  SaveOption(sIGNORE_BASIC_LOG, lEnable.ToString);
-  LogViewer.IgnoreBasicLog := lEnable;
-  LogViewer.ReloadLog;
-end;
-
-procedure TfMonitor.CheckBoxHighlightErrorsClick(Sender: TObject);
-var
-  lEnable: boolean;
-begin
-  lEnable := CheckBoxHighlightErrors.Checked;
-  SaveOption(sHIGHLIGHT_ERRORS, lEnable.ToString);
-  AssignGridDrawEvent;
-end;
-
-procedure TfMonitor.CheckBoxShowOnlySQLClick(Sender: TObject);
-var
-  lEnable: boolean;
-begin
-  lEnable := CheckBoxShowOnlySQL.Checked;
-  SaveOption(sSHOW_ONLY_SQL, lEnable.ToString);
-  LogViewer.ShowOnlySQL := lEnable;
-  LogViewer.ReloadLog;
 end;
 
 procedure TfMonitor.ComboBoxStylesSelect(Sender: TObject);
@@ -534,7 +471,6 @@ begin
   LoadStylesList;
   LoadOptions;
   GetMostRecentLog;
-  AssignCheckBoxesEvents;
   AssignFilterEvents;
   AssignGridDrawEvent;
 end;
@@ -551,16 +487,19 @@ begin
     PageControl.ActivePage := TabSheetLog;
 
   if (Shift = [ssAlt]) and (Key = 50) then
-  PageControl.ActivePage := TabSheetSQL;
+    PageControl.ActivePage := TabSheetSQL;
 
   if (Shift = [ssAlt]) and (Key = 51) then
-  PageControl.ActivePage := TabSheetOptions;
+    PageControl.ActivePage := TabSheetOptions;
 end;
 
 procedure TfMonitor.SaveOption(const aKey: string; const aValue: string);
 var
   lOptions: TOptions;
 begin
+  if FLoadingOptionsAtStartup then
+    Exit;
+
   lOptions := TOptions.Create;
   try
     lOptions.SaveOption(aKey, aValue);
@@ -624,7 +563,61 @@ end;
 
 procedure TfMonitor.TimerAutoUpdateTimer(Sender: TObject);
 begin
-  LoadLog;
+  LoadLogAtTimer;
+end;
+
+procedure TfMonitor.ToggleSwitchHighlightErrorsClick(Sender: TObject);
+var
+  lEnable: boolean;
+begin
+  lEnable := ToggleSwitchHighlightErrors.IsOn;
+  SaveOption(sHIGHLIGHT_ERRORS, lEnable.ToString);
+  AssignGridDrawEvent;
+end;
+
+procedure TfMonitor.ToggleSwitchIgnoreBasicLogClick(Sender: TObject);
+var
+  lEnable: boolean;
+begin
+  lEnable := ToggleSwitchIgnoreBasicLog.IsOn;
+  SaveOption(sIGNORE_BASIC_LOG, lEnable.ToString);
+  LogViewer.IgnoreBasicLog := lEnable;
+  LogViewer.ReloadLog;
+end;
+
+procedure TfMonitor.ToggleSwitchShowBottomPanelClick(Sender: TObject);
+var
+  lEnable: boolean;
+begin
+  lEnable := ToggleSwitchShowBottomPanel.IsOn;
+  PanelSQL.Visible := lEnable;
+  Splitter.Visible := lEnable;
+  SaveOption(sSHOW_BOTTOM_PANEL, lEnable.ToString);
+
+  if lEnable then
+    LoadSQLBottomPanel;
+end;
+
+procedure TfMonitor.ToggleSwitchShowOnlySQLClick(Sender: TObject);
+var
+  lEnable: boolean;
+begin
+  lEnable := ToggleSwitchShowOnlySQL.IsOn;
+  SaveOption(sSHOW_ONLY_SQL, lEnable.ToString);
+  LogViewer.ShowOnlySQL := lEnable;
+  LogViewer.ReloadLog;
+end;
+
+procedure TfMonitor.ToggleSwitchStayOnTopClick(Sender: TObject);
+var
+  lEnable: boolean;
+begin
+  lEnable := ToggleSwitchStayOnTop.IsOn;
+  SaveOption(sSTAY_ON_TOP, lEnable.ToString);
+
+  Self.FormStyle := fsNormal;
+  if lEnable then
+    Self.FormStyle := fsStayOnTop;
 end;
 
 end.

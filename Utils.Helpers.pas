@@ -3,7 +3,7 @@ unit Utils.Helpers;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.IniFiles;
+  System.SysUtils, System.Classes, System.IniFiles, Vcl.WinXCtrls;
 
 type
   TIniFileHelper = class helper for TIniFile
@@ -17,6 +17,13 @@ type
 
   TStringListHelper = class helper for TStringList
     function Exists(const aValue: string): boolean;
+  end;
+
+  TToggleSwitchHelper = class helper for TToggleSwitch
+  private
+    procedure SetChecked(const aChecked: boolean);
+  public
+    property Checked: boolean write SetChecked;
   end;
 
 implementation
@@ -48,6 +55,19 @@ end;
 function TStringListHelper.Exists(const aValue: string): boolean;
 begin
   result := Self.IndexOf(aValue.ToUpper) >= 0;
+end;
+
+{ TToggleSwitchHelper }
+
+procedure TToggleSwitchHelper.SetChecked(const aChecked: boolean);
+begin
+  if aChecked then
+    Self.State := tssOn
+  else
+  begin
+    Self.State := tssOff;
+    Self.OnClick(Self);
+  end;
 end;
 
 end.

@@ -8,7 +8,7 @@ const
   sSHOW_ONLY_SQL = 'ShowOnlySQL';
   sHIGHLIGHT_ERRORS = 'HighlightErrors';
   sSHOW_BOTTOM_PANEL = 'ShowBottomPanel';
-  sALWAYS_ON_TOP = 'AlwaysOnTop';
+  sSTAY_ON_TOP = 'StayOnTop';
   sIGNORE_BASIC_LOG = 'IgnoreBasicLog';
 
   sDEFAULT_STYLE = 'Windows';

@@ -32,7 +32,7 @@ object fMonitor: TfMonitor
       Caption = 'Log'
       object Splitter: TSplitter
         Left = 0
-        Top = 401
+        Top = 386
         Width = 1191
         Height = 3
         Cursor = crVSplit
@@ -116,6 +116,7 @@ object fMonitor: TfMonitor
             Checked = True
             State = cbChecked
             TabOrder = 0
+            OnClick = CheckBoxAutoUpdateClick
           end
           object SpinEditInterval: TSpinEdit
             Left = 96
@@ -186,15 +187,16 @@ object fMonitor: TfMonitor
         Left = 0
         Top = 92
         Width = 1191
-        Height = 309
+        Height = 294
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 1
+        ExplicitHeight = 309
         object DBGrid: TDBGrid
           Left = 0
           Top = 0
           Width = 1191
-          Height = 309
+          Height = 294
           Align = alClient
           DataSource = DataSource
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -260,9 +262,9 @@ object fMonitor: TfMonitor
       end
       object PanelSQL: TPanel
         Left = 0
-        Top = 404
+        Top = 389
         Width = 1191
-        Height = 135
+        Height = 150
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 2
@@ -270,7 +272,7 @@ object fMonitor: TfMonitor
           Left = 0
           Top = 0
           Width = 1191
-          Height = 135
+          Height = 150
           Align = alClient
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -282,6 +284,7 @@ object fMonitor: TfMonitor
           ScrollBars = ssBoth
           TabOrder = 0
           OnKeyPress = MemoSQLKeyPress
+          ExplicitHeight = 135
         end
       end
     end
@@ -313,67 +316,71 @@ object fMonitor: TfMonitor
     end
     object TabSheetOptions: TTabSheet
       Caption = 'Op'#231#245'es'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBoxLog: TGroupBox
         Left = 18
         Top = 16
-        Width = 230
-        Height = 115
+        Width = 279
+        Height = 137
         Caption = 'Log: '
         TabOrder = 0
-        object CheckBoxShowOnlySQL: TCheckBox
+        object ToggleSwitchShowOnlySQL: TToggleSwitch
           Left = 8
-          Top = 22
-          Width = 189
-          Height = 17
-          Caption = 'Exibir somente logs do tipo "SQL"'
+          Top = 23
+          Width = 214
+          Height = 20
+          StateCaptions.CaptionOn = 'Exibir somente logs do tipo "SQL"'
+          StateCaptions.CaptionOff = 'Exibir somente logs do tipo "SQL"'
           TabOrder = 0
+          OnClick = ToggleSwitchShowOnlySQLClick
         end
-        object CheckBoxHighlightErrors: TCheckBox
+        object ToggleSwitchHighlightErrors: TToggleSwitch
           Left = 8
-          Top = 44
-          Width = 189
-          Height = 17
-          Caption = 'Destacar linhas de erros'
+          Top = 49
+          Width = 172
+          Height = 20
+          StateCaptions.CaptionOn = 'Destacar linhas de erros'
+          StateCaptions.CaptionOff = 'Destacar linhas de erros'
           TabOrder = 1
+          OnClick = ToggleSwitchHighlightErrorsClick
         end
-        object CheckBoxShowBottomPanel: TCheckBox
+        object ToggleSwitchShowBottomPanel: TToggleSwitch
           Left = 8
-          Top = 66
-          Width = 169
-          Height = 17
-          Caption = 'Exibir painel inferior com a SQL'
+          Top = 75
+          Width = 203
+          Height = 20
+          StateCaptions.CaptionOn = 'Exibir painel inferior com a SQL'
+          StateCaptions.CaptionOff = 'Exibir painel inferior com a SQL'
           TabOrder = 2
+          OnClick = ToggleSwitchShowBottomPanelClick
         end
-        object CheckBoxIgnoreBasicLog: TCheckBox
+        object ToggleSwitchIgnoreBasicLog: TToggleSwitch
           Left = 8
-          Top = 88
-          Width = 209
-          Height = 17
-          Caption = 'Ignorar logs da classe TfpgServidorDM'
+          Top = 101
+          Width = 241
+          Height = 20
+          StateCaptions.CaptionOn = 'Ignorar logs da classe TfpgServidorDM'
+          StateCaptions.CaptionOff = 'Ignorar logs da classe TfpgServidorDM'
           TabOrder = 3
+          OnClick = ToggleSwitchIgnoreBasicLogClick
         end
       end
       object GroupBoxVisual: TGroupBox
         Left = 18
-        Top = 153
-        Width = 230
-        Height = 107
+        Top = 170
+        Width = 279
+        Height = 119
         Caption = 'Visual: '
         TabOrder = 1
         object LabelStyle: TLabel
           Left = 8
-          Top = 56
+          Top = 64
           Width = 30
           Height = 13
           Caption = 'Tema:'
         end
         object ComboBoxStyles: TComboBox
           Left = 8
-          Top = 72
+          Top = 80
           Width = 189
           Height = 21
           Style = csDropDownList
@@ -381,17 +388,19 @@ object fMonitor: TfMonitor
           TabOrder = 0
           OnSelect = ComboBoxStylesSelect
         end
-        object CheckBoxAlwaysOnTop: TCheckBox
+        object ToggleSwitchStayOnTop: TToggleSwitch
           Left = 8
-          Top = 24
-          Width = 199
-          Height = 17
-          Caption = 'Manter na frente de outras janelas'
+          Top = 30
+          Width = 224
+          Height = 20
+          StateCaptions.CaptionOn = 'Manter na frente de outras janelas'
+          StateCaptions.CaptionOff = 'Manter na frente de outras janelas'
           TabOrder = 1
+          OnClick = ToggleSwitchStayOnTopClick
         end
       end
       object GroupBoxShortCuts: TGroupBox
-        Left = 264
+        Left = 311
         Top = 16
         Width = 217
         Height = 201
