@@ -54,6 +54,7 @@ type
     procedure LoadLog;
     procedure ReloadLog;
     procedure RemoveFilter;
+    procedure ResetCounter;
     procedure SetLogFilter(const aFilter: string);
 
     // properties
@@ -251,6 +252,7 @@ begin
   finally
     Self.AfterScroll := lOriginalAfterScroll;
     Self.EnableControls;
+    Self.Last;
   end;
   FCounter := FStringListFile.Count;
 end;
@@ -267,6 +269,11 @@ begin
   Self.Filter := EmptyStr;
   Self.Filtered := False;
   Self.Last;
+end;
+
+procedure TFDLogViewer.ResetCounter;
+begin
+  FCounter := 0;
 end;
 
 procedure TFDLogViewer.SetLogFilter(const aFilter: string);

@@ -496,6 +496,7 @@ begin
   lParamsSection := Copy(aSQL, aParamsPosition, Length(aSQL) - aParamsPosition + 1);
 
   lOffSet := Pos('[', lParamsSection);
+  FStringListParameters.Clear;
   while Pos('[', lParamsSection, lOffSet) > 0 do
   begin
     lStartPosition := Pos('[', lParamsSection, lOffSet);

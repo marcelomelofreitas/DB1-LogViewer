@@ -15,7 +15,7 @@ uses
   Vcl.Bind.Editors, Data.Bind.Components, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Component.FDLogViewer,
-  Vcl.WinXCtrls;
+  Vcl.WinXCtrls, FireDAC.Phys.Intf, FireDAC.DApt.Intf, System.ImageList, Vcl.ImgList, Vcl.ToolWin;
 
 type
   TfMonitor = class(TForm)
@@ -121,6 +121,7 @@ type
     function FormatSQL: string;
     function GetFieldName(aComponent: TEdit): string;
     function IsFileNameValid: boolean;
+    function IsContentValid: boolean;
     function OpenFile: string;
 
     // private procedures
@@ -149,7 +150,7 @@ implementation
 
 uses
   VCL.Themes, ClipBrd, Utils.Options, Utils.Constants, Utils.Helpers,
-  View.Loading;
+  View.Loading, System.UITypes;
 
 {$R *.dfm}
 
@@ -160,7 +161,7 @@ begin
   lOpenDialog := TOpenDialog.Create(nil);
   try
     lOpenDialog.InitialDir := 'Q:\bin';
-    lOpenDialog.Filter := 'Log de métodos do servidor|spLogMetodoServidor*.txt';
+    lOpenDialog.Filter := 'Log de métodos do servidor|spLogMetodoServidor*.txt|Arquivos TXT|*.txt';
     lOpenDialog.DefaultExt := 'txt';
 
     if not lOpenDialog.Execute then
@@ -183,6 +184,7 @@ begin
     Exit;
 
   EditFileName.Text := lFileName.Trim;
+  LogViewer.ResetCounter;
   LoadLog;
 end;
 
@@ -247,6 +249,9 @@ var
   fLoading: TfLoading;
 begin
   if not IsFileNameValid then
+    Exit;
+
+  if not IsContentValid then
     Exit;
 
   TimerAutoUpdate.Enabled := False;
@@ -426,6 +431,27 @@ begin
   LabelRecordInfo.Caption := LogViewer.GetRecordCounter;
 end;
 
+function TfMonitor.IsContentValid: boolean;
+var
+  lStreamReader : TStreamReader;
+  lStringListFile: TStringList;
+begin
+  lStreamReader := TStreamReader.Create(EditFileName.Text, TEncoding.ANSI);
+  lStringListFile := TStringList.Create;
+  try
+    lStringListFile.Delimiter := ';';
+    lStringListFile.StrictDelimiter := True;
+    lStringListFile.DelimitedText := lStreamReader.ReadLine;
+    result := lStringListFile.Count = 16;
+
+    if not result then
+      MessageDlg('Arquivo de log inválido.', mtWarning, [mbOK], 0);
+  finally
+    lStringListFile.Free;
+    lStreamReader.Free;
+  end;
+end;
+
 function TfMonitor.IsFileNameValid: boolean;
 begin
   result := False;
@@ -582,7 +608,8 @@ begin
   lEnable := ToggleSwitchIgnoreBasicLog.IsOn;
   SaveOption(sIGNORE_BASIC_LOG, lEnable.ToString);
   LogViewer.IgnoreBasicLog := lEnable;
-  LogViewer.ReloadLog;
+  LogViewer.ResetCounter;
+  LoadLog;
 end;
 
 procedure TfMonitor.ToggleSwitchShowBottomPanelClick(Sender: TObject);
@@ -605,7 +632,8 @@ begin
   lEnable := ToggleSwitchShowOnlySQL.IsOn;
   SaveOption(sSHOW_ONLY_SQL, lEnable.ToString);
   LogViewer.ShowOnlySQL := lEnable;
-  LogViewer.ReloadLog;
+  LogViewer.ResetCounter;
+  LoadLog;
 end;
 
 procedure TfMonitor.ToggleSwitchStayOnTopClick(Sender: TObject);

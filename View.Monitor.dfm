@@ -47,7 +47,7 @@ object fMonitor: TfMonitor
         Height = 92
         Align = alTop
         BevelOuter = bvNone
-        TabOrder = 0
+        TabOrder = 1
         DesignSize = (
           1191
           92)
@@ -190,8 +190,7 @@ object fMonitor: TfMonitor
         Height = 294
         Align = alClient
         BevelOuter = bvNone
-        TabOrder = 1
-        ExplicitHeight = 309
+        TabOrder = 0
         object DBGrid: TDBGrid
           Left = 0
           Top = 0
@@ -284,7 +283,6 @@ object fMonitor: TfMonitor
           ScrollBars = ssBoth
           TabOrder = 0
           OnKeyPress = MemoSQLKeyPress
-          ExplicitHeight = 135
         end
       end
     end
@@ -292,10 +290,6 @@ object fMonitor: TfMonitor
       Caption = 'SQL'
       ImageIndex = 2
       OnEnter = TabSheetSQLEnter
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object MemoSQLTab: TMemo
         Left = 0
         Top = 0
