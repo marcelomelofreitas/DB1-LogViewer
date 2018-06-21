@@ -445,7 +445,10 @@ begin
     result := lStringListFile.Count = 16;
 
     if not result then
+    begin
+      LogViewer.EmptyDataSet;
       MessageDlg('Arquivo de log inválido.', mtWarning, [mbOK], 0);
+    end;
   finally
     lStringListFile.Free;
     lStreamReader.Free;
