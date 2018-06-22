@@ -591,15 +591,15 @@ object fMonitor: TfMonitor
   object PopupMenu: TPopupMenu
     Left = 1070
     Top = 371
-    object MenuItemCopyColumnValue: TMenuItem
-      Caption = 'Copiar Coluna'
-      ShortCut = 16451
-      OnClick = MenuItemCopyColumnValueClick
-    end
     object MenuItemCopySQL: TMenuItem
       Caption = 'Copiar SQL'
-      ShortCut = 16465
+      ShortCut = 16451
       OnClick = MenuItemCopySQLClick
+    end
+    object MenuItemCopyColumnValue: TMenuItem
+      Caption = 'Copiar Coluna'
+      ShortCut = 16465
+      OnClick = MenuItemCopyColumnValueClick
     end
   end
   object ImageList: TImageList

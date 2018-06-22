@@ -433,25 +433,34 @@ end;
 
 function TfMonitor.IsContentValid: boolean;
 var
-  lStreamReader : TStreamReader;
+  lFileStream: TFileStream;
   lStringListFile: TStringList;
+  lStringListLine: TStringList;
 begin
-  lStreamReader := TStreamReader.Create(EditFileName.Text, TEncoding.ANSI);
+  lFileStream := TFileStream.Create(EditFileName.Text, fmOpenRead or fmShareDenyNone);
   lStringListFile := TStringList.Create;
+  lStringListLine := TStringList.Create;
   try
-    lStringListFile.Delimiter := ';';
-    lStringListFile.StrictDelimiter := True;
-    lStringListFile.DelimitedText := lStreamReader.ReadLine;
-    result := lStringListFile.Count = 16;
+    lStringListFile.LoadFromStream(lFileStream);
 
-    if not result then
-    begin
-      LogViewer.EmptyDataSet;
-      MessageDlg('Arquivo de log inválido.', mtWarning, [mbOK], 0);
-    end;
+    lStringListLine.Delimiter := ';';
+    lStringListLine.StrictDelimiter := True;
+    lStringListLine.DelimitedText := lStringListFile[0];
+    result := lStringListLine.Count = 16;
   finally
+    lStringListLine.Free;
     lStringListFile.Free;
-    lStreamReader.Free;
+    lFileStream.Free;
+  end;
+
+  if not result then
+  begin
+    LogViewer.EmptyDataSet;
+    MemoSQL.Lines.Clear;
+    EditFileName.Clear;
+    LabelRecordInfo.Caption := EmptyStr;
+
+    MessageDlg('Arquivo de log inválido.', mtWarning, [mbOK], 0);
   end;
 end;
 
