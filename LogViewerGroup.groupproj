@@ -3,10 +3,10 @@
         <ProjectGuid>{95510D5B-C6FF-4FF6-8E15-442B5DD94BF2}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="Componente\LogViewerPackage.dproj">
+        <Projects Include="Package\LogViewerPackage.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="LogViewer.dproj">
+        <Projects Include="Viewer\LogViewer.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -18,22 +18,22 @@
         </BorlandProject>
     </ProjectExtensions>
     <Target Name="LogViewerPackage">
-        <MSBuild Projects="Componente\LogViewerPackage.dproj"/>
+        <MSBuild Projects="Package\LogViewerPackage.dproj"/>
     </Target>
     <Target Name="LogViewerPackage:Clean">
-        <MSBuild Projects="Componente\LogViewerPackage.dproj" Targets="Clean"/>
+        <MSBuild Projects="Package\LogViewerPackage.dproj" Targets="Clean"/>
     </Target>
     <Target Name="LogViewerPackage:Make">
-        <MSBuild Projects="Componente\LogViewerPackage.dproj" Targets="Make"/>
+        <MSBuild Projects="Package\LogViewerPackage.dproj" Targets="Make"/>
     </Target>
     <Target Name="LogViewer">
-        <MSBuild Projects="LogViewer.dproj"/>
+        <MSBuild Projects="Viewer\LogViewer.dproj"/>
     </Target>
     <Target Name="LogViewer:Clean">
-        <MSBuild Projects="LogViewer.dproj" Targets="Clean"/>
+        <MSBuild Projects="Viewer\LogViewer.dproj" Targets="Clean"/>
     </Target>
     <Target Name="LogViewer:Make">
-        <MSBuild Projects="LogViewer.dproj" Targets="Make"/>
+        <MSBuild Projects="Viewer\LogViewer.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
         <CallTarget Targets="LogViewerPackage;LogViewer"/>
