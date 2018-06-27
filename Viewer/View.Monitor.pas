@@ -16,7 +16,7 @@ uses
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Component.FDLogViewer,
   Vcl.WinXCtrls, FireDAC.Phys.Intf, FireDAC.DApt.Intf, System.ImageList, Vcl.ImgList, Vcl.ToolWin,
-  Component.RichEditSQL;
+  Component.RichEditSQL, FireDAC.Stan.StorageBin;
 
 type
   TfMonitor = class(TForm)
@@ -30,15 +30,10 @@ type
     BindingsList: TBindingsList;
     CheckBoxAutoUpdate: TCheckBox;
     ComboBoxStyles: TComboBox;
-    ComboBoxType: TComboBox;
     DataSource: TDataSource;
     DBGrid: TDBGrid;
     EditFileName: TEdit;
-    EditFilterClass: TEdit;
-    EditFilterMethod: TEdit;
-    EditFilterSQL: TEdit;
     GroupBoxAutoUpdate: TGroupBox;
-    GroupBoxFilters: TGroupBox;
     GroupBoxLog: TGroupBox;
     GroupBoxShortCuts: TGroupBox;
     GroupBoxVisual: TGroupBox;
@@ -86,14 +81,23 @@ type
     ToggleSwitchAutoFormatSQL: TToggleSwitch;
     LabelAutoFormatInfo: TLabel;
     LabelIgnoreBasicLogInfo: TLabel;
-    RichEditSQLPanel: TRichEditSQL;
     RichEditSQLTab: TRichEditSQL;
+    DBGridFilter: TDBGrid;
+    DataSourceFilter: TDataSource;
+    FDMemTableFilter: TFDMemTable;
+    FDMemTableFilterType: TStringField;
+    FDMemTableFilterDatabase: TStringField;
+    FDMemTableFilterUser: TStringField;
+    FDMemTableFilterIP: TStringField;
+    FDMemTableFilterClass: TStringField;
+    FDMemTableFilterMethod: TStringField;
+    FDMemTableFilterDateTime: TStringField;
+    RichEditSQLPanel: TRichEditSQL;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
     procedure CheckBoxAutoUpdateClick(Sender: TObject);
     procedure ComboBoxStylesSelect(Sender: TObject);
-    procedure ComboBoxTypeChange(Sender: TObject);
     procedure DBGridDblClick(Sender: TObject);
     procedure DBGridKeyPress(Sender: TObject; var Key: Char);
     procedure FormCreate(Sender: TObject);
@@ -111,6 +115,9 @@ type
     procedure LabelAutoFormatInfoClick(Sender: TObject);
     procedure LabelIgnoreBasicLogInfoClick(Sender: TObject);
     procedure ToggleSwitchAutoFormatSQLClick(Sender: TObject);
+    procedure DBGridFilterKeyPress(Sender: TObject; var Key: Char);
+    procedure DBGridFilterColEnter(Sender: TObject);
+    procedure DBGridFilterKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     // class fields
     FLoadingOptionsAtStartup: boolean;
@@ -118,20 +125,16 @@ type
     // event handlers
     procedure OnDrawColumnCellHighlight(Sender: TObject; const Rect: TRect; DataCol: Integer;
       Column: TColumn; State: TGridDrawState);
-    procedure OnKeyPressFilterComponents(Sender: TObject; var Key: Char);
 
     // private functions
-    function GetFieldName(aComponent: TEdit): string;
     function IsFileNameValid: boolean;
     function IsContentValid: boolean;
     function OpenFile: string;
 
     // private procedures
-    procedure AssignFilterEvents;
     procedure AssignGridDrawEvent;
-    procedure ClearFilterComponents(aComponent: TEdit);
+    procedure BuildFilter;
     procedure CopyColumnValue;
-    procedure FilterRecords(const aFieldName, aValue: string);
     procedure GetMostRecentLog;
     procedure LoadLog;
     procedure LoadLogAtTimer;
@@ -139,6 +142,7 @@ type
     procedure LoadSelectedStyle(const aSelectedStyle: string);
     procedure LoadSQLBottomPanel;
     procedure LoadStylesList;
+    procedure LoadTypePickList;
     procedure ManageTimer;
     procedure OpenSQLTab;
     procedure SaveOption(const aKey: string; const aValue: string);
@@ -209,11 +213,31 @@ begin
     DBGrid.OnDrawColumnCell := OnDrawColumnCellHighlight;
 end;
 
-procedure TfMonitor.AssignFilterEvents;
+procedure TfMonitor.BuildFilter;
+var
+  lBuilderFilter: TStringBuilder;
+  lField: TField;
 begin
-  EditFilterClass.OnKeyPress := OnKeyPressFilterComponents;
-  EditFilterMethod.OnKeyPress := OnKeyPressFilterComponents;
-  EditFilterSQL.OnKeyPress := OnKeyPressFilterComponents;
+  lBuilderFilter := TStringBuilder.Create;
+  try
+    lBuilderFilter.Append('1 = 1');
+
+    for lField in FDMemTableFilter.Fields do
+    begin
+      if not lField.AsString.IsEmpty then
+      begin
+        lBuilderFilter
+          .Append(' and ')
+          .Append(lField.FieldName)
+          .Append(' like ')
+          .Append(QuotedStr('%' + lField.AsString + '%'));
+      end;
+    end;
+
+    LogViewer.SetLogFilter(lBuilderFilter.ToString);
+  finally
+    lBuilderFilter.Free;
+  end;
 end;
 
 procedure TfMonitor.OpenSQLTab;
@@ -391,6 +415,17 @@ begin
   end;
 end;
 
+procedure TfMonitor.LoadTypePickList;
+var
+  lTypeColumn: TColumn;
+begin
+  lTypeColumn := DBGridFilter.Columns[0];
+  lTypeColumn.PickList.Add('ENTRADA');
+  lTypeColumn.PickList.Add('AVISO');
+  lTypeColumn.PickList.Add('SAIDA');
+  lTypeColumn.PickList.Add('SQL');
+end;
+
 procedure TfMonitor.CheckBoxAutoUpdateClick(Sender: TObject);
 var
   lEnable: boolean;
@@ -404,17 +439,6 @@ procedure TfMonitor.ComboBoxStylesSelect(Sender: TObject);
 begin
   TStyleManager.SetStyle(ComboBoxStyles.Text);
   SaveOption(sSELECTED_STYLE, ComboBoxStyles.Text);
-end;
-
-procedure TfMonitor.ComboBoxTypeChange(Sender: TObject);
-var
-  lValue: string;
-begin
-  lValue := EmptyStr;
-  if ComboBoxType.ItemIndex > 0 then
-    lValue := ComboBoxType.Text;
-
-  FilterRecords('Type', lValue);
 end;
 
 procedure TfMonitor.ManageTimer;
@@ -436,25 +460,35 @@ begin
   OpenSQLTab;
 end;
 
+procedure TfMonitor.DBGridFilterColEnter(Sender: TObject);
+begin
+  if DBGridFilter.SelectedField.FieldName.ToUpper.Equals('TYPE') then
+    DBGridFilter.EditorMode := True;
+end;
+
+procedure TfMonitor.DBGridFilterKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_DELETE then
+  begin
+    FDMemTableFilter.Edit;
+    DBGridFilter.SelectedField.Clear;
+    FDMemTableFilter.Post;
+    BuildFilter;
+  end;
+end;
+
+procedure TfMonitor.DBGridFilterKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #13 then
+  begin
+    BuildFilter;
+  end;
+end;
+
 procedure TfMonitor.DBGridKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = #13 then
     OpenSQLTab;
-end;
-
-procedure TfMonitor.OnKeyPressFilterComponents(Sender: TObject; var Key: Char);
-var
-  lComponent: TEdit;
-  lFieldName: string;
-begin
-  if Key = #13 then
-  begin
-    Key := #0;
-    lComponent := (Sender as TEdit);
-    lFieldName := GetFieldName(lComponent);
-    ClearFilterComponents(lComponent);
-    FilterRecords(lFieldName, lComponent.Text);
-   end;
 end;
 
 procedure TfMonitor.OnDrawColumnCellHighlight(Sender: TObject; const Rect: TRect; DataCol: Integer;
@@ -524,33 +558,12 @@ begin
   result := True;
 end;
 
-procedure TfMonitor.FilterRecords(const aFieldName, aValue: string);
-var
-  lFilter: string;
-  lValue: string;
-begin
-  if aValue.IsEmpty then
-  begin
-    LogViewer.RemoveFilter;
-    Exit;
-  end;
-
-  lFilter := EmptyStr;
-  if aFieldName = 'SQL' then
-    lFilter := Format('Type = %s AND ', [aFieldName.QuotedString]);
-
-  lValue := '%' + aValue + '%';
-  lFilter := lFilter.Format('%s like %s', [aFieldName, lValue.QuotedString]);
-
-  LogViewer.SetLogFilter(lFilter);
-end;
-
 procedure TfMonitor.FormCreate(Sender: TObject);
 begin
   LoadStylesList;
   LoadOptions;
+  LoadTypePickList;
   GetMostRecentLog;
-  AssignFilterEvents;
   AssignGridDrawEvent;
 end;
 
@@ -582,20 +595,6 @@ begin
   end;
 end;
 
-procedure TfMonitor.ClearFilterComponents(aComponent: TEdit);
-begin
-  ComboBoxType.ItemIndex := 0;
-
-  if EditFilterClass.Name <> aComponent.Name then
-    EditFilterClass.Clear;
-
-  if EditFilterMethod.Name <> aComponent.Name then
-    EditFilterMethod.Clear;
-
-  if EditFilterSQL.Name <> aComponent.Name then
-    EditFilterSQL.Clear;
-end;
-
 procedure TfMonitor.LogViewerAfterScroll(DataSet: TDataSet);
 begin
   ShowRecordInfo;
@@ -614,11 +613,6 @@ begin
   Clipboard.AsText := RichEditSQLTab.Lines.Text;
 end;
 
-function TfMonitor.GetFieldName(aComponent: TEdit): string;
-begin
-  result := StringReplace(aComponent.Name, 'EditFilter', EmptyStr, []);
-end;
-
 procedure TfMonitor.TabSheetSQLEnter(Sender: TObject);
 begin
   if LogViewer.IsSQLEmpty then
@@ -626,7 +620,7 @@ begin
 
   RichEditSQLTab.Lines.Text := LogViewer.GetSQL;
   RichEditSQLTab.FormatSQL;
-  //RichEditSQLTab.HightlightSQL;
+  RichEditSQLTab.HightlightSQL;
 end;
 
 procedure TfMonitor.TimerAutoUpdateTimer(Sender: TObject);

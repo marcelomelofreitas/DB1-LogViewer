@@ -33,7 +33,7 @@ const
 implementation
 
 uses
-  System.SysUtils, VCL.Graphics;
+  System.SysUtils, VCL.Graphics, Winapi.Messages;
 
 { TSQLHighlighter }
 

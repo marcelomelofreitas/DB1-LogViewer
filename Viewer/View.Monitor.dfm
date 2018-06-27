@@ -128,59 +128,6 @@ object fMonitor: TfMonitor
             Value = 1
           end
         end
-        object GroupBoxFilters: TGroupBox
-          Left = 546
-          Top = 3
-          Width = 517
-          Height = 81
-          Caption = 'Filtros: '
-          TabOrder = 3
-          object EditFilterClass: TEdit
-            Left = 14
-            Top = 50
-            Width = 200
-            Height = 21
-            MaxLength = 200
-            TabOrder = 1
-            TextHint = 'Classe'
-          end
-          object ComboBoxType: TComboBox
-            Left = 14
-            Top = 23
-            Width = 100
-            Height = 21
-            Style = csDropDownList
-            ItemIndex = 0
-            TabOrder = 0
-            Text = '[Todos]'
-            TextHint = 'Tipo'
-            OnChange = ComboBoxTypeChange
-            Items.Strings = (
-              '[Todos]'
-              'ENTRADA'
-              'SAIDA'
-              'AVISO'
-              'SQL')
-          end
-          object EditFilterMethod: TEdit
-            Left = 222
-            Top = 22
-            Width = 283
-            Height = 21
-            MaxLength = 200
-            TabOrder = 2
-            TextHint = 'M'#233'todo'
-          end
-          object EditFilterSQL: TEdit
-            Left = 222
-            Top = 50
-            Width = 283
-            Height = 21
-            MaxLength = 200
-            TabOrder = 3
-            TextHint = 'SQL'
-          end
-        end
       end
       object PanelGrid: TPanel
         Left = 0
@@ -192,12 +139,12 @@ object fMonitor: TfMonitor
         TabOrder = 0
         object DBGrid: TDBGrid
           Left = 0
-          Top = 0
+          Top = 39
           Width = 1191
-          Height = 294
+          Height = 255
           Align = alClient
           DataSource = DataSource
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+          Options = [dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           PopupMenu = PopupMenu
           ReadOnly = True
           TabOrder = 0
@@ -208,6 +155,73 @@ object fMonitor: TfMonitor
           TitleFont.Style = []
           OnDblClick = DBGridDblClick
           OnKeyPress = DBGridKeyPress
+          Columns = <
+            item
+              Expanded = False
+              FieldName = 'Type'
+              Title.Caption = 'Tipo'
+              Width = 70
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'Database'
+              Title.Caption = 'Base'
+              Width = 70
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'User'
+              Title.Caption = 'Usu'#225'rio'
+              Width = 140
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'IP'
+              Width = 110
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'DateTime'
+              Title.Caption = 'Data/Hora'
+              Width = 130
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'Class'
+              Width = 180
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'Method'
+              Title.Caption = 'M'#233'todo'
+              Width = 420
+              Visible = True
+            end>
+        end
+        object DBGridFilter: TDBGrid
+          Left = 0
+          Top = 0
+          Width = 1191
+          Height = 39
+          Align = alTop
+          DataSource = DataSourceFilter
+          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+          PopupMenu = PopupMenu
+          TabOrder = 1
+          TitleFont.Charset = DEFAULT_CHARSET
+          TitleFont.Color = clWindowText
+          TitleFont.Height = -11
+          TitleFont.Name = 'Tahoma'
+          TitleFont.Style = []
+          OnColEnter = DBGridFilterColEnter
+          OnKeyDown = DBGridFilterKeyDown
+          OnKeyPress = DBGridFilterKeyPress
           Columns = <
             item
               Expanded = False
@@ -278,10 +292,13 @@ object fMonitor: TfMonitor
           Font.Name = 'Courier New'
           Font.Style = []
           ParentFont = False
-          ScrollBars = ssVertical
           TabOrder = 0
-          StyleElements = [seClient, seBorder]
+          StyleElements = [seBorder]
           Zoom = 100
+          ExplicitLeft = 504
+          ExplicitTop = 32
+          ExplicitWidth = 185
+          ExplicitHeight = 89
         end
       end
     end
@@ -289,10 +306,6 @@ object fMonitor: TfMonitor
       Caption = 'SQL'
       ImageIndex = 2
       OnEnter = TabSheetSQLEnter
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RichEditSQLTab: TRichEditSQL
         Left = 0
         Top = 0
@@ -313,10 +326,6 @@ object fMonitor: TfMonitor
     end
     object TabSheetOptions: TTabSheet
       Caption = 'Op'#231#245'es'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBoxLog: TGroupBox
         Left = 18
         Top = 16
@@ -1333,5 +1342,95 @@ object fMonitor: TfMonitor
     StoreDefs = True
     Left = 1010
     Top = 371
+  end
+  object DataSourceFilter: TDataSource
+    DataSet = FDMemTableFilter
+    Left = 970
+    Top = 276
+  end
+  object FDMemTableFilter: TFDMemTable
+    Active = True
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvPersistent, rvSilentMode]
+    ResourceOptions.Persistent = True
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    Left = 998
+    Top = 276
+    Content = {
+      414442530F006F3A10030000FF00010001FF02FF03040020000000460044004D
+      0065006D005400610062006C006500460069006C0074006500720005000A0000
+      005400610062006C006500060000000000070000080032000000090000FF0AFF
+      0B040008000000540079007000650005000800000054007900700065000C0001
+      0000000E000D000F000A00000010000111000112000113000114000115000116
+      0008000000540079007000650017000A000000FEFF0B04001000000044006100
+      7400610062006100730065000500100000004400610074006100620061007300
+      65000C00020000000E000D000F00140000001000011100011200011300011400
+      0115000116001000000044006100740061006200610073006500170014000000
+      FEFF0B040008000000550073006500720005000800000055007300650072000C
+      00030000000E000D000F00320000001000011100011200011300011400011500
+      011600080000005500730065007200170032000000FEFF0B0400040000004900
+      5000050004000000490050000C00040000000E000D000F001400000010000111
+      000112000113000114000115000116000400000049005000170014000000FEFF
+      0B04000A00000043006C0061007300730005000A00000043006C006100730073
+      000C00050000000E000D000F0064000000100001110001120001130001140001
+      15000116000A00000043006C00610073007300170064000000FEFF0B04000C00
+      00004D006500740068006F00640005000C0000004D006500740068006F006400
+      0C00060000000E000D000F006400000010000111000112000113000114000115
+      000116000C0000004D006500740068006F006400170064000000FEFF0B040010
+      0000004400610074006500540069006D00650005001000000044006100740065
+      00540069006D0065000C00070000000E000D000F001400000010000111000112
+      00011300011400011500011600100000004400610074006500540069006D0065
+      00170014000000FEFEFF18FEFF19FEFF1AFF1B1C0000000000FF1DFEFEFEFEFE
+      FF1EFEFF1F200002000000FF21FEFEFE0E004D0061006E006100670065007200
+      1E00550070006400610074006500730052006500670069007300740072007900
+      12005400610062006C0065004C006900730074000A005400610062006C006500
+      08004E0061006D006500140053006F0075007200630065004E0061006D006500
+      0A0054006100620049004400240045006E0066006F0072006300650043006F00
+      6E00730074007200610069006E00740073001E004D0069006E0069006D007500
+      6D0043006100700061006300690074007900180043006800650063006B004E00
+      6F0074004E0075006C006C00140043006F006C0075006D006E004C0069007300
+      74000C0043006F006C0075006D006E00100053006F0075007200630065004900
+      440018006400740041006E007300690053007400720069006E00670010004400
+      61007400610054007900700065000800530069007A0065001400530065006100
+      720063006800610062006C006500120041006C006C006F0077004E0075006C00
+      6C000800420061007300650014004F0041006C006C006F0077004E0075006C00
+      6C0012004F0049006E0055007000640061007400650010004F0049006E005700
+      68006500720065001A004F0072006900670069006E0043006F006C004E006100
+      6D006500140053006F007500720063006500530069007A0065001C0043006F00
+      6E00730074007200610069006E0074004C006900730074001000560069006500
+      77004C006900730074000E0052006F0077004C00690073007400060052006F00
+      77000A0052006F0077004900440010004F0072006900670069006E0061006C00
+      1800520065006C006100740069006F006E004C006900730074001C0055007000
+      640061007400650073004A006F00750072006E0061006C001200530061007600
+      650050006F0069006E0074000E004300680061006E00670065007300}
+    object FDMemTableFilterType: TStringField
+      FieldName = 'Type'
+      Size = 10
+    end
+    object FDMemTableFilterDatabase: TStringField
+      FieldName = 'Database'
+    end
+    object FDMemTableFilterUser: TStringField
+      FieldName = 'User'
+      Size = 50
+    end
+    object FDMemTableFilterIP: TStringField
+      FieldName = 'IP'
+    end
+    object FDMemTableFilterClass: TStringField
+      FieldName = 'Class'
+      Size = 100
+    end
+    object FDMemTableFilterMethod: TStringField
+      FieldName = 'Method'
+      Size = 100
+    end
+    object FDMemTableFilterDateTime: TStringField
+      FieldName = 'DateTime'
+    end
   end
 end
