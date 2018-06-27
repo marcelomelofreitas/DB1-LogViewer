@@ -3,11 +3,12 @@ unit SQL.Formatter;
 interface
 
 uses
-  System.SysUtils, System.Classes;
+  System.SysUtils, System.Classes, Vcl.ComCtrls;
 
 type
   TSQLFormatter = class
   private
+    FRichEdit: TRichEdit;
     FStringListClauses: TStringList;
     FStringListJoins: TStringList;
     FStringListOperators: TStringList;
@@ -49,11 +50,11 @@ type
     procedure ProcessCommand(const aSQL, aValue: string; var aTokenPosition: smallint;
       aBuilder: TStringBuilder);
   public
-    constructor Create;
+    constructor Create(aRichEdit: TRichEdit);
     destructor Destroy; override;
 
     // main function
-    function FormatSQL(const aSQL: string): string;
+    procedure FormatSQL;
   end;
 
 implementation
@@ -318,8 +319,9 @@ begin
   end;
 end;
 
-constructor TSQLFormatter.Create;
+constructor TSQLFormatter.Create(aRichEdit: TRichEdit);
 begin
+  FRichEdit := aRichEdit;
   CreateInternalObjects;
   InitializeStringLists;
 end;
@@ -364,14 +366,14 @@ begin
   result := QuotedStr(FormatDateTime('dd/mm/yyyy hh:nn:ss', aDate));
 end;
 
-function TSQLFormatter.FormatSQL(const aSQL: string): string;
+procedure TSQLFormatter.FormatSQL;
 var
   lPreparedSQL: string;
 begin
   FMarginLevel := 0;
-  lPreparedSQL := ProcessParameters(aSQL);
+  lPreparedSQL := ProcessParameters(FRichEdit.Lines.Text);
   lPreparedSQL := PrepareSQL(lPreparedSQL);
-  result := IdentSQL(lPreparedSQL);
+  FRichEdit.Lines.Text := IdentSQL(lPreparedSQL);
 end;
 
 function TSQLFormatter.IdentSQL(const aPreparedSQL: string): string;

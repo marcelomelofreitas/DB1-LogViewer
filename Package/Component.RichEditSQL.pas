@@ -33,7 +33,7 @@ end;
 constructor TRichEditSQL.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FSQLFormatter := TSQLFormatter.Create;
+  FSQLFormatter := TSQLFormatter.Create(Self);
   FSQLHighlighter := TSQLHighlighter.Create(Self);
 end;
 
@@ -46,8 +46,7 @@ end;
 
 procedure TRichEditSQL.FormatSQL;
 begin
-  Self.Lines.Text := FSQLFormatter.FormatSQL(Self.Lines.Text);
-  FSQLHighlighter.HighlightSQL;
+  FSQLFormatter.FormatSQL;
 end;
 
 procedure TRichEditSQL.HightlightSQL;

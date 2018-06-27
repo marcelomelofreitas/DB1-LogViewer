@@ -9,17 +9,31 @@ type
   TSQLHighlighter = class
   private
     FRichEdit: TRichEdit;
+
+    // private functions
     procedure HighlightKeyword(const aKeyword: string);
     procedure HighlightValues;
   public
     constructor Create(aRichEdit: TRichEdit);
+
+    // main function
     procedure HighlightSQL;
   end;
+
+const
+  Commands: array[0..33] of string =
+  (
+    'SELECT', 'UPDATE', 'DELETE', 'INSERT', 'INTO', 'SET',
+    'FROM', 'WHERE', 'AND', 'OR', 'ON', 'GROUP', 'ORDER', 'BY', 'AS',
+    'JOIN', 'INNER', 'OUTER', 'LEFT', 'RIGHT', 'UNION',
+    'CAST', 'CONVERT', 'CASE', 'SUM', 'COUNT', 'MIN', 'MAX',
+    'IS', 'NOT', 'NULL', 'LIKE', 'TOP', 'DISTINCT'
+   );
 
 implementation
 
 uses
-  System.SysUtils, VCL.Graphics, Utils.Constants;
+  System.SysUtils, VCL.Graphics;
 
 { TSQLHighlighter }
 
@@ -29,21 +43,13 @@ begin
 end;
 
 procedure TSQLHighlighter.HighlightSQL;
+var
+  Count: byte;
 begin
-  HighlightKeyword('SELECT');
-  HighlightKeyword('FROM');
-  HighlightKeyword('WHERE');
-  HighlightKeyword('AND');
-  HighlightKeyword('OR');
-  HighlightKeyword('ON');
-  HighlightKeyword('JOIN');
-  HighlightKeyword('INNER');
-  HighlightKeyword('OUTER');
-  HighlightKeyword('LEFT');
-  HighlightKeyword('RIGHT');
-  HighlightKeyword('CASE');
-  HighlightKeyword('CAST');
-  HighlightKeyword('CONVERT');
+  for Count := 0 to High(Commands) do
+  begin
+    HighlightKeyword(Commands[Count]);
+  end;
 
   HighlightValues;
 
@@ -69,8 +75,6 @@ var
   end;
 
 begin
-  lEndPosition := 0;
-
   lStartPosition := GetStartPosition(0);
   lEndPosition := GetEndPosition;
   while lStartPosition <> -1 do

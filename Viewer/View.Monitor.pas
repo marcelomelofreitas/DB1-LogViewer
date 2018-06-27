@@ -366,9 +366,9 @@ begin
   RichEditSQLPanel.Lines.Text := LogViewer.GetSQL;
 
   if ToggleSwitchAutoFormatSQL.IsOn then
-    RichEditSQLPanel.FormatSQL
-  else
-    RichEditSQLPanel.HightlightSQL;
+    RichEditSQLPanel.FormatSQL;
+
+  //RichEditSQLPanel.HightlightSQL;
 end;
 
 procedure TfMonitor.LoadStylesList;
@@ -621,11 +621,12 @@ end;
 
 procedure TfMonitor.TabSheetSQLEnter(Sender: TObject);
 begin
-  if not LogViewer.IsSQLEmpty then
-  begin
-    RichEditSQLTab.Lines.Text := LogViewer.GetSQL;
-    RichEditSQLTab.FormatSQL;
-  end;
+  if LogViewer.IsSQLEmpty then
+    Exit;
+
+  RichEditSQLTab.Lines.Text := LogViewer.GetSQL;
+  RichEditSQLTab.FormatSQL;
+  //RichEditSQLTab.HightlightSQL;
 end;
 
 procedure TfMonitor.TimerAutoUpdateTimer(Sender: TObject);
