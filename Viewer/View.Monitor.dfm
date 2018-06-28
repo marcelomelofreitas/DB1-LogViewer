@@ -27,7 +27,7 @@ object fMonitor: TfMonitor
     ActivePage = TabSheetLog
     Align = alClient
     TabOrder = 0
-    TabWidth = 100
+    TabWidth = 110
     object TabSheetLog: TTabSheet
       Caption = 'Log'
       object Splitter: TSplitter
@@ -111,7 +111,7 @@ object fMonitor: TfMonitor
           object CheckBoxAutoUpdate: TCheckBox
             Left = 124
             Top = -1
-            Width = 20
+            Width = 16
             Height = 17
             Checked = True
             State = cbChecked
@@ -221,7 +221,6 @@ object fMonitor: TfMonitor
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           OnColEnter = DBGridFilterColEnter
-          OnKeyDown = DBGridFilterKeyDown
           OnKeyPress = DBGridFilterKeyPress
           Columns = <
             item
@@ -289,7 +288,7 @@ object fMonitor: TfMonitor
           Align = alClient
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
-          Font.Height = -13
+          Font.Height = -12
           Font.Name = 'Courier New'
           Font.Style = []
           TabOrder = 0
@@ -314,6 +313,7 @@ object fMonitor: TfMonitor
           ReadOnly = True
           RightEdge = 0
           ScrollBars = ssVertical
+          WordWrap = True
           FontSmoothing = fsmNone
         end
       end
@@ -363,7 +363,7 @@ object fMonitor: TfMonitor
         Left = 18
         Top = 16
         Width = 327
-        Height = 106
+        Height = 130
         Caption = 'Log: '
         TabOrder = 0
         object LabelIgnoreBasicLogInfo: TLabel
@@ -383,6 +383,24 @@ object fMonitor: TfMonitor
           ParentFont = False
           StyleElements = [seClient, seBorder]
           OnClick = LabelIgnoreBasicLogInfoClick
+        end
+        object LabelRowSelectInfo: TLabel
+          Left = 176
+          Top = 104
+          Width = 19
+          Height = 13
+          Cursor = crHandPoint
+          Caption = '[ ? ]'
+          Color = clBlack
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlue
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentColor = False
+          ParentFont = False
+          StyleElements = [seClient, seBorder]
+          OnClick = LabelRowSelectInfoClick
         end
         object ToggleSwitchShowOnlySQL: TToggleSwitch
           Left = 8
@@ -414,10 +432,20 @@ object fMonitor: TfMonitor
           TabOrder = 2
           OnClick = ToggleSwitchIgnoreBasicLogClick
         end
+        object ToggleSwitchRowSelect: TToggleSwitch
+          Left = 8
+          Top = 101
+          Width = 163
+          Height = 20
+          StateCaptions.CaptionOn = 'Selecionar linha inteira'
+          StateCaptions.CaptionOff = 'Selecionar linha inteira'
+          TabOrder = 3
+          OnClick = ToggleSwitchRowSelectClick
+        end
       end
       object GroupBoxVisual: TGroupBox
         Left = 18
-        Top = 230
+        Top = 252
         Width = 327
         Height = 143
         Caption = 'Visual: '
@@ -644,7 +672,7 @@ object fMonitor: TfMonitor
       end
       object GroupBoxSQL: TGroupBox
         Left = 18
-        Top = 135
+        Top = 159
         Width = 327
         Height = 80
         Caption = 'SQL: '
@@ -680,9 +708,9 @@ object fMonitor: TfMonitor
         object ToggleSwitchShowLineNumbers: TToggleSwitch
           Left = 8
           Top = 23
-          Width = 283
+          Width = 171
           Height = 20
-          StateCaptions.CaptionOn = 'Identar SQL automaticamente no painel inferior'
+          StateCaptions.CaptionOn = 'Exibir n'#250'mero das linhas'
           StateCaptions.CaptionOff = 'Exibir n'#250'mero das linhas'
           TabOrder = 1
           OnClick = ToggleSwitchShowLineNumbersClick
@@ -702,6 +730,7 @@ object fMonitor: TfMonitor
     Top = 371
   end
   object PopupMenu: TPopupMenu
+    OnPopup = PopupMenuPopup
     Left = 1063
     Top = 371
     object MenuItemCopySQL: TMenuItem
@@ -1412,7 +1441,7 @@ object fMonitor: TfMonitor
     Left = 1007
     Top = 344
     Content = {
-      414442530F00982E10030000FF00010001FF02FF03040020000000460044004D
+      414442530F00701B10030000FF00010001FF02FF03040020000000460044004D
       0065006D005400610062006C006500460069006C0074006500720005000A0000
       005400610062006C006500060000000000070000080032000000090000FF0AFF
       0B040008000000540079007000650005000800000054007900700065000C0001
@@ -1488,7 +1517,7 @@ object fMonitor: TfMonitor
     Options.AutoDetectEnabled = False
     Options.AutoDetectLineLimit = 0
     Options.Visible = False
-    CommentAttri.Foreground = clSilver
+    CommentAttri.Foreground = clGray
     KeyAttri.Foreground = clNavy
     NumberAttri.Foreground = clBlue
     StringAttri.Foreground = 42496

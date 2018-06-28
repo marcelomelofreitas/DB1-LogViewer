@@ -78,6 +78,9 @@ const
 
 implementation
 
+uses
+  Dialogs;
+
 procedure Register;
 begin
   RegisterComponents('LogViewer', [TFDLogViewer]);
@@ -231,6 +234,9 @@ begin
   if FLogFileName.IsEmpty then
     Exit;
 
+  if FCounter = Pred(FStringListFile.Count) then
+    Exit;
+
   lOriginalAfterScroll := Self.AfterScroll;
   Self.AfterScroll := nil;
   Self.DisableControls;
@@ -254,7 +260,7 @@ begin
     Self.EnableControls;
     Self.Last;
   end;
-  FCounter := FStringListFile.Count;
+  FCounter := Pred(FStringListFile.Count);
 end;
 
 procedure TFDLogViewer.ReloadLog;

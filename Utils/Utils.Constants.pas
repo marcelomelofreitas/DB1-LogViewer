@@ -10,8 +10,10 @@ const
   sSHOW_BOTTOM_PANEL = 'ShowBottomPanel';
   sSTAY_ON_TOP = 'StayOnTop';
   sIGNORE_BASIC_LOG = 'IgnoreBasicLog';
+  sROW_SELECT = 'RowSelect';
   sSHOW_LINE_NUMBERS = 'ShowLineNumbers';
   sAUTO_FORMAT_SQL = 'AutoFormatSQL';
+
 
   sDEFAULT_STYLE = 'Windows';
   sSELECTED_STYLE = 'SelectedStyle';

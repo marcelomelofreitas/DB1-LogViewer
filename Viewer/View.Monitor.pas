@@ -98,6 +98,8 @@ type
     ToggleSwitchAutoFormatSQL: TToggleSwitch;
     LabelAutoFormatInfo: TLabel;
     ToggleSwitchShowLineNumbers: TToggleSwitch;
+    ToggleSwitchRowSelect: TToggleSwitch;
+    LabelRowSelectInfo: TLabel;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
@@ -122,9 +124,11 @@ type
     procedure ToggleSwitchAutoFormatSQLClick(Sender: TObject);
     procedure DBGridFilterKeyPress(Sender: TObject; var Key: Char);
     procedure DBGridFilterColEnter(Sender: TObject);
-    procedure DBGridFilterKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormDestroy(Sender: TObject);
     procedure ToggleSwitchShowLineNumbersClick(Sender: TObject);
+    procedure ToggleSwitchRowSelectClick(Sender: TObject);
+    procedure LabelRowSelectInfoClick(Sender: TObject);
+    procedure PopupMenuPopup(Sender: TObject);
   private
     // class fields
     FLoadingOptionsAtStartup: boolean;
@@ -255,6 +259,11 @@ begin
   PageControl.ActivePage := TabSheetSQL;
 end;
 
+procedure TfMonitor.PopupMenuPopup(Sender: TObject);
+begin
+  MenuItemCopyColumnValue.Visible := not ToggleSwitchRowSelect.IsOn;
+end;
+
 procedure TfMonitor.GetMostRecentLog;
 var
   lSearchRec: TSearchRec;
@@ -317,6 +326,21 @@ begin
   end;
 end;
 
+procedure TfMonitor.LabelRowSelectInfoClick(Sender: TObject);
+var
+  lStringBuilder: TStringBuilder;
+begin
+  lStringBuilder := TStringBuilder.Create;
+  try
+    lStringBuilder
+      .Append('Ao habilitar essa opção, a cópia do valor da coluna ficará indisponível.');
+
+    MessageDlg(lStringBuilder.ToString, mtInformation, [mbOK], 0);
+  finally
+    lStringBuilder.Free;
+  end;
+end;
+
 procedure TfMonitor.LoadLog;
 var
   fLoading: TfLoading;
@@ -367,6 +391,7 @@ begin
     ToggleSwitchHighlightErrors.Checked := lOptions.ReadEnabled(sHIGHLIGHT_ERRORS);
     ToggleSwitchShowBottomPanel.Checked := lOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
     ToggleSwitchIgnoreBasicLog.Checked := lOptions.ReadEnabled(sIGNORE_BASIC_LOG);
+    ToggleSwitchRowSelect.Checked := lOptions.ReadEnabled(sROW_SELECT);
     ToggleSwitchStayOnTop.Checked := lOptions.ReadEnabled(sSTAY_ON_TOP);
     ToggleSwitchShowLineNumbers.Checked := lOptions.ReadEnabled(sSHOW_LINE_NUMBERS);
     LoadSelectedStyle(lOptions.ReadValue(sSELECTED_STYLE));
@@ -427,14 +452,14 @@ begin
 end;
 
 procedure TfMonitor.LoadTypePickList;
-var
-  lTypeColumn: TColumn;
 begin
-  lTypeColumn := DBGridFilter.Columns[0];
-  lTypeColumn.PickList.Add('ENTRADA');
-  lTypeColumn.PickList.Add('AVISO');
-  lTypeColumn.PickList.Add('SAIDA');
-  lTypeColumn.PickList.Add('SQL');
+  with DBGridFilter.Columns[0].PickList do
+  begin
+    Add('ENTRADA');
+    Add('AVISO');
+    Add('SAIDA');
+    Add('SQL');
+  end;
 end;
 
 procedure TfMonitor.CheckBoxAutoUpdateClick(Sender: TObject);
@@ -475,17 +500,6 @@ procedure TfMonitor.DBGridFilterColEnter(Sender: TObject);
 begin
   if DBGridFilter.SelectedField.FieldName.ToUpper.Equals('TYPE') then
     DBGridFilter.EditorMode := True;
-end;
-
-procedure TfMonitor.DBGridFilterKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = VK_DELETE then
-  begin
-    FDMemTableFilter.Edit;
-    DBGridFilter.SelectedField.Clear;
-    FDMemTableFilter.Post;
-    BuildFilter;
-  end;
 end;
 
 procedure TfMonitor.DBGridFilterKeyPress(Sender: TObject; var Key: Char);
@@ -669,6 +683,21 @@ begin
   LogViewer.IgnoreBasicLog := lEnable;
   LogViewer.ResetCounter;
   LoadLog;
+end;
+
+procedure TfMonitor.ToggleSwitchRowSelectClick(Sender: TObject);
+var
+  lEnable: boolean;
+begin
+  lEnable := ToggleSwitchRowSelect.IsOn;
+  SaveOption(sROW_SELECT, lEnable.ToString);
+
+  LabelCtrlQ.Enabled := not lEnable;
+  LabelCopySQL.Enabled := not lEnable;
+
+  DBGrid.Options := DBGrid.Options - [dgRowSelect];
+  if lEnable then
+    DBGrid.Options := DBGrid.Options + [dgRowSelect];
 end;
 
 procedure TfMonitor.ToggleSwitchShowLineNumbersClick(Sender: TObject);
