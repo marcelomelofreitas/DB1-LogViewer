@@ -42,9 +42,6 @@ requires
 
 contains
   Component.FDLogViewer in 'Component.FDLogViewer.pas',
-  SQL.Highlighter in 'SQL.Highlighter.pas',
-  SQL.Formatter in 'SQL.Formatter.pas',
-  Component.RichEditSQL in 'Component.RichEditSQL.pas',
   Utils.Helpers in '..\Utils\Utils.Helpers.pas',
   Utils.Constants in '..\Utils\Utils.Constants.pas';
 

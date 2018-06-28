@@ -8,7 +8,6 @@ uses
 type
   TSQLFormatter = class
   private
-    FRichEdit: TRichEdit;
     FStringListClauses: TStringList;
     FStringListJoins: TStringList;
     FStringListOperators: TStringList;
@@ -50,11 +49,11 @@ type
     procedure ProcessCommand(const aSQL, aValue: string; var aTokenPosition: smallint;
       aBuilder: TStringBuilder);
   public
-    constructor Create(aRichEdit: TRichEdit);
+    constructor Create;
     destructor Destroy; override;
 
     // main function
-    procedure FormatSQL;
+    function FormatSQL(const aSQL: string): string;
   end;
 
 implementation
@@ -319,9 +318,8 @@ begin
   end;
 end;
 
-constructor TSQLFormatter.Create(aRichEdit: TRichEdit);
+constructor TSQLFormatter.Create;
 begin
-  FRichEdit := aRichEdit;
   CreateInternalObjects;
   InitializeStringLists;
 end;
@@ -366,14 +364,14 @@ begin
   result := QuotedStr(FormatDateTime('dd/mm/yyyy hh:nn:ss', aDate));
 end;
 
-procedure TSQLFormatter.FormatSQL;
+function TSQLFormatter.FormatSQL(const aSQL: string): string;
 var
   lPreparedSQL: string;
 begin
   FMarginLevel := 0;
-  lPreparedSQL := ProcessParameters(FRichEdit.Lines.Text);
+  lPreparedSQL := ProcessParameters(aSQL);
   lPreparedSQL := PrepareSQL(lPreparedSQL);
-  FRichEdit.Lines.Text := IdentSQL(lPreparedSQL);
+  result := IdentSQL(lPreparedSQL);
 end;
 
 function TSQLFormatter.IdentSQL(const aPreparedSQL: string): string;

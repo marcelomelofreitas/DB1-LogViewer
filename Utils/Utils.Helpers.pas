@@ -4,7 +4,6 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.IniFiles, Vcl.WinXCtrls;
-
 type
   TIniFileHelper = class helper for TIniFile
     function ReadValue(const aKey: string): string;

@@ -127,6 +127,7 @@
         <DCCReference Include="..\Utils\Utils.Options.pas"/>
         <DCCReference Include="..\Utils\Utils.Helpers.pas"/>
         <DCCReference Include="..\Utils\Utils.Constants.pas"/>
+        <DCCReference Include="..\Utils\SQL.Formatter.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

@@ -46,7 +46,7 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
+        <DCC_DcuOutput>..\Lib</DCC_DcuOutput>
         <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
         <DCC_E>false</DCC_E>
         <DCC_N>false</DCC_N>
@@ -114,9 +114,6 @@
         <DCCReference Include="vclimg.dcp"/>
         <DCCReference Include="vclwinx.dcp"/>
         <DCCReference Include="Component.FDLogViewer.pas"/>
-        <DCCReference Include="SQL.Highlighter.pas"/>
-        <DCCReference Include="SQL.Formatter.pas"/>
-        <DCCReference Include="Component.RichEditSQL.pas"/>
         <DCCReference Include="..\Utils\Utils.Helpers.pas"/>
         <DCCReference Include="..\Utils\Utils.Constants.pas"/>
         <BuildConfiguration Include="Release">
@@ -140,7 +137,7 @@
                     <Source Name="MainSource">LogViewerPackage.dpk</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\RTC\pg5Dev\bin\pg5CompletoDT.bpl">PG5 - Componentes Design Time</Excluded_Packages>
+                    <Excluded_Packages Name="D:\Sistemas\LogViewer\Lib\LogViewerPackage.bpl">File D:\Sistemas\LogViewer\Lib\LogViewerPackage.bpl not found</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k250.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp250.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>

@@ -1,0 +1,61 @@
+package SynEditDR;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS OFF}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO OFF}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE RELEASE}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'TurboPack SynEdit Delphi runtime package'}
+{$LIBSUFFIX '250'}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  vcl,
+  vcldb,
+  vclx,
+  rtl;
+
+contains
+  SynTextDrawer in '..\Source\SynTextDrawer.pas',
+  SynEdit in '..\Source\SynEdit.pas',
+  SynEditHighlighter in '..\Source\SynEditHighlighter.pas',
+  SynEditKbdHandler in '..\Source\SynEditKbdHandler.pas',
+  SynEditWordWrap in '..\Source\SynEditWordWrap.pas',
+  SynEditTypes in '..\Source\SynEditTypes.pas',
+  SynEditStrConst in '..\Source\SynEditStrConst.pas',
+  SynEditKeyConst in '..\Source\SynEditKeyConst.pas',
+  SynHighlighterHashEntries in '..\Source\SynHighlighterHashEntries.pas',
+  SynEditMiscClasses in '..\Source\SynEditMiscClasses.pas',
+  SynHighlighterMulti in '..\Source\SynHighlighterMulti.pas',
+  SynEditMiscProcs in '..\Source\SynEditMiscProcs.pas',
+  SynEditTextBuffer in '..\Source\SynEditTextBuffer.pas',
+  SynEditKeyCmds in '..\Source\SynEditKeyCmds.pas',
+  SynHighlighterSQL in '..\Source\SynHighlighterSQL.pas',
+  SynRegExpr in '..\Source\SynRegExpr.pas',
+  SynMemo in '..\Source\SynMemo.pas',
+  SynEditHighlighterOptions in '..\Source\SynEditHighlighterOptions.pas',
+  SynUnicode in '..\Source\SynUnicode.pas',
+  SynEditCodeFolding in '..\Source\SynEditCodeFolding.pas';
+
+end.

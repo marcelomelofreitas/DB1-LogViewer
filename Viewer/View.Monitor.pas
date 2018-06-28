@@ -9,14 +9,16 @@ uses
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Data.DB, Vcl.ExtCtrls, Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls,
   Vcl.Buttons, Vcl.Samples.Spin, Vcl.ComCtrls, Vcl.Menus,
-  Utils.SQLFormatter, System.Actions, Vcl.ActnList,
+  System.Actions, Vcl.ActnList,
   Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan, Vcl.ActnCtrls,
   Data.Bind.EngExt, Vcl.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs,
   Vcl.Bind.Editors, Data.Bind.Components, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Component.FDLogViewer,
-  Vcl.WinXCtrls, FireDAC.Phys.Intf, FireDAC.DApt.Intf, System.ImageList, Vcl.ImgList, Vcl.ToolWin,
-  Component.RichEditSQL, FireDAC.Stan.StorageBin;
+  Vcl.WinXCtrls,
+  FireDAC.Stan.StorageBin, SynEdit, SynMemo,
+  SynEditHighlighter, SynHighlighterSQL, SQL.Formatter, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, System.ImageList, Vcl.ImgList, Vcl.ToolWin;
 
 type
   TfMonitor = class(TForm)
@@ -78,10 +80,7 @@ type
     ToggleSwitchShowOnlySQL: TToggleSwitch;
     ToggleSwitchStayOnTop: TToggleSwitch;
     ToggleSwitchShowBottomPanel: TToggleSwitch;
-    ToggleSwitchAutoFormatSQL: TToggleSwitch;
-    LabelAutoFormatInfo: TLabel;
     LabelIgnoreBasicLogInfo: TLabel;
-    RichEditSQLTab: TRichEditSQL;
     DBGridFilter: TDBGrid;
     DataSourceFilter: TDataSource;
     FDMemTableFilter: TFDMemTable;
@@ -92,7 +91,13 @@ type
     FDMemTableFilterClass: TStringField;
     FDMemTableFilterMethod: TStringField;
     FDMemTableFilterDateTime: TStringField;
-    RichEditSQLPanel: TRichEditSQL;
+    SynMemoSQL: TSynMemo;
+    SynSQLSyn: TSynSQLSyn;
+    SynMemoTab: TSynMemo;
+    GroupBoxSQL: TGroupBox;
+    ToggleSwitchAutoFormatSQL: TToggleSwitch;
+    LabelAutoFormatInfo: TLabel;
+    ToggleSwitchShowLineNumbers: TToggleSwitch;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
@@ -118,9 +123,12 @@ type
     procedure DBGridFilterKeyPress(Sender: TObject; var Key: Char);
     procedure DBGridFilterColEnter(Sender: TObject);
     procedure DBGridFilterKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormDestroy(Sender: TObject);
+    procedure ToggleSwitchShowLineNumbersClick(Sender: TObject);
   private
     // class fields
     FLoadingOptionsAtStartup: boolean;
+    FSQLFormatter: TSQLFormatter;
 
     // event handlers
     procedure OnDrawColumnCellHighlight(Sender: TObject; const Rect: TRect; DataCol: Integer;
@@ -203,7 +211,7 @@ procedure TfMonitor.ActionClearLogExecute(Sender: TObject);
 begin
   LogViewer.EmptyDataSet;
   LabelRecordInfo.Caption := EmptyStr;
-  RichEditSQLPanel.Lines.Clear;
+  SynMemoSQL.Lines.Clear;
 end;
 
 procedure TfMonitor.AssignGridDrawEvent;
@@ -218,6 +226,8 @@ var
   lBuilderFilter: TStringBuilder;
   lField: TField;
 begin
+  FDMemTableFilter.Post;
+
   lBuilderFilter := TStringBuilder.Create;
   try
     lBuilderFilter.Append('1 = 1');
@@ -358,6 +368,7 @@ begin
     ToggleSwitchShowBottomPanel.Checked := lOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
     ToggleSwitchIgnoreBasicLog.Checked := lOptions.ReadEnabled(sIGNORE_BASIC_LOG);
     ToggleSwitchStayOnTop.Checked := lOptions.ReadEnabled(sSTAY_ON_TOP);
+    ToggleSwitchShowLineNumbers.Checked := lOptions.ReadEnabled(sSHOW_LINE_NUMBERS);
     LoadSelectedStyle(lOptions.ReadValue(sSELECTED_STYLE));
   finally
     lOptions.Free;
@@ -382,17 +393,17 @@ begin
   if not ToggleSwitchShowBottomPanel.IsOn then
     Exit;
 
-  RichEditSQLPanel.Lines.Clear;
+  SynMemoSQL.Lines.Clear;
 
   if LogViewer.IsSQLEmpty then
     Exit;
 
-  RichEditSQLPanel.Lines.Text := LogViewer.GetSQL;
+  SynMemoSQL.Lines.Text := LogViewer.GetSQL;
 
   if ToggleSwitchAutoFormatSQL.IsOn then
-    RichEditSQLPanel.FormatSQL;
-
-  //RichEditSQLPanel.HightlightSQL;
+    SynMemoSQL.Lines.Text := FSQLFormatter.FormatSQL(LogViewer.GetSQL)
+  else
+    SynMemoSQL.Lines.Text := LogViewer.GetSQL;
 end;
 
 procedure TfMonitor.LoadStylesList;
@@ -537,7 +548,7 @@ begin
   if not result then
   begin
     LogViewer.EmptyDataSet;
-    RichEditSQLPanel.Lines.Clear;
+    SynMemoSQL.Lines.Clear;
     EditFileName.Clear;
     LabelRecordInfo.Caption := EmptyStr;
 
@@ -560,11 +571,20 @@ end;
 
 procedure TfMonitor.FormCreate(Sender: TObject);
 begin
+  FSQLFormatter := TSQLFormatter.Create;
+  FDMemTableFilter.LogChanges := False;
+
   LoadStylesList;
   LoadOptions;
   LoadTypePickList;
   GetMostRecentLog;
   AssignGridDrawEvent;
+end;
+
+procedure TfMonitor.FormDestroy(Sender: TObject);
+begin
+  FSQLFormatter.Free;
+  inherited;
 end;
 
 procedure TfMonitor.FormKeyDown(Sender: TObject; var Key: Word;
@@ -608,9 +628,8 @@ end;
 
 procedure TfMonitor.MenuItemCopySQLClick(Sender: TObject);
 begin
-  RichEditSQLTab.Lines.Text := LogViewer.GetSQL;
-  RichEditSQLTab.FormatSQL;
-  Clipboard.AsText := RichEditSQLTab.Lines.Text;
+  SynMemoTab.Lines.Text := FSQLFormatter.FormatSQL(LogViewer.GetSQL);
+  Clipboard.AsText := SynMemoTab.Lines.Text;
 end;
 
 procedure TfMonitor.TabSheetSQLEnter(Sender: TObject);
@@ -618,9 +637,7 @@ begin
   if LogViewer.IsSQLEmpty then
     Exit;
 
-  RichEditSQLTab.Lines.Text := LogViewer.GetSQL;
-  RichEditSQLTab.FormatSQL;
-  RichEditSQLTab.HightlightSQL;
+  SynMemoTab.Lines.Text := FSQLFormatter.FormatSQL(LogViewer.GetSQL);
 end;
 
 procedure TfMonitor.TimerAutoUpdateTimer(Sender: TObject);
@@ -630,6 +647,7 @@ end;
 
 procedure TfMonitor.ToggleSwitchAutoFormatSQLClick(Sender: TObject);
 begin
+  LoadSQLBottomPanel;
   SaveOption(sAUTO_FORMAT_SQL, ToggleSwitchIgnoreBasicLog.IsOn.ToString);
 end;
 
@@ -651,6 +669,16 @@ begin
   LogViewer.IgnoreBasicLog := lEnable;
   LogViewer.ResetCounter;
   LoadLog;
+end;
+
+procedure TfMonitor.ToggleSwitchShowLineNumbersClick(Sender: TObject);
+var
+  lEnable: boolean;
+begin
+  lEnable := ToggleSwitchShowLineNumbers.IsOn;
+  SynMemoSQL.Gutter.Visible := lEnable;
+  SynMemoTab.Gutter.Visible := lEnable;
+  SaveOption(sSHOW_LINE_NUMBERS, lEnable.ToString);
 end;
 
 procedure TfMonitor.ToggleSwitchShowBottomPanelClick(Sender: TObject);

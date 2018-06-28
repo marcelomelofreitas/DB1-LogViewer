@@ -3,6 +3,12 @@
         <ProjectGuid>{95510D5B-C6FF-4FF6-8E15-442B5DD94BF2}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
+        <Projects Include="3rdParty\SynEdit\Packages\SynEditDR.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="3rdParty\SynEdit\Packages\SynEditDD.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="Package\LogViewerPackage.dproj">
             <Dependencies/>
         </Projects>
@@ -17,6 +23,24 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
+    <Target Name="SynEditDR">
+        <MSBuild Projects="3rdParty\SynEdit\Packages\SynEditDR.dproj"/>
+    </Target>
+    <Target Name="SynEditDR:Clean">
+        <MSBuild Projects="3rdParty\SynEdit\Packages\SynEditDR.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SynEditDR:Make">
+        <MSBuild Projects="3rdParty\SynEdit\Packages\SynEditDR.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SynEditDD">
+        <MSBuild Projects="3rdParty\SynEdit\Packages\SynEditDD.dproj"/>
+    </Target>
+    <Target Name="SynEditDD:Clean">
+        <MSBuild Projects="3rdParty\SynEdit\Packages\SynEditDD.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SynEditDD:Make">
+        <MSBuild Projects="3rdParty\SynEdit\Packages\SynEditDD.dproj" Targets="Make"/>
+    </Target>
     <Target Name="LogViewerPackage">
         <MSBuild Projects="Package\LogViewerPackage.dproj"/>
     </Target>
@@ -36,13 +60,13 @@
         <MSBuild Projects="Viewer\LogViewer.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="LogViewerPackage;LogViewer"/>
+        <CallTarget Targets="SynEditDR;SynEditDD;LogViewerPackage;LogViewer"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="LogViewerPackage:Clean;LogViewer:Clean"/>
+        <CallTarget Targets="SynEditDR:Clean;SynEditDD:Clean;LogViewerPackage:Clean;LogViewer:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="LogViewerPackage:Make;LogViewer:Make"/>
+        <CallTarget Targets="SynEditDR:Make;SynEditDD:Make;LogViewerPackage:Make;LogViewer:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

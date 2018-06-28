@@ -15,6 +15,7 @@ object fMonitor: TfMonitor
   Position = poDesigned
   WindowState = wsMaximized
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
@@ -211,7 +212,7 @@ object fMonitor: TfMonitor
           Height = 39
           Align = alTop
           DataSource = DataSourceFilter
-          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+          Options = [dgEditing, dgAlwaysShowEditor, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           PopupMenu = PopupMenu
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
@@ -280,25 +281,40 @@ object fMonitor: TfMonitor
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 2
-        object RichEditSQLPanel: TRichEditSQL
+        object SynMemoSQL: TSynMemo
           Left = 0
           Top = 0
           Width = 1191
           Height = 150
           Align = alClient
-          Font.Charset = ANSI_CHARSET
+          Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
-          Font.Height = -12
+          Font.Height = -13
           Font.Name = 'Courier New'
           Font.Style = []
-          ParentFont = False
           TabOrder = 0
-          StyleElements = [seBorder]
-          Zoom = 100
-          ExplicitLeft = 504
-          ExplicitTop = 32
-          ExplicitWidth = 185
-          ExplicitHeight = 89
+          CodeFolding.GutterShapeSize = 11
+          CodeFolding.CollapsedLineColor = clGrayText
+          CodeFolding.FolderBarLinesColor = clGrayText
+          CodeFolding.IndentGuidesColor = clGray
+          CodeFolding.IndentGuides = True
+          CodeFolding.ShowCollapsedLine = False
+          CodeFolding.ShowHintMark = True
+          UseCodeFolding = False
+          Gutter.BorderStyle = gbsNone
+          Gutter.DigitCount = 3
+          Gutter.Font.Charset = DEFAULT_CHARSET
+          Gutter.Font.Color = clWindowText
+          Gutter.Font.Height = -11
+          Gutter.Font.Name = 'Courier New'
+          Gutter.Font.Style = []
+          Gutter.LeftOffset = 10
+          Gutter.ShowLineNumbers = True
+          Highlighter = SynSQLSyn
+          ReadOnly = True
+          RightEdge = 0
+          ScrollBars = ssVertical
+          FontSmoothing = fsmNone
         end
       end
     end
@@ -306,22 +322,39 @@ object fMonitor: TfMonitor
       Caption = 'SQL'
       ImageIndex = 2
       OnEnter = TabSheetSQLEnter
-      object RichEditSQLTab: TRichEditSQL
+      object SynMemoTab: TSynMemo
         Left = 0
         Top = 0
         Width = 1191
         Height = 539
         Align = alClient
-        Font.Charset = ANSI_CHARSET
+        Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
-        ParentFont = False
-        ScrollBars = ssBoth
         TabOrder = 0
-        StyleElements = [seClient, seBorder]
-        Zoom = 100
+        CodeFolding.GutterShapeSize = 11
+        CodeFolding.CollapsedLineColor = clGrayText
+        CodeFolding.FolderBarLinesColor = clGrayText
+        CodeFolding.IndentGuidesColor = clGray
+        CodeFolding.IndentGuides = True
+        CodeFolding.ShowCollapsedLine = False
+        CodeFolding.ShowHintMark = True
+        UseCodeFolding = False
+        Gutter.BorderStyle = gbsNone
+        Gutter.DigitCount = 3
+        Gutter.Font.Charset = DEFAULT_CHARSET
+        Gutter.Font.Color = clWindowText
+        Gutter.Font.Height = -11
+        Gutter.Font.Name = 'Courier New'
+        Gutter.Font.Style = []
+        Gutter.LeftOffset = 10
+        Gutter.ShowLineNumbers = True
+        Highlighter = SynSQLSyn
+        ReadOnly = True
+        RightEdge = 0
+        FontSmoothing = fsmNone
       end
     end
     object TabSheetOptions: TTabSheet
@@ -330,27 +363,9 @@ object fMonitor: TfMonitor
         Left = 18
         Top = 16
         Width = 327
-        Height = 137
+        Height = 106
         Caption = 'Log: '
         TabOrder = 0
-        object LabelAutoFormatInfo: TLabel
-          Left = 295
-          Top = 104
-          Width = 19
-          Height = 13
-          Cursor = crHandPoint
-          Caption = '[ ? ]'
-          Color = clBlack
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentColor = False
-          ParentFont = False
-          StyleElements = [seClient, seBorder]
-          OnClick = LabelAutoFormatInfoClick
-        end
         object LabelIgnoreBasicLogInfo: TLabel
           Left = 256
           Top = 78
@@ -399,20 +414,10 @@ object fMonitor: TfMonitor
           TabOrder = 2
           OnClick = ToggleSwitchIgnoreBasicLogClick
         end
-        object ToggleSwitchAutoFormatSQL: TToggleSwitch
-          Left = 8
-          Top = 101
-          Width = 283
-          Height = 20
-          StateCaptions.CaptionOn = 'Identar SQL automaticamente no painel inferior'
-          StateCaptions.CaptionOff = 'Identar SQL automaticamente no painel inferior'
-          TabOrder = 3
-          OnClick = ToggleSwitchAutoFormatSQLClick
-        end
       end
       object GroupBoxVisual: TGroupBox
         Left = 18
-        Top = 170
+        Top = 230
         Width = 327
         Height = 143
         Caption = 'Visual: '
@@ -637,6 +642,52 @@ object fMonitor: TfMonitor
           Shape = bsTopLine
         end
       end
+      object GroupBoxSQL: TGroupBox
+        Left = 18
+        Top = 135
+        Width = 327
+        Height = 80
+        Caption = 'SQL: '
+        TabOrder = 3
+        object LabelAutoFormatInfo: TLabel
+          Left = 295
+          Top = 52
+          Width = 19
+          Height = 13
+          Cursor = crHandPoint
+          Caption = '[ ? ]'
+          Color = clBlack
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlue
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentColor = False
+          ParentFont = False
+          StyleElements = [seClient, seBorder]
+          OnClick = LabelAutoFormatInfoClick
+        end
+        object ToggleSwitchAutoFormatSQL: TToggleSwitch
+          Left = 8
+          Top = 49
+          Width = 283
+          Height = 20
+          StateCaptions.CaptionOn = 'Identar SQL automaticamente no painel inferior'
+          StateCaptions.CaptionOff = 'Identar SQL automaticamente no painel inferior'
+          TabOrder = 0
+          OnClick = ToggleSwitchAutoFormatSQLClick
+        end
+        object ToggleSwitchShowLineNumbers: TToggleSwitch
+          Left = 8
+          Top = 23
+          Width = 283
+          Height = 20
+          StateCaptions.CaptionOn = 'Identar SQL automaticamente no painel inferior'
+          StateCaptions.CaptionOff = 'Exibir n'#250'mero das linhas'
+          TabOrder = 1
+          OnClick = ToggleSwitchShowLineNumbersClick
+        end
+      end
     end
   end
   object DataSource: TDataSource
@@ -647,11 +698,11 @@ object fMonitor: TfMonitor
   object TimerAutoUpdate: TTimer
     Enabled = False
     OnTimer = TimerAutoUpdateTimer
-    Left = 1040
+    Left = 1035
     Top = 371
   end
   object PopupMenu: TPopupMenu
-    Left = 1070
+    Left = 1063
     Top = 371
     object MenuItemCopySQL: TMenuItem
       Caption = 'Copiar SQL'
@@ -668,7 +719,7 @@ object fMonitor: TfMonitor
     ColorDepth = cd32Bit
     Height = 32
     Width = 32
-    Left = 1100
+    Left = 1091
     Top = 371
     Bitmap = {
       494C010103000500040020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
@@ -1238,7 +1289,7 @@ object fMonitor: TfMonitor
         GlyphLayout = blGlyphTop
       end>
     Images = ImageList
-    Left = 1130
+    Left = 1119
     Top = 371
     StyleName = 'Platform Default'
     object ActionOpenFile: TAction
@@ -1263,8 +1314,8 @@ object fMonitor: TfMonitor
   object BindingsList: TBindingsList
     Methods = <>
     OutputConverters = <>
-    Left = 1160
-    Top = 371
+    Left = 1063
+    Top = 344
     object LinkControlToPropertyLabel: TLinkControlToProperty
       Category = 'Quick Bindings'
       Control = CheckBoxAutoUpdate
@@ -1340,13 +1391,13 @@ object fMonitor: TfMonitor
     UpdateOptions.CheckRequired = False
     UpdateOptions.AutoCommitUpdates = True
     StoreDefs = True
-    Left = 1010
+    Left = 1007
     Top = 371
   end
   object DataSourceFilter: TDataSource
     DataSet = FDMemTableFilter
-    Left = 970
-    Top = 276
+    Left = 979
+    Top = 344
   end
   object FDMemTableFilter: TFDMemTable
     Active = True
@@ -1358,10 +1409,10 @@ object fMonitor: TfMonitor
     UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
     UpdateOptions.CheckRequired = False
     UpdateOptions.AutoCommitUpdates = True
-    Left = 998
-    Top = 276
+    Left = 1007
+    Top = 344
     Content = {
-      414442530F006F3A10030000FF00010001FF02FF03040020000000460044004D
+      414442530F00982E10030000FF00010001FF02FF03040020000000460044004D
       0065006D005400610062006C006500460069006C0074006500720005000A0000
       005400610062006C006500060000000000070000080032000000090000FF0AFF
       0B040008000000540079007000650005000800000054007900700065000C0001
@@ -1432,5 +1483,16 @@ object fMonitor: TfMonitor
     object FDMemTableFilterDateTime: TStringField
       FieldName = 'DateTime'
     end
+  end
+  object SynSQLSyn: TSynSQLSyn
+    Options.AutoDetectEnabled = False
+    Options.AutoDetectLineLimit = 0
+    Options.Visible = False
+    CommentAttri.Foreground = clSilver
+    KeyAttri.Foreground = clNavy
+    NumberAttri.Foreground = clBlue
+    StringAttri.Foreground = 42496
+    Left = 1035
+    Top = 344
   end
 end
