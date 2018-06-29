@@ -178,7 +178,7 @@ end;
 
 function TFDLogViewer.GetRecordCounter: string;
 begin
-  result := Format('Registro %d / %d', [Self.RecNo, Self.RecordCount]);
+  result := Format('%d / %d', [Self.RecNo, Self.RecordCount]);
 end;
 
 function TFDLogViewer.GetSQL: string;

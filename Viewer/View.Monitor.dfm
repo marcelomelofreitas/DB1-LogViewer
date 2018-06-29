@@ -1,7 +1,7 @@
 object fMonitor: TfMonitor
   Left = 488
   Top = 0
-  Caption = 'DB1 Log Viewer'
+  Caption = 'DB1 Log Viewer - 1.0'
   ClientHeight = 567
   ClientWidth = 1199
   Color = clBtnFace
@@ -32,7 +32,7 @@ object fMonitor: TfMonitor
       Caption = 'Log'
       object Splitter: TSplitter
         Left = 0
-        Top = 386
+        Top = 381
         Width = 1191
         Height = 3
         Cursor = crVSplit
@@ -44,20 +44,20 @@ object fMonitor: TfMonitor
         Left = 0
         Top = 0
         Width = 1191
-        Height = 92
+        Height = 64
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 1
         DesignSize = (
           1191
-          92)
-        object LabelRecordInfo: TLabel
-          Left = 1184
-          Top = 72
-          Width = 3
+          64)
+        object LabelRecordInfoValue: TLabel
+          Left = 613
+          Top = 37
+          Width = 200
           Height = 13
-          Alignment = taRightJustify
           Anchors = [akLeft, akTop, akRight]
+          AutoSize = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -65,21 +65,55 @@ object fMonitor: TfMonitor
           Font.Style = [fsBold]
           ParentFont = False
         end
-        object EditFileName: TEdit
-          Left = 1
-          Top = 63
-          Width = 533
-          Height = 21
-          Color = clInfoBk
-          ReadOnly = True
-          TabOrder = 0
+        object LabelFileName: TLabel
+          Left = 558
+          Top = 18
+          Width = 50
+          Height = 13
+          Caption = 'Arquivo :'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clNavy
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          StyleElements = [seClient, seBorder]
+        end
+        object LabelRecordInfo: TLabel
+          Left = 550
+          Top = 37
+          Width = 58
+          Height = 13
+          Caption = 'Contador :'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clNavy
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          StyleElements = [seClient, seBorder]
+        end
+        object LabelFileNameValue: TLabel
+          Left = 614
+          Top = 18
+          Width = 500
+          Height = 13
+          Anchors = [akLeft, akTop, akRight]
+          AutoSize = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
         end
         object ActionToolBar: TActionToolBar
           Left = 0
           Top = 0
-          Width = 1191
+          Width = 545
           Height = 59
           ActionManager = ActionManager
+          Align = alCustom
           Color = clMenuBar
           ColorMap.DisabledFontColor = 7171437
           ColorMap.HighlightColor = clWhite
@@ -100,7 +134,7 @@ object fMonitor: TfMonitor
           Width = 185
           Height = 54
           Caption = 'Atualiza'#231#227'o autom'#225'tica       '
-          TabOrder = 2
+          TabOrder = 1
           object LabelInterval: TLabel
             Left = 9
             Top = 26
@@ -132,23 +166,25 @@ object fMonitor: TfMonitor
       end
       object PanelGrid: TPanel
         Left = 0
-        Top = 92
+        Top = 64
         Width = 1191
-        Height = 294
+        Height = 317
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitTop = 66
+        ExplicitHeight = 322
         object DBGrid: TDBGrid
           Left = 0
           Top = 39
           Width = 1191
-          Height = 255
+          Height = 278
           Align = alClient
           DataSource = DataSource
           Options = [dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           PopupMenu = PopupMenu
           ReadOnly = True
-          TabOrder = 0
+          TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -11
@@ -210,11 +246,12 @@ object fMonitor: TfMonitor
           Top = 0
           Width = 1191
           Height = 39
+          TabStop = False
           Align = alTop
           DataSource = DataSourceFilter
           Options = [dgEditing, dgAlwaysShowEditor, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           PopupMenu = PopupMenu
-          TabOrder = 1
+          TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -11
@@ -260,6 +297,7 @@ object fMonitor: TfMonitor
             item
               Expanded = False
               FieldName = 'Class'
+              Title.Caption = 'Classe'
               Width = 180
               Visible = True
             end
@@ -274,9 +312,9 @@ object fMonitor: TfMonitor
       end
       object PanelSQL: TPanel
         Left = 0
-        Top = 389
+        Top = 384
         Width = 1191
-        Height = 150
+        Height = 155
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 2
@@ -284,7 +322,7 @@ object fMonitor: TfMonitor
           Left = 0
           Top = 0
           Width = 1191
-          Height = 150
+          Height = 155
           Align = alClient
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -315,6 +353,7 @@ object fMonitor: TfMonitor
           ScrollBars = ssVertical
           WordWrap = True
           FontSmoothing = fsmNone
+          ExplicitHeight = 148
         end
       end
     end
@@ -496,11 +535,11 @@ object fMonitor: TfMonitor
         Caption = 'Atalhos: '
         TabOrder = 2
         object LabelCtrlO: TLabel
-          Left = 17
+          Left = 23
           Top = 24
-          Width = 51
+          Width = 43
           Height = 13
-          Caption = 'CTRL + O'
+          Caption = 'Ctrl + O'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -509,11 +548,11 @@ object fMonitor: TfMonitor
           ParentFont = False
         end
         object LabelCtrlL: TLabel
-          Left = 19
+          Left = 25
           Top = 43
-          Width = 49
+          Width = 41
           Height = 13
-          Caption = 'CTRL + L'
+          Caption = 'Ctrl + L'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -522,7 +561,7 @@ object fMonitor: TfMonitor
           ParentFont = False
         end
         object LabelF5: TLabel
-          Left = 55
+          Left = 53
           Top = 62
           Width = 13
           Height = 13
@@ -535,11 +574,11 @@ object fMonitor: TfMonitor
           ParentFont = False
         end
         object LabelCtrlC: TLabel
-          Left = 18
+          Left = 24
           Top = 89
-          Width = 50
+          Width = 42
           Height = 13
-          Caption = 'CTRL + C'
+          Caption = 'Ctrl + C'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -548,11 +587,11 @@ object fMonitor: TfMonitor
           ParentFont = False
         end
         object LabelCtrlQ: TLabel
-          Left = 17
+          Left = 23
           Top = 108
-          Width = 51
+          Width = 43
           Height = 13
-          Caption = 'CTRL + Q'
+          Caption = 'Ctrl + Q'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -561,11 +600,11 @@ object fMonitor: TfMonitor
           ParentFont = False
         end
         object LabelAlt1: TLabel
-          Left = 25
+          Left = 28
           Top = 135
-          Width = 43
+          Width = 38
           Height = 13
-          Caption = 'ALT + 1'
+          Caption = 'Alt + 1'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -574,11 +613,11 @@ object fMonitor: TfMonitor
           ParentFont = False
         end
         object LabelAlt2: TLabel
-          Left = 25
+          Left = 28
           Top = 154
-          Width = 43
+          Width = 38
           Height = 13
-          Caption = 'ALT + 2'
+          Caption = 'Alt + 2'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -587,11 +626,11 @@ object fMonitor: TfMonitor
           ParentFont = False
         end
         object LabelAlt3: TLabel
-          Left = 25
+          Left = 28
           Top = 173
-          Width = 43
+          Width = 38
           Height = 13
-          Caption = 'ALT + 3'
+          Caption = 'Alt + 3'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -1441,7 +1480,7 @@ object fMonitor: TfMonitor
     Left = 1007
     Top = 344
     Content = {
-      414442530F00701B10030000FF00010001FF02FF03040020000000460044004D
+      414442530F00AD1D10030000FF00010001FF02FF03040020000000460044004D
       0065006D005400610062006C006500460069006C0074006500720005000A0000
       005400610062006C006500060000000000070000080032000000090000FF0AFF
       0B040008000000540079007000650005000800000054007900700065000C0001

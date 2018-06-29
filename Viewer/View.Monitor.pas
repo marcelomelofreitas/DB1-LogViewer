@@ -34,7 +34,6 @@ type
     ComboBoxStyles: TComboBox;
     DataSource: TDataSource;
     DBGrid: TDBGrid;
-    EditFileName: TEdit;
     GroupBoxAutoUpdate: TGroupBox;
     GroupBoxLog: TGroupBox;
     GroupBoxShortCuts: TGroupBox;
@@ -53,7 +52,6 @@ type
     LabelF5: TLabel;
     LabelInterval: TLabel;
     LabelOpenFile: TLabel;
-    LabelRecordInfo: TLabel;
     LabelReloadLog: TLabel;
     LabelShowLogTab: TLabel;
     LabelShowOptionsTab: TLabel;
@@ -100,6 +98,10 @@ type
     ToggleSwitchShowLineNumbers: TToggleSwitch;
     ToggleSwitchRowSelect: TToggleSwitch;
     LabelRowSelectInfo: TLabel;
+    LabelRecordInfoValue: TLabel;
+    LabelFileName: TLabel;
+    LabelRecordInfo: TLabel;
+    LabelFileNameValue: TLabel;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
@@ -146,6 +148,7 @@ type
     // private procedures
     procedure AssignGridDrawEvent;
     procedure BuildFilter;
+    procedure ClearFilters;
     procedure CopyColumnValue;
     procedure GetMostRecentLog;
     procedure LoadLog;
@@ -185,8 +188,8 @@ begin
     if not lOpenDialog.Execute then
       Exit;
 
-    EditFileName.Text := Trim(lOpenDialog.FileName);
-    result := EditFileName.Text;
+    LabelFileNameValue.Caption := Trim(lOpenDialog.FileName);
+    result := LabelFileNameValue.Caption;
   finally
     lOpenDialog.Free;
   end;
@@ -201,7 +204,7 @@ begin
   if lFileName.IsEmpty then
     Exit;
 
-  EditFileName.Text := lFileName.Trim;
+  LabelFileNameValue.Caption := lFileName.Trim;
   LogViewer.ResetCounter;
   LoadLog;
 end;
@@ -214,7 +217,7 @@ end;
 procedure TfMonitor.ActionClearLogExecute(Sender: TObject);
 begin
   LogViewer.EmptyDataSet;
-  LabelRecordInfo.Caption := EmptyStr;
+  LabelRecordInfoValue.Caption := EmptyStr;
   SynMemoSQL.Lines.Clear;
 end;
 
@@ -285,7 +288,7 @@ begin
   until FindNext(lSearchRec) <> 0;
 
   FindClose(lSearchRec);
-  EditFileName.Text := 'Q:\bin\' + lFileName.Trim;
+  LabelFileNameValue.Caption := 'Q:\bin\' + lFileName.Trim;
   LoadLog;
 end;
 
@@ -314,11 +317,7 @@ begin
   lStringBuilder := TStringBuilder.Create;
   try
     lStringBuilder
-      .Append('Ignora os métodos da classe TfpgServidorDM, como:')
-      .AppendLine.AppendLine
-      .Append('- Login').AppendLine
-      .Append('- LoginInterno').AppendLine
-      .Append('- AutenticarUsuario');
+      .Append('Ignora os métodos da classe TfpgServidorDM, como "Login", "LoginInterno" e "AutenticarUsuario".');
 
     MessageDlg(lStringBuilder.ToString, mtInformation, [mbOK], 0);
   finally
@@ -333,7 +332,7 @@ begin
   lStringBuilder := TStringBuilder.Create;
   try
     lStringBuilder
-      .Append('Ao habilitar essa opção, a cópia do valor da coluna ficará indisponível.');
+      .Append('Ao habilitar essa opção, a cópia do valor da coluna (Ctrl + Q) ficará indisponível.');
 
     MessageDlg(lStringBuilder.ToString, mtInformation, [mbOK], 0);
   finally
@@ -358,7 +357,7 @@ begin
   try
     fLoading.Show;
     Application.ProcessMessages;
-    LogViewer.LogFileName := EditFileName.Text;
+    LogViewer.LogFileName := LabelFileNameValue.Caption;
     LogViewer.LoadLog;
   finally
     fLoading.Free;
@@ -471,6 +470,18 @@ begin
   SaveOption(sAUTO_UPDATE_ENABLED, lEnable.ToString);
 end;
 
+procedure TfMonitor.ClearFilters;
+var
+  lField: TField;
+begin
+  FDMemTableFilter.Edit;
+
+  for lField in FDMemTableFilter.Fields do
+    lField.Clear;
+
+  BuildFilter;
+end;
+
 procedure TfMonitor.ComboBoxStylesSelect(Sender: TObject);
 begin
   TStyleManager.SetStyle(ComboBoxStyles.Text);
@@ -530,11 +541,11 @@ procedure TfMonitor.ShowRecordInfo;
 begin
   if LogViewer.IsEmpty then
   begin
-    LabelRecordInfo.Caption := EmptyStr;
+    LabelRecordInfoValue.Caption := EmptyStr;
     Exit;
   end;
 
-  LabelRecordInfo.Caption := LogViewer.GetRecordCounter;
+  LabelRecordInfoValue.Caption := LogViewer.GetRecordCounter;
 end;
 
 function TfMonitor.IsContentValid: boolean;
@@ -543,7 +554,7 @@ var
   lStringListFile: TStringList;
   lStringListLine: TStringList;
 begin
-  lFileStream := TFileStream.Create(EditFileName.Text, fmOpenRead or fmShareDenyNone);
+  lFileStream := TFileStream.Create(LabelFileNameValue.Caption, fmOpenRead or fmShareDenyNone);
   lStringListFile := TStringList.Create;
   lStringListLine := TStringList.Create;
   try
@@ -563,8 +574,8 @@ begin
   begin
     LogViewer.EmptyDataSet;
     SynMemoSQL.Lines.Clear;
-    EditFileName.Clear;
-    LabelRecordInfo.Caption := EmptyStr;
+    LabelFileNameValue.Caption := EmptyStr;
+    LabelRecordInfoValue.Caption := EmptyStr;
 
     MessageDlg('Arquivo de log inválido.', mtWarning, [mbOK], 0);
   end;
@@ -574,10 +585,10 @@ function TfMonitor.IsFileNameValid: boolean;
 begin
   result := False;
 
-  if Trim(EditFileName.Text).IsEmpty then
+  if Trim(LabelFileNameValue.Caption).IsEmpty then
     Exit;
 
-  if not FileExists(EditFileName.Text) then
+  if not FileExists(LabelFileNameValue.Caption) then
     Exit;
 
   result := True;
@@ -612,6 +623,9 @@ begin
 
   if (Shift = [ssAlt]) and (Key = 51) then
     PageControl.ActivePage := TabSheetOptions;
+
+  if Key = VK_F4 then
+    ClearFilters;
 end;
 
 procedure TfMonitor.SaveOption(const aKey: string; const aValue: string);

@@ -29,7 +29,6 @@ type
     function IsCommand(const aValue: string): boolean;
     function PrepareSQL(const aSQL: string): string;
     function ProcessParameters(const aSQL: string): string;
-    function RemovedUnusedSpaces(const aSQL: string): string;
     function ReplaceAllStrings(const aText, aOldPattern, aNewPattern: string): string;
     function ReplaceParametersWithValues: string;
 
@@ -138,6 +137,8 @@ function TSQLFormatter.PrepareSQL(const aSQL: string): string;
 begin
   result := ReplaceAllStrings(aSQL, '  ', sSPACE);
   result := ReplaceAllStrings(result, ',', ', ');
+  result := ReplaceAllStrings(result, ' )', ')');
+  result := ReplaceAllStrings(result, '( ', '(');
   result := ReplaceAllStrings(result, 'LEFT JOIN', 'LEFT_JOIN');
   result := ReplaceAllStrings(result, 'LEFT OUTER JOIN', 'LEFT_OUTER_JOIN');
   result := ReplaceAllStrings(result, 'INNER JOIN', 'INNER_JOIN');
@@ -245,12 +246,6 @@ begin
   FMarginLevel := lActualMargin;
   FMarginHeap := lActualHeap;
   FSingleCommand := lActualSingleCommand;
-end;
-
-function TSQLFormatter.RemovedUnusedSpaces(const aSQL: string): string;
-begin
-  result := ReplaceAllStrings(aSQL, ' )', ')');
-  result := ReplaceAllStrings(result, '( ', '(');
 end;
 
 function TSQLFormatter.ReplaceAllStrings(const aText, aOldPattern, aNewPattern: string): string;
@@ -451,7 +446,6 @@ begin
     end;
 
     result := lBuilder.ToString;
-    result := RemovedUnusedSpaces(result);
   finally
     lBuilder.Free;
   end;
