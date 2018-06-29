@@ -102,6 +102,10 @@ type
     LabelFileName: TLabel;
     LabelRecordInfo: TLabel;
     LabelFileNameValue: TLabel;
+    PanelSQLTab: TPanel;
+    LabelBase: TLabel;
+    LabelUser: TLabel;
+    LabelIP: TLabel;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);

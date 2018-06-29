@@ -28,6 +28,8 @@ object fMonitor: TfMonitor
     Align = alClient
     TabOrder = 0
     TabWidth = 110
+    ExplicitLeft = 28
+    ExplicitTop = -8
     object TabSheetLog: TTabSheet
       Caption = 'Log'
       object Splitter: TSplitter
@@ -172,8 +174,6 @@ object fMonitor: TfMonitor
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitTop = 66
-        ExplicitHeight = 322
         object DBGrid: TDBGrid
           Left = 0
           Top = 39
@@ -353,7 +353,6 @@ object fMonitor: TfMonitor
           ScrollBars = ssVertical
           WordWrap = True
           FontSmoothing = fsmNone
-          ExplicitHeight = 148
         end
       end
     end
@@ -363,9 +362,9 @@ object fMonitor: TfMonitor
       OnEnter = TabSheetSQLEnter
       object SynMemoTab: TSynMemo
         Left = 0
-        Top = 0
+        Top = 49
         Width = 1191
-        Height = 539
+        Height = 490
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -394,6 +393,36 @@ object fMonitor: TfMonitor
         ReadOnly = True
         RightEdge = 0
         FontSmoothing = fsmNone
+        ExplicitLeft = 170
+      end
+      object PanelSQLTab: TPanel
+        Left = 0
+        Top = 0
+        Width = 1191
+        Height = 49
+        Align = alTop
+        TabOrder = 1
+        object LabelBase: TLabel
+          Left = 4
+          Top = 8
+          Width = 27
+          Height = 13
+          Caption = 'Base:'
+        end
+        object LabelUser: TLabel
+          Left = 90
+          Top = 8
+          Width = 40
+          Height = 13
+          Caption = 'Usu'#225'rio:'
+        end
+        object LabelIP: TLabel
+          Left = 176
+          Top = 8
+          Width = 14
+          Height = 13
+          Caption = 'IP:'
+        end
       end
     end
     object TabSheetOptions: TTabSheet
@@ -747,10 +776,10 @@ object fMonitor: TfMonitor
         object ToggleSwitchShowLineNumbers: TToggleSwitch
           Left = 8
           Top = 23
-          Width = 171
+          Width = 208
           Height = 20
-          StateCaptions.CaptionOn = 'Exibir n'#250'mero das linhas'
-          StateCaptions.CaptionOff = 'Exibir n'#250'mero das linhas'
+          StateCaptions.CaptionOn = 'Exibir n'#250'mero das linhas na SQL'
+          StateCaptions.CaptionOff = 'Exibir n'#250'mero das linhas na SQL'
           TabOrder = 1
           OnClick = ToggleSwitchShowLineNumbersClick
         end
@@ -1480,7 +1509,7 @@ object fMonitor: TfMonitor
     Left = 1007
     Top = 344
     Content = {
-      414442530F00AD1D10030000FF00010001FF02FF03040020000000460044004D
+      414442530F00AC2110030000FF00010001FF02FF03040020000000460044004D
       0065006D005400610062006C006500460069006C0074006500720005000A0000
       005400610062006C006500060000000000070000080032000000090000FF0AFF
       0B040008000000540079007000650005000800000054007900700065000C0001
