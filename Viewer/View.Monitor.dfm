@@ -3,7 +3,7 @@ object fMonitor: TfMonitor
   Top = 0
   Caption = 'DB1 Log Viewer - 1.0'
   ClientHeight = 567
-  ClientWidth = 1199
+  ClientWidth = 1344
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -22,20 +22,18 @@ object fMonitor: TfMonitor
   object PageControl: TPageControl
     Left = 0
     Top = 0
-    Width = 1199
+    Width = 1344
     Height = 567
     ActivePage = TabSheetLog
     Align = alClient
     TabOrder = 0
     TabWidth = 110
-    ExplicitLeft = 28
-    ExplicitTop = -8
     object TabSheetLog: TTabSheet
       Caption = 'Log'
       object Splitter: TSplitter
         Left = 0
         Top = 381
-        Width = 1191
+        Width = 1336
         Height = 3
         Cursor = crVSplit
         Align = alBottom
@@ -45,18 +43,18 @@ object fMonitor: TfMonitor
       object PanelOptions: TPanel
         Left = 0
         Top = 0
-        Width = 1191
+        Width = 1336
         Height = 64
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 1
         DesignSize = (
-          1191
+          1336
           64)
         object LabelRecordInfoValue: TLabel
           Left = 613
           Top = 37
-          Width = 200
+          Width = 345
           Height = 13
           Anchors = [akLeft, akTop, akRight]
           AutoSize = False
@@ -66,6 +64,7 @@ object fMonitor: TfMonitor
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
+          ExplicitWidth = 200
         end
         object LabelFileName: TLabel
           Left = 558
@@ -98,7 +97,7 @@ object fMonitor: TfMonitor
         object LabelFileNameValue: TLabel
           Left = 614
           Top = 18
-          Width = 500
+          Width = 645
           Height = 13
           Anchors = [akLeft, akTop, akRight]
           AutoSize = False
@@ -108,6 +107,7 @@ object fMonitor: TfMonitor
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
+          ExplicitWidth = 500
         end
         object ActionToolBar: TActionToolBar
           Left = 0
@@ -169,7 +169,7 @@ object fMonitor: TfMonitor
       object PanelGrid: TPanel
         Left = 0
         Top = 64
-        Width = 1191
+        Width = 1336
         Height = 317
         Align = alClient
         BevelOuter = bvNone
@@ -177,7 +177,7 @@ object fMonitor: TfMonitor
         object DBGrid: TDBGrid
           Left = 0
           Top = 39
-          Width = 1191
+          Width = 1336
           Height = 278
           Align = alClient
           DataSource = DataSource
@@ -244,7 +244,7 @@ object fMonitor: TfMonitor
         object DBGridFilter: TDBGrid
           Left = 0
           Top = 0
-          Width = 1191
+          Width = 1336
           Height = 39
           TabStop = False
           Align = alTop
@@ -313,16 +313,16 @@ object fMonitor: TfMonitor
       object PanelSQL: TPanel
         Left = 0
         Top = 384
-        Width = 1191
+        Width = 1336
         Height = 155
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 2
         object SynMemoSQL: TSynMemo
           Left = 0
-          Top = 0
-          Width = 1191
-          Height = 155
+          Top = 29
+          Width = 1336
+          Height = 126
           Align = alClient
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -353,6 +353,37 @@ object fMonitor: TfMonitor
           ScrollBars = ssVertical
           WordWrap = True
           FontSmoothing = fsmNone
+          ExplicitTop = 34
+          ExplicitHeight = 121
+        end
+        object PanelFilterSQL: TPanel
+          Left = 0
+          Top = 0
+          Width = 1336
+          Height = 29
+          Align = alTop
+          BevelOuter = bvNone
+          TabOrder = 1
+          DesignSize = (
+            1336
+            29)
+          object LabelFilterSQL: TLabel
+            Left = 4
+            Top = 7
+            Width = 28
+            Height = 13
+            Caption = 'Filtro:'
+          end
+          object EditSQLFilter: TEdit
+            Left = 36
+            Top = 4
+            Width = 1299
+            Height = 21
+            Anchors = [akLeft, akTop, akRight]
+            MaxLength = 200
+            TabOrder = 0
+            OnKeyPress = EditSQLFilterKeyPress
+          end
         end
       end
     end
@@ -362,9 +393,9 @@ object fMonitor: TfMonitor
       OnEnter = TabSheetSQLEnter
       object SynMemoTab: TSynMemo
         Left = 0
-        Top = 49
-        Width = 1191
-        Height = 490
+        Top = 45
+        Width = 1336
+        Height = 494
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -393,35 +424,95 @@ object fMonitor: TfMonitor
         ReadOnly = True
         RightEdge = 0
         FontSmoothing = fsmNone
-        ExplicitLeft = 170
       end
       object PanelSQLTab: TPanel
         Left = 0
         Top = 0
-        Width = 1191
-        Height = 49
+        Width = 1336
+        Height = 45
         Align = alTop
         TabOrder = 1
-        object LabelBase: TLabel
-          Left = 4
-          Top = 8
-          Width = 27
-          Height = 13
-          Caption = 'Base:'
+        object DBNavigator: TDBNavigator
+          Left = 1215
+          Top = 1
+          Width = 120
+          Height = 43
+          DataSource = DataSource
+          VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast]
+          Align = alRight
+          TabOrder = 0
         end
-        object LabelUser: TLabel
-          Left = 90
-          Top = 8
-          Width = 40
-          Height = 13
-          Caption = 'Usu'#225'rio:'
+        object LabeledEditDatabase: TLabeledEdit
+          Left = 3
+          Top = 17
+          Width = 95
+          Height = 21
+          EditLabel.Width = 27
+          EditLabel.Height = 13
+          EditLabel.Caption = 'Base:'
+          LabelSpacing = 2
+          ReadOnly = True
+          TabOrder = 1
         end
-        object LabelIP: TLabel
-          Left = 176
-          Top = 8
-          Width = 14
-          Height = 13
-          Caption = 'IP:'
+        object LabeledEditUser: TLabeledEdit
+          Left = 103
+          Top = 17
+          Width = 160
+          Height = 21
+          EditLabel.Width = 40
+          EditLabel.Height = 13
+          EditLabel.Caption = 'Usu'#225'rio:'
+          LabelSpacing = 2
+          ReadOnly = True
+          TabOrder = 2
+        end
+        object LabeledEditIP: TLabeledEdit
+          Left = 268
+          Top = 17
+          Width = 110
+          Height = 21
+          EditLabel.Width = 14
+          EditLabel.Height = 13
+          EditLabel.Caption = 'IP:'
+          LabelSpacing = 2
+          ReadOnly = True
+          TabOrder = 3
+        end
+        object LabeledEditDateTime: TLabeledEdit
+          Left = 383
+          Top = 17
+          Width = 121
+          Height = 21
+          EditLabel.Width = 54
+          EditLabel.Height = 13
+          EditLabel.Caption = 'Data/Hora:'
+          LabelSpacing = 2
+          ReadOnly = True
+          TabOrder = 4
+        end
+        object LabeledEditClass: TLabeledEdit
+          Left = 509
+          Top = 17
+          Width = 200
+          Height = 21
+          EditLabel.Width = 35
+          EditLabel.Height = 13
+          EditLabel.Caption = 'Classe:'
+          LabelSpacing = 2
+          ReadOnly = True
+          TabOrder = 5
+        end
+        object LabeledEditMethod: TLabeledEdit
+          Left = 714
+          Top = 17
+          Width = 442
+          Height = 21
+          EditLabel.Width = 40
+          EditLabel.Height = 13
+          EditLabel.Caption = 'M'#233'todo:'
+          LabelSpacing = 2
+          ReadOnly = True
+          TabOrder = 6
         end
       end
     end
@@ -1432,7 +1523,9 @@ object fMonitor: TfMonitor
   object LogViewer: TFDLogViewer
     Active = True
     AfterScroll = LogViewerAfterScroll
+    Filtered = True
     FilterOptions = [foCaseInsensitive]
+    Filter = '1 = 1'
     FieldDefs = <
       item
         Name = 'Type'
@@ -1509,7 +1602,7 @@ object fMonitor: TfMonitor
     Left = 1007
     Top = 344
     Content = {
-      414442530F00AC2110030000FF00010001FF02FF03040020000000460044004D
+      414442530F00372210030000FF00010001FF02FF03040020000000460044004D
       0065006D005400610062006C006500460069006C0074006500720005000A0000
       005400610062006C006500060000000000070000080032000000090000FF0AFF
       0B040008000000540079007000650005000800000054007900700065000C0001

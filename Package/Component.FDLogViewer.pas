@@ -199,6 +199,8 @@ begin
   Self.FCounter := 0;
   Self.FShowOnlySQL := False;
   Self.FLogFileName := EmptyStr;
+  Self.Filter := '1 = 1';
+  Self.Filtered := True;
 
   FStringListLine.Delimiter := ';';
   FStringListLine.StrictDelimiter := True;
@@ -272,8 +274,7 @@ end;
 
 procedure TFDLogViewer.RemoveFilter;
 begin
-  Self.Filter := EmptyStr;
-  Self.Filtered := False;
+  Self.Filter := '1 = 1';
   Self.Last;
 end;
 

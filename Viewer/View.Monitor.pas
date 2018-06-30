@@ -18,7 +18,7 @@ uses
   Vcl.WinXCtrls,
   FireDAC.Stan.StorageBin, SynEdit, SynMemo,
   SynEditHighlighter, SynHighlighterSQL, SQL.Formatter, FireDAC.Phys.Intf,
-  FireDAC.DApt.Intf, System.ImageList, Vcl.ImgList, Vcl.ToolWin;
+  FireDAC.DApt.Intf, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.DBCtrls;
 
 type
   TfMonitor = class(TForm)
@@ -103,9 +103,16 @@ type
     LabelRecordInfo: TLabel;
     LabelFileNameValue: TLabel;
     PanelSQLTab: TPanel;
-    LabelBase: TLabel;
-    LabelUser: TLabel;
-    LabelIP: TLabel;
+    DBNavigator: TDBNavigator;
+    LabeledEditDatabase: TLabeledEdit;
+    LabeledEditUser: TLabeledEdit;
+    LabeledEditIP: TLabeledEdit;
+    LabeledEditDateTime: TLabeledEdit;
+    LabeledEditClass: TLabeledEdit;
+    LabeledEditMethod: TLabeledEdit;
+    PanelFilterSQL: TPanel;
+    LabelFilterSQL: TLabel;
+    EditSQLFilter: TEdit;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
@@ -118,7 +125,6 @@ type
     procedure LogViewerAfterScroll(DataSet: TDataSet);
     procedure MenuItemCopyColumnValueClick(Sender: TObject);
     procedure MenuItemCopySQLClick(Sender: TObject);
-    procedure TabSheetSQLEnter(Sender: TObject);
     procedure TimerAutoUpdateTimer(Sender: TObject);
     procedure ToggleSwitchHighlightErrorsClick(Sender: TObject);
     procedure ToggleSwitchIgnoreBasicLogClick(Sender: TObject);
@@ -135,6 +141,8 @@ type
     procedure ToggleSwitchRowSelectClick(Sender: TObject);
     procedure LabelRowSelectInfoClick(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
+    procedure EditSQLFilterKeyPress(Sender: TObject; var Key: Char);
+    procedure TabSheetSQLEnter(Sender: TObject);
   private
     // class fields
     FLoadingOptionsAtStartup: boolean;
@@ -155,11 +163,13 @@ type
     procedure ClearFilters;
     procedure CopyColumnValue;
     procedure GetMostRecentLog;
+    procedure LoadLineDetails;
     procedure LoadLog;
     procedure LoadLogAtTimer;
     procedure LoadOptions;
     procedure LoadSelectedStyle(const aSelectedStyle: string);
     procedure LoadSQLBottomPanel;
+    procedure LoadSQLTab;
     procedure LoadStylesList;
     procedure LoadTypePickList;
     procedure ManageTimer;
@@ -241,8 +251,6 @@ begin
 
   lBuilderFilter := TStringBuilder.Create;
   try
-    lBuilderFilter.Append('1 = 1');
-
     for lField in FDMemTableFilter.Fields do
     begin
       if not lField.AsString.IsEmpty then
@@ -344,6 +352,16 @@ begin
   end;
 end;
 
+procedure TfMonitor.LoadLineDetails;
+begin
+  LabeledEditDatabase.Text := LogViewer.FieldByName('Database').AsString;
+  LabeledEditUser.Text := LogViewer.FieldByName('User').AsString;
+  LabeledEditIP.Text := LogViewer.FieldByName('IP').AsString;
+  LabeledEditDateTime.Text := LogViewer.FieldByName('DateTime').AsString;
+  LabeledEditClass.Text := LogViewer.FieldByName('Class').AsString;
+  LabeledEditMethod.Text := LogViewer.FieldByName('Method').AsString;
+end;
+
 procedure TfMonitor.LoadLog;
 var
   fLoading: TfLoading;
@@ -432,6 +450,17 @@ begin
     SynMemoSQL.Lines.Text := FSQLFormatter.FormatSQL(LogViewer.GetSQL)
   else
     SynMemoSQL.Lines.Text := LogViewer.GetSQL;
+end;
+
+procedure TfMonitor.LoadSQLTab;
+begin
+  SynMemoSQL.Lines.Clear;
+
+  if LogViewer.IsSQLEmpty then
+    Exit;
+
+  SynMemoTab.Lines.Text := FSQLFormatter.FormatSQL(LogViewer.GetSQL);
+  LoadLineDetails;
 end;
 
 procedure TfMonitor.LoadStylesList;
@@ -528,7 +557,33 @@ end;
 procedure TfMonitor.DBGridKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = #13 then
+  begin
+    Key := #0;
     OpenSQLTab;
+  end;
+end;
+
+procedure TfMonitor.EditSQLFilterKeyPress(Sender: TObject; var Key: Char);
+var
+  lValue: string;
+  lSQLFilter: string;
+begin
+  if Key = #13 then
+  begin
+    Key := #0;
+
+    if Trim(EditSQLFilter.Text).IsEmpty then
+    begin
+      BuildFilter;
+      Exit;
+    end;
+
+    lValue := '%' + Trim(EditSQLFilter.Text) + '%';
+    lSQLFilter := Format(' and Type = %s and SQL like %s',
+      ['SQL'.QuotedString, lValue.QuotedString]);
+
+    LogViewer.Filter := LogViewer.Filter + lSQLFilter;
+  end;
 end;
 
 procedure TfMonitor.OnDrawColumnCellHighlight(Sender: TObject; const Rect: TRect; DataCol: Integer;
@@ -651,6 +706,9 @@ procedure TfMonitor.LogViewerAfterScroll(DataSet: TDataSet);
 begin
   ShowRecordInfo;
   LoadSQLBottomPanel;
+
+  if PageControl.ActivePage = TabSheetSQL then
+    LoadSQLTab;
 end;
 
 procedure TfMonitor.MenuItemCopyColumnValueClick(Sender: TObject);
@@ -666,10 +724,7 @@ end;
 
 procedure TfMonitor.TabSheetSQLEnter(Sender: TObject);
 begin
-  if LogViewer.IsSQLEmpty then
-    Exit;
-
-  SynMemoTab.Lines.Text := FSQLFormatter.FormatSQL(LogViewer.GetSQL);
+  LoadSQLTab;
 end;
 
 procedure TfMonitor.TimerAutoUpdateTimer(Sender: TObject);
