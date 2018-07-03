@@ -113,6 +113,7 @@ type
     PanelFilterSQL: TPanel;
     LabelFilterSQL: TLabel;
     EditSQLFilter: TEdit;
+    ToggleSwitchUseToDateFunction: TToggleSwitch;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
@@ -454,10 +455,10 @@ end;
 
 procedure TfMonitor.LoadSQLTab;
 begin
-  SynMemoSQL.Lines.Clear;
-
+  SynMemoTab.Lines.Clear;
+  
   if LogViewer.IsSQLEmpty then
-    Exit;
+  Exit;
 
   SynMemoTab.Lines.Text := FSQLFormatter.FormatSQL(LogViewer.GetSQL);
   LoadLineDetails;
@@ -491,7 +492,7 @@ begin
     Add('AVISO');
     Add('SAIDA');
     Add('SQL');
-  end;
+    end;
 end;
 
 procedure TfMonitor.CheckBoxAutoUpdateClick(Sender: TObject);
@@ -508,10 +509,10 @@ var
   lField: TField;
 begin
   FDMemTableFilter.Edit;
-
+  
   for lField in FDMemTableFilter.Fields do
-    lField.Clear;
-
+  lField.Clear;
+  
   BuildFilter;
 end;
 
@@ -571,20 +572,20 @@ begin
   if Key = #13 then
   begin
     Key := #0;
-
+    
     if Trim(EditSQLFilter.Text).IsEmpty then
     begin
       BuildFilter;
       Exit;
     end;
-
+    
     lValue := '%' + Trim(EditSQLFilter.Text) + '%';
     lSQLFilter := Format(' and Type = %s and SQL like %s',
-      ['SQL'.QuotedString, lValue.QuotedString]);
-
+    ['SQL'.QuotedString, lValue.QuotedString]);
+    
     LogViewer.Filter := LogViewer.Filter + lSQLFilter;
+    end;
   end;
-end;
 
 procedure TfMonitor.OnDrawColumnCellHighlight(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
@@ -725,7 +726,7 @@ end;
 procedure TfMonitor.TabSheetSQLEnter(Sender: TObject);
 begin
   LoadSQLTab;
-end;
+  end;
 
 procedure TfMonitor.TimerAutoUpdateTimer(Sender: TObject);
 begin

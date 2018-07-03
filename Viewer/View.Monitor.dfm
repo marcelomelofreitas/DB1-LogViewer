@@ -353,8 +353,6 @@ object fMonitor: TfMonitor
           ScrollBars = ssVertical
           WordWrap = True
           FontSmoothing = fsmNone
-          ExplicitTop = 34
-          ExplicitHeight = 121
         end
         object PanelFilterSQL: TPanel
           Left = 0
@@ -604,7 +602,7 @@ object fMonitor: TfMonitor
       end
       object GroupBoxVisual: TGroupBox
         Left = 18
-        Top = 252
+        Top = 279
         Width = 327
         Height = 143
         Caption = 'Visual: '
@@ -833,7 +831,7 @@ object fMonitor: TfMonitor
         Left = 18
         Top = 159
         Width = 327
-        Height = 80
+        Height = 109
         Caption = 'SQL: '
         TabOrder = 3
         object LabelAutoFormatInfo: TLabel
@@ -873,6 +871,16 @@ object fMonitor: TfMonitor
           StateCaptions.CaptionOff = 'Exibir n'#250'mero das linhas na SQL'
           TabOrder = 1
           OnClick = ToggleSwitchShowLineNumbersClick
+        end
+        object ToggleSwitchUseToDateFunction: TToggleSwitch
+          Left = 8
+          Top = 75
+          Width = 283
+          Height = 20
+          StateCaptions.CaptionOn = 'Identar SQL automaticamente no painel inferior'
+          StateCaptions.CaptionOff = 'Usar fun'#231#227'o "to_date" para as datas'
+          TabOrder = 2
+          OnClick = ToggleSwitchAutoFormatSQLClick
         end
       end
     end
@@ -1602,7 +1610,7 @@ object fMonitor: TfMonitor
     Left = 1007
     Top = 344
     Content = {
-      414442530F00372210030000FF00010001FF02FF03040020000000460044004D
+      414442530F00BE1610030000FF00010001FF02FF03040020000000460044004D
       0065006D005400610062006C006500460069006C0074006500720005000A0000
       005400610062006C006500060000000000070000080032000000090000FF0AFF
       0B040008000000540079007000650005000800000054007900700065000C0001
