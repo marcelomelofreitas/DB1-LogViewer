@@ -19,12 +19,13 @@ type
     FMarginHeap: smallint;
     FSameLinePosition: smallint;
     FSingleCommand: boolean;
+    FUseToDateFunction: boolean;
 
     // private functions
     function BreakLineNeeded(const aValue: string): boolean;
     function ExtractCommand(const aSQL: string): string;
     function ExtractSubSelect(const aSQL: string): string;
-    function FormatDate(const aDate: TDateTime): string;
+    function FormatDateTimeWithToDateFunction(const aDateTime: TDateTime): string;
     function IdentSQL(const aPreparedSQL: string): string;
     function IsCommand(const aValue: string): boolean;
     function PrepareSQL(const aSQL: string): string;
@@ -53,6 +54,8 @@ type
 
     // main function
     function FormatSQL(const aSQL: string): string;
+
+    property UseToDateFunction: boolean write FUseToDateFunction;
   end;
 
 implementation
@@ -259,6 +262,7 @@ var
   lType: string;
   lValue: string;
   lParam: string;
+  lDate: TDateTime;
 
   function IsDateTimeParameter: boolean;
   begin
@@ -284,7 +288,14 @@ begin
     end;
 
     if IsDateTimeParameter then
-      lValue := FormatDate(StrToDateTime(lValue));
+    begin
+      lDate := StrToDateTime(lValue);
+
+      if FUseToDateFunction then
+        lValue := FormatDateTimeWithToDateFunction(lDate)
+      else
+        lValue := QuotedStr(FormatDateTime('dd/mm/yyyy hh:nn:ss', lDate));
+    end;
 
     result := ReplaceAllStrings(result, lName, lValue);
   end;
@@ -354,9 +365,14 @@ begin
   FStringListValues.Free;
 end;
 
-function TSQLFormatter.FormatDate(const aDate: TDateTime): string;
+function TSQLFormatter.FormatDateTimeWithToDateFunction(
+  const aDateTime: TDateTime): string;
+var
+  lToDateFunction: string;
 begin
-  result := QuotedStr(FormatDateTime('dd/mm/yyyy hh:nn:ss', aDate));
+  lToDateFunction := 'to_date(%s, ''dd-mm-yyyy hh24:mi:ss'')';
+  result := Format(lToDateFunction,
+    [FormatDateTime('dd/mm/yyyy hh:nn:ss', aDateTime).QuotedString]);
 end;
 
 function TSQLFormatter.FormatSQL(const aSQL: string): string;

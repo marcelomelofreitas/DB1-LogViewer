@@ -241,7 +241,7 @@ object fMonitor: TfMonitor
               Visible = True
             end>
         end
-        object DBGridFilter: TDBGrid
+        object DBGridFilter: TDBGridLog
           Left = 0
           Top = 0
           Width = 1336
@@ -258,7 +258,9 @@ object fMonitor: TfMonitor
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           OnColEnter = DBGridFilterColEnter
+          OnColumnMoved = DBGridFilterColumnMoved
           OnKeyPress = DBGridFilterKeyPress
+          OnColResize = DBGridFilterColResize
           Columns = <
             item
               Expanded = False
@@ -875,12 +877,12 @@ object fMonitor: TfMonitor
         object ToggleSwitchUseToDateFunction: TToggleSwitch
           Left = 8
           Top = 75
-          Width = 283
+          Width = 286
           Height = 20
-          StateCaptions.CaptionOn = 'Identar SQL automaticamente no painel inferior'
-          StateCaptions.CaptionOff = 'Usar fun'#231#227'o "to_date" para as datas'
+          StateCaptions.CaptionOn = 'Usar fun'#231#227'o "to_date" nos par'#226'metros de datas'
+          StateCaptions.CaptionOff = 'Usar fun'#231#227'o "to_date" nos par'#226'metros de datas'
           TabOrder = 2
-          OnClick = ToggleSwitchAutoFormatSQLClick
+          OnClick = ToggleSwitchUseToDateFunctionClick
         end
       end
     end
@@ -1533,7 +1535,7 @@ object fMonitor: TfMonitor
     AfterScroll = LogViewerAfterScroll
     Filtered = True
     FilterOptions = [foCaseInsensitive]
-    Filter = '1 = 1'
+    Filter = '(1 = 1)'
     FieldDefs = <
       item
         Name = 'Type'
@@ -1610,7 +1612,7 @@ object fMonitor: TfMonitor
     Left = 1007
     Top = 344
     Content = {
-      414442530F00BE1610030000FF00010001FF02FF03040020000000460044004D
+      414442530F00963110030000FF00010001FF02FF03040020000000460044004D
       0065006D005400610062006C006500460069006C0074006500720005000A0000
       005400610062006C006500060000000000070000080032000000090000FF0AFF
       0B040008000000540079007000650005000800000054007900700065000C0001

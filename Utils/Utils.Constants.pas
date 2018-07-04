@@ -13,7 +13,7 @@ const
   sROW_SELECT = 'RowSelect';
   sSHOW_LINE_NUMBERS = 'ShowLineNumbers';
   sAUTO_FORMAT_SQL = 'AutoFormatSQL';
-
+  sUSE_TODATE_FUNCTION = 'UseToDateFunction';
 
   sDEFAULT_STYLE = 'Windows';
   sSELECTED_STYLE = 'SelectedStyle';

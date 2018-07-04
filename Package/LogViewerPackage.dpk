@@ -38,12 +38,13 @@ requires
   xmlrtl,
   vcl,
   vclimg,
-  vclwinx;
+  vclwinx,
+  vcldb;
 
 contains
   Component.FDLogViewer in 'Component.FDLogViewer.pas',
   Utils.Helpers in '..\Utils\Utils.Helpers.pas',
-  Utils.Constants in '..\Utils\Utils.Constants.pas';
+  Utils.Constants in '..\Utils\Utils.Constants.pas',
+  Component.DBGridLog in 'Component.DBGridLog.pas';
 
 end.
-

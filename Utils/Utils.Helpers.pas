@@ -20,9 +20,9 @@ type
 
   TToggleSwitchHelper = class helper for TToggleSwitch
   private
-    procedure SetChecked(const aChecked: boolean);
+    procedure SetActive(const aChecked: boolean);
   public
-    property Checked: boolean write SetChecked;
+    property Active: boolean write SetActive;
   end;
 
 implementation
@@ -58,7 +58,7 @@ end;
 
 { TToggleSwitchHelper }
 
-procedure TToggleSwitchHelper.SetChecked(const aChecked: boolean);
+procedure TToggleSwitchHelper.SetActive(const aChecked: boolean);
 begin
   if aChecked then
     Self.State := tssOn

@@ -18,7 +18,8 @@ uses
   Vcl.WinXCtrls,
   FireDAC.Stan.StorageBin, SynEdit, SynMemo,
   SynEditHighlighter, SynHighlighterSQL, SQL.Formatter, FireDAC.Phys.Intf,
-  FireDAC.DApt.Intf, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.DBCtrls;
+  FireDAC.DApt.Intf, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.DBCtrls,
+  Component.DBGridLog;
 
 type
   TfMonitor = class(TForm)
@@ -79,7 +80,7 @@ type
     ToggleSwitchStayOnTop: TToggleSwitch;
     ToggleSwitchShowBottomPanel: TToggleSwitch;
     LabelIgnoreBasicLogInfo: TLabel;
-    DBGridFilter: TDBGrid;
+    DBGridFilter: TDBGridLog;
     DataSourceFilter: TDataSource;
     FDMemTableFilter: TFDMemTable;
     FDMemTableFilterType: TStringField;
@@ -144,6 +145,10 @@ type
     procedure PopupMenuPopup(Sender: TObject);
     procedure EditSQLFilterKeyPress(Sender: TObject; var Key: Char);
     procedure TabSheetSQLEnter(Sender: TObject);
+    procedure ToggleSwitchUseToDateFunctionClick(Sender: TObject);
+    procedure DBGridFilterColumnMoved(Sender: TObject; FromIndex,
+      ToIndex: Integer);
+    procedure DBGridFilterColResize(Sender: TObject);
   private
     // class fields
     FLoadingOptionsAtStartup: boolean;
@@ -247,8 +252,10 @@ procedure TfMonitor.BuildFilter;
 var
   lBuilderFilter: TStringBuilder;
   lField: TField;
+  lSQLFilter: string;
 begin
-  FDMemTableFilter.Post;
+  if FDMemTableFilter.State in dsEditModes then
+    FDMemTableFilter.Post;
 
   lBuilderFilter := TStringBuilder.Create;
   try
@@ -262,6 +269,13 @@ begin
           .Append(' like ')
           .Append(QuotedStr('%' + lField.AsString + '%'));
       end;
+    end;
+
+    if not Trim(EditSQLFilter.Text).IsEmpty then
+    begin
+      lSQLFilter := '%' + Trim(EditSQLFilter.Text) + '%';
+      lBuilderFilter.Append(Format(' and Type = %s and SQL like %s',
+        ['SQL'.QuotedString, lSQLFilter.QuotedString]));
     end;
 
     LogViewer.SetLogFilter(lBuilderFilter.ToString);
@@ -409,13 +423,14 @@ begin
   lOptions := TOptions.Create;
   try
     CheckBoxAutoUpdate.Checked := lOptions.ReadEnabled(sAUTO_UPDATE_ENABLED);
-    ToggleSwitchShowOnlySQL.Checked := lOptions.ReadEnabled(sSHOW_ONLY_SQL);
-    ToggleSwitchHighlightErrors.Checked := lOptions.ReadEnabled(sHIGHLIGHT_ERRORS);
-    ToggleSwitchShowBottomPanel.Checked := lOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
-    ToggleSwitchIgnoreBasicLog.Checked := lOptions.ReadEnabled(sIGNORE_BASIC_LOG);
-    ToggleSwitchRowSelect.Checked := lOptions.ReadEnabled(sROW_SELECT);
-    ToggleSwitchStayOnTop.Checked := lOptions.ReadEnabled(sSTAY_ON_TOP);
-    ToggleSwitchShowLineNumbers.Checked := lOptions.ReadEnabled(sSHOW_LINE_NUMBERS);
+    ToggleSwitchShowOnlySQL.Active := lOptions.ReadEnabled(sSHOW_ONLY_SQL);
+    ToggleSwitchHighlightErrors.Active := lOptions.ReadEnabled(sHIGHLIGHT_ERRORS);
+    ToggleSwitchShowBottomPanel.Active := lOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
+    ToggleSwitchIgnoreBasicLog.Active := lOptions.ReadEnabled(sIGNORE_BASIC_LOG);
+    ToggleSwitchRowSelect.Active := lOptions.ReadEnabled(sROW_SELECT);
+    ToggleSwitchStayOnTop.Active := lOptions.ReadEnabled(sSTAY_ON_TOP);
+    ToggleSwitchShowLineNumbers.Active := lOptions.ReadEnabled(sSHOW_LINE_NUMBERS);
+    ToggleSwitchUseToDateFunction.Active := lOptions.ReadEnabled(sUSE_TODATE_FUNCTION);
     LoadSelectedStyle(lOptions.ReadValue(sSELECTED_STYLE));
   finally
     lOptions.Free;
@@ -547,10 +562,31 @@ begin
     DBGridFilter.EditorMode := True;
 end;
 
+procedure TfMonitor.DBGridFilterColResize(Sender: TObject);
+var
+  Counter: integer;
+begin
+  for Counter := 0 to Pred(DBGridFilter.Columns.Count) do
+    DBGrid.Columns[Counter].Width := DBGridFilter.Columns[Counter].Width;
+end;
+
+procedure TfMonitor.DBGridFilterColumnMoved(Sender: TObject; FromIndex,
+  ToIndex: Integer);
+var
+  Counter: integer;
+begin
+  for Counter := 0 to Pred(DBGridFilter.Columns.Count) do
+  begin
+    DBGrid.Columns[Counter].FieldName := DBGridFilter.Columns[Counter].FieldName;
+    DBGrid.Columns[Counter].Width := DBGridFilter.Columns[Counter].Width;
+  end;
+end;
+
 procedure TfMonitor.DBGridFilterKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = #13 then
   begin
+    Key := #0;
     BuildFilter;
   end;
 end;
@@ -565,27 +601,13 @@ begin
 end;
 
 procedure TfMonitor.EditSQLFilterKeyPress(Sender: TObject; var Key: Char);
-var
-  lValue: string;
-  lSQLFilter: string;
 begin
   if Key = #13 then
   begin
     Key := #0;
-    
-    if Trim(EditSQLFilter.Text).IsEmpty then
-    begin
-      BuildFilter;
-      Exit;
-    end;
-    
-    lValue := '%' + Trim(EditSQLFilter.Text) + '%';
-    lSQLFilter := Format(' and Type = %s and SQL like %s',
-    ['SQL'.QuotedString, lValue.QuotedString]);
-    
-    LogViewer.Filter := LogViewer.Filter + lSQLFilter;
-    end;
+    BuildFilter;
   end;
+end;
 
 procedure TfMonitor.OnDrawColumnCellHighlight(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
@@ -818,6 +840,15 @@ begin
   Self.FormStyle := fsNormal;
   if lEnable then
     Self.FormStyle := fsStayOnTop;
+end;
+
+procedure TfMonitor.ToggleSwitchUseToDateFunctionClick(Sender: TObject);
+var
+  lEnable: boolean;
+begin
+  lEnable := ToggleSwitchUseToDateFunction.IsOn;
+  FSQLFormatter.UseToDateFunction := lEnable;
+  SaveOption(sUSE_TODATE_FUNCTION, lEnable.ToString);
 end;
 
 end.
