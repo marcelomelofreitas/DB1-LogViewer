@@ -19,7 +19,7 @@ uses
   FireDAC.Stan.StorageBin, SynEdit, SynMemo,
   SynEditHighlighter, SynHighlighterSQL, SQL.Formatter, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.DBCtrls,
-  Component.DBGridLog;
+  Component.DBGridLog, Utils.Options;
 
 type
   TfMonitor = class(TForm)
@@ -80,7 +80,6 @@ type
     ToggleSwitchStayOnTop: TToggleSwitch;
     ToggleSwitchShowBottomPanel: TToggleSwitch;
     LabelIgnoreBasicLogInfo: TLabel;
-    DBGridFilter: TDBGridLog;
     DataSourceFilter: TDataSource;
     FDMemTableFilter: TFDMemTable;
     FDMemTableFilterType: TStringField;
@@ -115,6 +114,10 @@ type
     LabelFilterSQL: TLabel;
     EditSQLFilter: TEdit;
     ToggleSwitchUseToDateFunction: TToggleSwitch;
+    PanelDBGridFilter: TPanel;
+    DBGridFilter: TDBGridLog;
+    ToggleSwitchStartMaximized: TToggleSwitch;
+    LabelUseToDateFunctionInfo: TLabel;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
@@ -149,10 +152,17 @@ type
     procedure DBGridFilterColumnMoved(Sender: TObject; FromIndex,
       ToIndex: Integer);
     procedure DBGridFilterColResize(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure SplitterMoved(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure SpinEditIntervalChange(Sender: TObject);
+    procedure ToggleSwitchStartMaximizedClick(Sender: TObject);
+    procedure LabelUseToDateFunctionInfoClick(Sender: TObject);
   private
     // class fields
     FLoadingOptionsAtStartup: boolean;
     FSQLFormatter: TSQLFormatter;
+    FLastDirectory: string;
 
     // event handlers
     procedure OnDrawColumnCellHighlight(Sender: TObject; const Rect: TRect; DataCol: Integer;
@@ -170,17 +180,21 @@ type
     procedure CopyColumnValue;
     procedure GetMostRecentLog;
     procedure LoadLineDetails;
+    procedure LoadLastDirectory(aOptions: TOptions);
     procedure LoadLog;
     procedure LoadLogAtTimer;
     procedure LoadOptions;
+    procedure LoadPreferences(aOptions: TOptions);
     procedure LoadSelectedStyle(const aSelectedStyle: string);
     procedure LoadSQLBottomPanel;
     procedure LoadSQLTab;
     procedure LoadStylesList;
     procedure LoadTypePickList;
+    procedure LoadWindowParams(aOptions: TOptions);
     procedure ManageTimer;
     procedure OpenSQLTab;
     procedure SaveOption(const aKey: string; const aValue: string);
+    procedure ShowInfoMessage(const aMessage: string);
     procedure ShowRecordInfo;
   end;
 
@@ -190,7 +204,7 @@ var
 implementation
 
 uses
-  VCL.Themes, ClipBrd, Utils.Options, Utils.Constants, Utils.Helpers,
+  VCL.Themes, ClipBrd, Utils.Constants, Utils.Helpers,
   View.Loading, System.UITypes;
 
 {$R *.dfm}
@@ -201,7 +215,7 @@ var
 begin
   lOpenDialog := TOpenDialog.Create(nil);
   try
-    lOpenDialog.InitialDir := 'Q:\bin';
+    lOpenDialog.InitialDir := FLastDirectory;
     lOpenDialog.Filter := 'Log de métodos do servidor|spLogMetodoServidor*.txt|Arquivos TXT|*.txt';
     lOpenDialog.DefaultExt := 'txt';
 
@@ -300,7 +314,7 @@ var
   lFileTime: TFileTime;
   lFileName: string;
 begin
-  if FindFirst('Q:\Bin\spLogMetodoServidor*.txt', faNormal, lSearchRec) <> 0 then
+  if FindFirst(FLastDirectory + 'spLogMetodoServidor*.txt', faNormal, lSearchRec) <> 0 then
     Exit;
 
   lFileTime.dwLowDateTime := 0;
@@ -315,7 +329,7 @@ begin
   until FindNext(lSearchRec) <> 0;
 
   FindClose(lSearchRec);
-  LabelFileNameValue.Caption := 'Q:\bin\' + lFileName.Trim;
+  LabelFileNameValue.Caption := FLastDirectory + lFileName.Trim;
   LoadLog;
 end;
 
@@ -331,40 +345,36 @@ begin
       .Append('Obs: A opção se refere apenas ao painel inferior na aba "Log". ')
       .Append('Na aba "SQL", a identação SEMPRE será aplicada.');
 
-    MessageDlg(lStringBuilder.ToString, mtInformation, [mbOK], 0);
+    ShowInfoMessage(lStringBuilder.ToString);
   finally
     lStringBuilder.Free;
   end;
 end;
 
 procedure TfMonitor.LabelIgnoreBasicLogInfoClick(Sender: TObject);
-var
-  lStringBuilder: TStringBuilder;
 begin
-  lStringBuilder := TStringBuilder.Create;
-  try
-    lStringBuilder
-      .Append('Ignora os métodos da classe TfpgServidorDM, como "Login", "LoginInterno" e "AutenticarUsuario".');
-
-    MessageDlg(lStringBuilder.ToString, mtInformation, [mbOK], 0);
-  finally
-    lStringBuilder.Free;
-  end;
+  ShowInfoMessage(
+    'Ignora os métodos da classe TfpgServidorDM, como "Login", "LoginInterno" e "AutenticarUsuario".');
 end;
 
 procedure TfMonitor.LabelRowSelectInfoClick(Sender: TObject);
-var
-  lStringBuilder: TStringBuilder;
 begin
-  lStringBuilder := TStringBuilder.Create;
-  try
-    lStringBuilder
-      .Append('Ao habilitar essa opção, a cópia do valor da coluna (Ctrl + Q) ficará indisponível.');
+  ShowInfoMessage(
+    'Ao habilitar essa opção, a cópia do valor da coluna (Ctrl + Q) ficará indisponível.');
+end;
 
-    MessageDlg(lStringBuilder.ToString, mtInformation, [mbOK], 0);
-  finally
-    lStringBuilder.Free;
-  end;
+procedure TfMonitor.LabelUseToDateFunctionInfoClick(Sender: TObject);
+begin
+  ShowInfoMessage(
+    'A função "to_date" normalmente é utilizada em SQLs do banco de dados Oracle.');
+end;
+
+procedure TfMonitor.LoadLastDirectory(aOptions: TOptions);
+begin
+  FLastDirectory := aOptions.ReadValue(sLAST_DIRECTORY);
+
+  if FLastDirectory.IsEmpty then
+    FLastDirectory := sDEFAULT_DIRECTORY;
 end;
 
 procedure TfMonitor.LoadLineDetails;
@@ -386,6 +396,8 @@ begin
 
   if not IsContentValid then
     Exit;
+
+  SaveOption(sLAST_DIRECTORY, ExtractFilePath(LabelFileNameValue.Caption));
 
   TimerAutoUpdate.Enabled := False;
   LogViewer.EmptyDataSet;
@@ -422,20 +434,28 @@ begin
   FLoadingOptionsAtStartup := True;
   lOptions := TOptions.Create;
   try
-    CheckBoxAutoUpdate.Checked := lOptions.ReadEnabled(sAUTO_UPDATE_ENABLED);
-    ToggleSwitchShowOnlySQL.Active := lOptions.ReadEnabled(sSHOW_ONLY_SQL);
-    ToggleSwitchHighlightErrors.Active := lOptions.ReadEnabled(sHIGHLIGHT_ERRORS);
-    ToggleSwitchShowBottomPanel.Active := lOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
-    ToggleSwitchIgnoreBasicLog.Active := lOptions.ReadEnabled(sIGNORE_BASIC_LOG);
-    ToggleSwitchRowSelect.Active := lOptions.ReadEnabled(sROW_SELECT);
-    ToggleSwitchStayOnTop.Active := lOptions.ReadEnabled(sSTAY_ON_TOP);
-    ToggleSwitchShowLineNumbers.Active := lOptions.ReadEnabled(sSHOW_LINE_NUMBERS);
-    ToggleSwitchUseToDateFunction.Active := lOptions.ReadEnabled(sUSE_TODATE_FUNCTION);
-    LoadSelectedStyle(lOptions.ReadValue(sSELECTED_STYLE));
+    LoadPreferences(lOptions);
+    LoadWindowParams(lOptions);
+    LoadLastDirectory(lOptions);
   finally
     lOptions.Free;
     FLoadingOptionsAtStartup := False;
   end;
+end;
+
+procedure TfMonitor.LoadPreferences(aOptions: TOptions);
+begin
+  CheckBoxAutoUpdate.Checked := aOptions.ReadEnabled(sAUTO_UPDATE_ENABLED);
+  SpinEditInterval.Value := StrToIntDef(aOptions.ReadValue(nAUTO_UPDATE_INTERVAL), 1);
+  ToggleSwitchShowOnlySQL.Active := aOptions.ReadEnabled(sSHOW_ONLY_SQL);
+  ToggleSwitchHighlightErrors.Active := aOptions.ReadEnabled(sHIGHLIGHT_ERRORS);
+  ToggleSwitchShowBottomPanel.Active := aOptions.ReadEnabled(sSHOW_BOTTOM_PANEL);
+  ToggleSwitchIgnoreBasicLog.Active := aOptions.ReadEnabled(sIGNORE_BASIC_LOG);
+  ToggleSwitchRowSelect.Active := aOptions.ReadEnabled(sROW_SELECT);
+  ToggleSwitchStayOnTop.Active := aOptions.ReadEnabled(sSTAY_ON_TOP);
+  ToggleSwitchShowLineNumbers.Active := aOptions.ReadEnabled(sSHOW_LINE_NUMBERS);
+  ToggleSwitchUseToDateFunction.Active := aOptions.ReadEnabled(sUSE_TODATE_FUNCTION);
+  LoadSelectedStyle(aOptions.ReadValue(sSELECTED_STYLE));
 end;
 
 procedure TfMonitor.LoadSelectedStyle(const aSelectedStyle: string);
@@ -507,7 +527,39 @@ begin
     Add('AVISO');
     Add('SAIDA');
     Add('SQL');
-    end;
+  end;
+end;
+
+procedure TfMonitor.LoadWindowParams(aOptions: TOptions);
+var
+  lValue: string;
+begin
+  lValue := aOptions.ReadValue(nSQL_BOTTOM_PANEL_HEIGHT);
+  if not lValue.IsEmpty then
+    PanelSQL.Height := lValue.ToInteger;
+
+  ToggleSwitchStartMaximized.Active := aOptions.ReadEnabled(sSTART_MAXIMIZED);
+  if ToggleSwitchStartMaximized.IsOn then
+  begin
+    Self.WindowState := wsMaximized;
+    Exit;
+  end;
+
+  lValue := aOptions.ReadValue(nHEIGHT);
+  if not lValue.IsEmpty then
+    Self.Height := lValue.ToInteger;
+
+  lValue := aOptions.ReadValue(nWIDTH);
+  if not lValue.IsEmpty then
+    Self.Width := lValue.ToInteger;
+
+  lValue := aOptions.ReadValue(nLEFT);
+  if not lValue.IsEmpty then
+    Self.Left := lValue.ToInteger;
+
+  lValue := aOptions.ReadValue(nTOP);
+  if not lValue.IsEmpty then
+    Self.Top := lValue.ToInteger;
 end;
 
 procedure TfMonitor.CheckBoxAutoUpdateClick(Sender: TObject);
@@ -515,6 +567,8 @@ var
   lEnable: boolean;
 begin
   lEnable := CheckBoxAutoUpdate.Checked;
+  LabelInterval.Enabled := lEnable;
+  SpinEditInterval.Enabled := lEnable;
   TimerAutoUpdate.Enabled := lEnable;
   SaveOption(sAUTO_UPDATE_ENABLED, lEnable.ToString);
 end;
@@ -619,6 +673,11 @@ begin
   end;
 end;
 
+procedure TfMonitor.ShowInfoMessage(const aMessage: string);
+begin
+  MessageDlg(aMessage, mtInformation, [mbOK], 0);
+end;
+
 procedure TfMonitor.ShowRecordInfo;
 begin
   if LogViewer.IsEmpty then
@@ -628,6 +687,16 @@ begin
   end;
 
   LabelRecordInfoValue.Caption := LogViewer.GetRecordCounter;
+end;
+
+procedure TfMonitor.SpinEditIntervalChange(Sender: TObject);
+begin
+  TimerAutoUpdate.Interval := SpinEditInterval.Value * 1000;
+end;
+
+procedure TfMonitor.SplitterMoved(Sender: TObject);
+begin
+  SaveOption(nSQL_BOTTOM_PANEL_HEIGHT, PanelSQL.Height.ToString);
 end;
 
 function TfMonitor.IsContentValid: boolean;
@@ -676,6 +745,15 @@ begin
   result := True;
 end;
 
+procedure TfMonitor.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  SaveOption(nHEIGHT, Self.Height.ToString);
+  SaveOption(nWIDTH, Self.Width.ToString);
+  SaveOption(nLEFT, Self.Left.ToString);
+  SaveOption(nTOP, Self.Top.ToString);
+  SaveOption(nAUTO_UPDATE_INTERVAL, SpinEditInterval.Value.ToString);
+end;
+
 procedure TfMonitor.FormCreate(Sender: TObject);
 begin
   FSQLFormatter := TSQLFormatter.Create;
@@ -684,7 +762,6 @@ begin
   LoadStylesList;
   LoadOptions;
   LoadTypePickList;
-  GetMostRecentLog;
   AssignGridDrawEvent;
 end;
 
@@ -708,6 +785,11 @@ begin
 
   if Key = VK_F4 then
     ClearFilters;
+end;
+
+procedure TfMonitor.FormShow(Sender: TObject);
+begin
+  GetMostRecentLog;
 end;
 
 procedure TfMonitor.SaveOption(const aKey: string; const aValue: string);
@@ -828,6 +910,11 @@ begin
   LogViewer.ShowOnlySQL := lEnable;
   LogViewer.ResetCounter;
   LoadLog;
+end;
+
+procedure TfMonitor.ToggleSwitchStartMaximizedClick(Sender: TObject);
+begin
+  SaveOption(sSTART_MAXIMIZED, ToggleSwitchStartMaximized.IsOn.ToString);
 end;
 
 procedure TfMonitor.ToggleSwitchStayOnTopClick(Sender: TObject);

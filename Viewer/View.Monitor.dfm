@@ -1,7 +1,7 @@
 object fMonitor: TfMonitor
   Left = 488
   Top = 0
-  Caption = 'DB1 Log Viewer - 1.0'
+  Caption = 'DB1 Log Viewer 1.1'
   ClientHeight = 567
   ClientWidth = 1344
   Color = clBtnFace
@@ -13,10 +13,11 @@ object fMonitor: TfMonitor
   KeyPreview = True
   OldCreateOrder = False
   Position = poDesigned
-  WindowState = wsMaximized
+  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object PageControl: TPageControl
@@ -37,6 +38,7 @@ object fMonitor: TfMonitor
         Height = 3
         Cursor = crVSplit
         Align = alBottom
+        OnMoved = SplitterMoved
         ExplicitTop = 91
         ExplicitWidth = 338
       end
@@ -48,15 +50,11 @@ object fMonitor: TfMonitor
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 1
-        DesignSize = (
-          1336
-          64)
         object LabelRecordInfoValue: TLabel
           Left = 613
           Top = 37
-          Width = 345
+          Width = 200
           Height = 13
-          Anchors = [akLeft, akTop, akRight]
           AutoSize = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -64,7 +62,6 @@ object fMonitor: TfMonitor
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          ExplicitWidth = 200
         end
         object LabelFileName: TLabel
           Left = 558
@@ -73,7 +70,7 @@ object fMonitor: TfMonitor
           Height = 13
           Caption = 'Arquivo :'
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clNavy
+          Font.Color = clHotLight
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
@@ -87,7 +84,7 @@ object fMonitor: TfMonitor
           Height = 13
           Caption = 'Contador :'
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clNavy
+          Font.Color = clHotLight
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
@@ -97,9 +94,8 @@ object fMonitor: TfMonitor
         object LabelFileNameValue: TLabel
           Left = 614
           Top = 18
-          Width = 645
+          Width = 709
           Height = 13
-          Anchors = [akLeft, akTop, akRight]
           AutoSize = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -107,7 +103,6 @@ object fMonitor: TfMonitor
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
-          ExplicitWidth = 500
         end
         object ActionToolBar: TActionToolBar
           Left = 0
@@ -163,6 +158,7 @@ object fMonitor: TfMonitor
             MinValue = 0
             TabOrder = 1
             Value = 1
+            OnChange = SpinEditIntervalChange
           end
         end
       end
@@ -184,7 +180,7 @@ object fMonitor: TfMonitor
           Options = [dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           PopupMenu = PopupMenu
           ReadOnly = True
-          TabOrder = 1
+          TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -11
@@ -241,75 +237,84 @@ object fMonitor: TfMonitor
               Visible = True
             end>
         end
-        object DBGridFilter: TDBGridLog
+        object PanelDBGridFilter: TPanel
           Left = 0
           Top = 0
           Width = 1336
           Height = 39
-          TabStop = False
           Align = alTop
-          DataSource = DataSourceFilter
-          Options = [dgEditing, dgAlwaysShowEditor, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-          PopupMenu = PopupMenu
-          TabOrder = 0
-          TitleFont.Charset = DEFAULT_CHARSET
-          TitleFont.Color = clWindowText
-          TitleFont.Height = -11
-          TitleFont.Name = 'Tahoma'
-          TitleFont.Style = []
-          OnColEnter = DBGridFilterColEnter
-          OnColumnMoved = DBGridFilterColumnMoved
-          OnKeyPress = DBGridFilterKeyPress
-          OnColResize = DBGridFilterColResize
-          Columns = <
-            item
-              Expanded = False
-              FieldName = 'Type'
-              Title.Caption = 'Tipo'
-              Width = 70
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'Database'
-              Title.Caption = 'Base'
-              Width = 70
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'User'
-              Title.Caption = 'Usu'#225'rio'
-              Width = 140
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'IP'
-              Width = 110
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'DateTime'
-              Title.Caption = 'Data/Hora'
-              Width = 130
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'Class'
-              Title.Caption = 'Classe'
-              Width = 180
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'Method'
-              Title.Caption = 'M'#233'todo'
-              Width = 420
-              Visible = True
-            end>
+          BevelOuter = bvNone
+          TabOrder = 1
+          object DBGridFilter: TDBGridLog
+            Left = 0
+            Top = 0
+            Width = 1336
+            Height = 39
+            TabStop = False
+            Align = alClient
+            DataSource = DataSourceFilter
+            Options = [dgEditing, dgAlwaysShowEditor, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+            PopupMenu = PopupMenu
+            TabOrder = 0
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -11
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            OnColEnter = DBGridFilterColEnter
+            OnColumnMoved = DBGridFilterColumnMoved
+            OnKeyPress = DBGridFilterKeyPress
+            OnColResize = DBGridFilterColResize
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'Type'
+                Title.Caption = 'Tipo'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'Database'
+                Title.Caption = 'Base'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'User'
+                Title.Caption = 'Usu'#225'rio'
+                Width = 140
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'IP'
+                Width = 110
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'DateTime'
+                Title.Caption = 'Data/Hora'
+                Width = 130
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'Class'
+                Title.Caption = 'Classe'
+                Width = 180
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'Method'
+                Title.Caption = 'M'#233'todo'
+                Width = 420
+                Visible = True
+              end>
+          end
         end
       end
       object PanelSQL: TPanel
@@ -526,7 +531,7 @@ object fMonitor: TfMonitor
         Caption = 'Log: '
         TabOrder = 0
         object LabelIgnoreBasicLogInfo: TLabel
-          Left = 256
+          Left = 255
           Top = 78
           Width = 19
           Height = 13
@@ -534,7 +539,7 @@ object fMonitor: TfMonitor
           Caption = '[ ? ]'
           Color = clBlack
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
+          Font.Color = clHotLight
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -552,7 +557,7 @@ object fMonitor: TfMonitor
           Caption = '[ ? ]'
           Color = clBlack
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
+          Font.Color = clHotLight
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -606,19 +611,19 @@ object fMonitor: TfMonitor
         Left = 18
         Top = 279
         Width = 327
-        Height = 143
+        Height = 163
         Caption = 'Visual: '
         TabOrder = 1
         object LabelStyle: TLabel
           Left = 8
-          Top = 88
+          Top = 116
           Width = 30
           Height = 13
           Caption = 'Tema:'
         end
         object ComboBoxStyles: TComboBox
           Left = 8
-          Top = 104
+          Top = 132
           Width = 189
           Height = 21
           Style = csDropDownList
@@ -645,6 +650,16 @@ object fMonitor: TfMonitor
           StateCaptions.CaptionOff = 'Exibir painel inferior com a SQL'
           TabOrder = 0
           OnClick = ToggleSwitchShowBottomPanelClick
+        end
+        object ToggleSwitchStartMaximized: TToggleSwitch
+          Left = 8
+          Top = 79
+          Width = 181
+          Height = 20
+          StateCaptions.CaptionOn = 'Iniciar sempre maximizado'
+          StateCaptions.CaptionOff = 'Iniciar sempre maximizado'
+          TabOrder = 3
+          OnClick = ToggleSwitchStartMaximizedClick
         end
       end
       object GroupBoxShortCuts: TGroupBox
@@ -695,7 +710,7 @@ object fMonitor: TfMonitor
         end
         object LabelCtrlC: TLabel
           Left = 24
-          Top = 89
+          Top = 88
           Width = 42
           Height = 13
           Caption = 'Ctrl + C'
@@ -708,7 +723,7 @@ object fMonitor: TfMonitor
         end
         object LabelCtrlQ: TLabel
           Left = 23
-          Top = 108
+          Top = 107
           Width = 43
           Height = 13
           Caption = 'Ctrl + Q'
@@ -781,14 +796,14 @@ object fMonitor: TfMonitor
         end
         object LabelCopyColumnValue: TLabel
           Left = 72
-          Top = 89
+          Top = 88
           Width = 60
           Height = 13
           Caption = ': Copiar SQL'
         end
         object LabelCopySQL: TLabel
           Left = 72
-          Top = 108
+          Top = 107
           Width = 116
           Height = 13
           Caption = ': Copiar Valor da Coluna'
@@ -837,7 +852,7 @@ object fMonitor: TfMonitor
         Caption = 'SQL: '
         TabOrder = 3
         object LabelAutoFormatInfo: TLabel
-          Left = 295
+          Left = 294
           Top = 52
           Width = 19
           Height = 13
@@ -845,7 +860,7 @@ object fMonitor: TfMonitor
           Caption = '[ ? ]'
           Color = clBlack
           Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
+          Font.Color = clHotLight
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
@@ -853,6 +868,24 @@ object fMonitor: TfMonitor
           ParentFont = False
           StyleElements = [seClient, seBorder]
           OnClick = LabelAutoFormatInfoClick
+        end
+        object LabelUseToDateFunctionInfo: TLabel
+          Left = 298
+          Top = 78
+          Width = 19
+          Height = 13
+          Cursor = crHandPoint
+          Caption = '[ ? ]'
+          Color = clBlack
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clHotLight
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentColor = False
+          ParentFont = False
+          StyleElements = [seClient, seBorder]
+          OnClick = LabelUseToDateFunctionInfoClick
         end
         object ToggleSwitchAutoFormatSQL: TToggleSwitch
           Left = 8
@@ -1612,7 +1645,7 @@ object fMonitor: TfMonitor
     Left = 1007
     Top = 344
     Content = {
-      414442530F00963110030000FF00010001FF02FF03040020000000460044004D
+      414442530F00631A10030000FF00010001FF02FF03040020000000460044004D
       0065006D005400610062006C006500460069006C0074006500720005000A0000
       005400610062006C006500060000000000070000080032000000090000FF0AFF
       0B040008000000540079007000650005000800000054007900700065000C0001

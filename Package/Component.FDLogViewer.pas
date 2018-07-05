@@ -236,6 +236,8 @@ begin
   if FLogFileName.IsEmpty then
     Exit;
 
+  LoadFile;
+
   if FCounter = Pred(FStringListFile.Count) then
     Exit;
 
@@ -243,8 +245,6 @@ begin
   Self.AfterScroll := nil;
   Self.DisableControls;
   try
-    LoadFile;
-
     for lContador := FCounter to Pred(FStringListFile.Count) do
     begin
       FStringListLine.DelimitedText := FStringListFile[lContador];

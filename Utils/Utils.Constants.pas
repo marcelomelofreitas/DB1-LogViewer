@@ -3,7 +3,6 @@ unit Utils.Constants;
 interface
 
 const
-  // options
   sAUTO_UPDATE_ENABLED = 'AutoUpdateEnabled';
   sSHOW_ONLY_SQL = 'ShowOnlySQL';
   sHIGHLIGHT_ERRORS = 'HighlightErrors';
@@ -14,12 +13,20 @@ const
   sSHOW_LINE_NUMBERS = 'ShowLineNumbers';
   sAUTO_FORMAT_SQL = 'AutoFormatSQL';
   sUSE_TODATE_FUNCTION = 'UseToDateFunction';
+  sSTART_MAXIMIZED = 'StartMaximized';
 
+  sLAST_DIRECTORY = 'LastDirectory';
+  sDEFAULT_DIRECTORY = 'Q:\bin\';
   sDEFAULT_STYLE = 'Windows';
   sSELECTED_STYLE = 'SelectedStyle';
+  nSQL_BOTTOM_PANEL_HEIGHT = 'SQLBottomPanelHeight';
+  nAUTO_UPDATE_INTERVAL = 'AutoUpdateInterval';
+  nHEIGHT = 'Height';
+  nWIDTH = 'Width';
+  nLEFT = 'Left';
+  nTOP = 'Top';
+
   sSPACE = ' ';
-  sSINGLE_QUOTE = '''';
-  sSEPARATOR = '((ESPACO))';
   nMARGIN = 2;
   sSUBSELECT = '(SELECT';
 
