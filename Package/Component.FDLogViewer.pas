@@ -89,6 +89,8 @@ end;
 { TFDLogViewer }
 
 procedure TFDLogViewer.AppendLineToDataSet;
+var
+  lCounter: integer;
 begin
   Self.Append;
   FFieldType.AsString := FStringListLine[POSITION_TYPE];
@@ -98,7 +100,13 @@ begin
   FFieldDateTime.AsString := GetDateTime;
   FFieldClass.AsString := FStringListLine[POSITION_CLASS];
   FFieldMethod.AsString := FStringListLine[POSITION_METHOD];
+
   FFieldSQL.AsString := FStringListLine[POSITION_SQL];
+  for lCounter := Succ(POSITION_SQL) to Pred(FStringListLine.Count) do
+  begin
+    FFieldSQL.AsString := FFieldSQL.AsString + ';' + FStringListLine[lCounter];
+  end;
+
   FFieldError.AsString := GetError;
   Self.Post;
 end;
@@ -223,6 +231,7 @@ begin
   lFileStream := TFileStream.Create(FLogFileName, fmOpenRead or fmShareDenyNone);
   try
     FStringListFile.LoadFromStream(lFileStream);
+    FStringListFile.Text := StringReplace(FStringListFile.Text, #0, '', [rfReplaceAll]);
   finally
     lFileStream.Free;
   end;

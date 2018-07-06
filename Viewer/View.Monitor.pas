@@ -5,21 +5,15 @@ unit View.Monitor;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Data.DB, Vcl.ExtCtrls, Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls,
-  Vcl.Buttons, Vcl.Samples.Spin, Vcl.ComCtrls, Vcl.Menus,
-  System.Actions, Vcl.ActnList,
-  Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan, Vcl.ActnCtrls,
-  Data.Bind.EngExt, Vcl.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs,
-  Vcl.Bind.Editors, Data.Bind.Components, FireDAC.Stan.Intf,
-  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Component.FDLogViewer,
-  Vcl.WinXCtrls,
-  FireDAC.Stan.StorageBin, SynEdit, SynMemo,
-  SynEditHighlighter, SynHighlighterSQL, SQL.Formatter, FireDAC.Phys.Intf,
-  FireDAC.DApt.Intf, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.DBCtrls,
-  Component.DBGridLog, Utils.Options;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.ExtCtrls, Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls,
+  Vcl.Buttons, Vcl.Samples.Spin, Vcl.ComCtrls, Vcl.Menus,System.Actions, Vcl.ActnList,
+  Vcl.PlatformDefaultStyleActnCtrls, Vcl.ActnMan, Vcl.ActnCtrls, Data.Bind.EngExt, Vcl.Bind.DBEngExt,
+  System.Rtti, System.Bindings.Outputs, Vcl.Bind.Editors, Data.Bind.Components, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client, Component.FDLogViewer, Vcl.WinXCtrls, FireDAC.Stan.StorageBin, SynEdit,
+  SynMemo, SynEditHighlighter, SynHighlighterSQL, SQL.Formatter, FireDAC.Phys.Intf, Utils.Options,
+  FireDAC.DApt.Intf, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.DBCtrls, Component.DBGridLog;
 
 type
   TfMonitor = class(TForm)
@@ -34,15 +28,30 @@ type
     CheckBoxAutoUpdate: TCheckBox;
     ComboBoxStyles: TComboBox;
     DataSource: TDataSource;
+    DataSourceFilter: TDataSource;
     DBGrid: TDBGrid;
+    DBGridFilter: TDBGridLog;
+    DBNavigator: TDBNavigator;
+    EditSQLFilter: TEdit;
+    FDMemTableFilter: TFDMemTable;
+    FDMemTableFilterClass: TStringField;
+    FDMemTableFilterDatabase: TStringField;
+    FDMemTableFilterDateTime: TStringField;
+    FDMemTableFilterIP: TStringField;
+    FDMemTableFilterMethod: TStringField;
+    FDMemTableFilterType: TStringField;
+    FDMemTableFilterUser: TStringField;
     GroupBoxAutoUpdate: TGroupBox;
     GroupBoxLog: TGroupBox;
     GroupBoxShortCuts: TGroupBox;
+    GroupBoxSQL: TGroupBox;
     GroupBoxVisual: TGroupBox;
     ImageList: TImageList;
     LabelAlt1: TLabel;
     LabelAlt2: TLabel;
     LabelAlt3: TLabel;
+    LabelAutoFormatInfo: TLabel;
+    LabelClearFilters: TLabel;
     LabelClearLog: TLabel;
     LabelCopyColumnValue: TLabel;
     LabelCopySQL: TLabel;
@@ -50,116 +59,100 @@ type
     LabelCtrlL: TLabel;
     LabelCtrlO: TLabel;
     LabelCtrlQ: TLabel;
+    LabeledEditClass: TLabeledEdit;
+    LabeledEditDatabase: TLabeledEdit;
+    LabeledEditDateTime: TLabeledEdit;
+    LabeledEditIP: TLabeledEdit;
+    LabeledEditMethod: TLabeledEdit;
+    LabeledEditUser: TLabeledEdit;
+    LabelF4: TLabel;
     LabelF5: TLabel;
+    LabelFileName: TLabel;
+    LabelFileNameValue: TLabel;
+    LabelFilterSQL: TLabel;
+    LabelIgnoreBasicLogInfo: TLabel;
     LabelInterval: TLabel;
     LabelOpenFile: TLabel;
+    LabelRecordInfo: TLabel;
+    LabelRecordInfoValue: TLabel;
     LabelReloadLog: TLabel;
+    LabelRowSelectInfo: TLabel;
     LabelShowLogTab: TLabel;
     LabelShowOptionsTab: TLabel;
     LabelShowSQLTab: TLabel;
     LabelStyle: TLabel;
+    LabelUseToDateFunctionInfo: TLabel;
     LinkControlToPropertyLabel: TLinkControlToProperty;
     LinkControlToPropertySpinEdit: TLinkControlToProperty;
     LogViewer: TFDLogViewer;
     MenuItemCopyColumnValue: TMenuItem;
     MenuItemCopySQL: TMenuItem;
     PageControl: TPageControl;
+    PanelDBGridFilter: TPanel;
+    PanelFilterSQL: TPanel;
     PanelGrid: TPanel;
     PanelOptions: TPanel;
     PanelSQL: TPanel;
+    PanelSQLTab: TPanel;
     PopupMenu: TPopupMenu;
     SpinEditInterval: TSpinEdit;
     Splitter: TSplitter;
+    SynMemoSQL: TSynMemo;
+    SynMemoTab: TSynMemo;
+    SynSQLSyn: TSynSQLSyn;
     TabSheetLog: TTabSheet;
     TabSheetOptions: TTabSheet;
     TabSheetSQL: TTabSheet;
     TimerAutoUpdate: TTimer;
+    ToggleSwitchAutoFormatSQL: TToggleSwitch;
     ToggleSwitchHighlightErrors: TToggleSwitch;
     ToggleSwitchIgnoreBasicLog: TToggleSwitch;
-    ToggleSwitchShowOnlySQL: TToggleSwitch;
-    ToggleSwitchStayOnTop: TToggleSwitch;
-    ToggleSwitchShowBottomPanel: TToggleSwitch;
-    LabelIgnoreBasicLogInfo: TLabel;
-    DataSourceFilter: TDataSource;
-    FDMemTableFilter: TFDMemTable;
-    FDMemTableFilterType: TStringField;
-    FDMemTableFilterDatabase: TStringField;
-    FDMemTableFilterUser: TStringField;
-    FDMemTableFilterIP: TStringField;
-    FDMemTableFilterClass: TStringField;
-    FDMemTableFilterMethod: TStringField;
-    FDMemTableFilterDateTime: TStringField;
-    SynMemoSQL: TSynMemo;
-    SynSQLSyn: TSynSQLSyn;
-    SynMemoTab: TSynMemo;
-    GroupBoxSQL: TGroupBox;
-    ToggleSwitchAutoFormatSQL: TToggleSwitch;
-    LabelAutoFormatInfo: TLabel;
-    ToggleSwitchShowLineNumbers: TToggleSwitch;
     ToggleSwitchRowSelect: TToggleSwitch;
-    LabelRowSelectInfo: TLabel;
-    LabelRecordInfoValue: TLabel;
-    LabelFileName: TLabel;
-    LabelRecordInfo: TLabel;
-    LabelFileNameValue: TLabel;
-    PanelSQLTab: TPanel;
-    DBNavigator: TDBNavigator;
-    LabeledEditDatabase: TLabeledEdit;
-    LabeledEditUser: TLabeledEdit;
-    LabeledEditIP: TLabeledEdit;
-    LabeledEditDateTime: TLabeledEdit;
-    LabeledEditClass: TLabeledEdit;
-    LabeledEditMethod: TLabeledEdit;
-    PanelFilterSQL: TPanel;
-    LabelFilterSQL: TLabel;
-    EditSQLFilter: TEdit;
-    ToggleSwitchUseToDateFunction: TToggleSwitch;
-    PanelDBGridFilter: TPanel;
-    DBGridFilter: TDBGridLog;
+    ToggleSwitchShowBottomPanel: TToggleSwitch;
+    ToggleSwitchShowLineNumbers: TToggleSwitch;
+    ToggleSwitchShowOnlySQL: TToggleSwitch;
     ToggleSwitchStartMaximized: TToggleSwitch;
-    LabelUseToDateFunctionInfo: TLabel;
-    LabelF4: TLabel;
-    LabelClearFilters: TLabel;
+    ToggleSwitchStayOnTop: TToggleSwitch;
+    ToggleSwitchUseToDateFunction: TToggleSwitch;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
     procedure CheckBoxAutoUpdateClick(Sender: TObject);
     procedure ComboBoxStylesSelect(Sender: TObject);
     procedure DBGridDblClick(Sender: TObject);
+    procedure DBGridFilterColEnter(Sender: TObject);
+    procedure DBGridFilterColResize(Sender: TObject);
+    procedure DBGridFilterColumnMoved(Sender: TObject; FromIndex, ToIndex: Integer);
+    procedure DBGridFilterKeyPress(Sender: TObject; var Key: Char);
     procedure DBGridKeyPress(Sender: TObject; var Key: Char);
+    procedure EditSQLFilterKeyPress(Sender: TObject; var Key: Char);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
+    procedure LabelAutoFormatInfoClick(Sender: TObject);
+    procedure LabelIgnoreBasicLogInfoClick(Sender: TObject);
+    procedure LabelRowSelectInfoClick(Sender: TObject);
+    procedure LabelUseToDateFunctionInfoClick(Sender: TObject);
     procedure LogViewerAfterScroll(DataSet: TDataSet);
     procedure MenuItemCopyColumnValueClick(Sender: TObject);
     procedure MenuItemCopySQLClick(Sender: TObject);
+    procedure PopupMenuPopup(Sender: TObject);
+    procedure SpinEditIntervalChange(Sender: TObject);
+    procedure SplitterMoved(Sender: TObject);
+    procedure TabSheetSQLEnter(Sender: TObject);
     procedure TimerAutoUpdateTimer(Sender: TObject);
+    procedure ToggleSwitchAutoFormatSQLClick(Sender: TObject);
     procedure ToggleSwitchHighlightErrorsClick(Sender: TObject);
     procedure ToggleSwitchIgnoreBasicLogClick(Sender: TObject);
-    procedure ToggleSwitchShowBottomPanelClick(Sender: TObject);
-    procedure ToggleSwitchShowOnlySQLClick(Sender: TObject);
-    procedure ToggleSwitchStayOnTopClick(Sender: TObject);
-    procedure LabelAutoFormatInfoClick(Sender: TObject);
-    procedure LabelIgnoreBasicLogInfoClick(Sender: TObject);
-    procedure ToggleSwitchAutoFormatSQLClick(Sender: TObject);
-    procedure DBGridFilterKeyPress(Sender: TObject; var Key: Char);
-    procedure DBGridFilterColEnter(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
-    procedure ToggleSwitchShowLineNumbersClick(Sender: TObject);
     procedure ToggleSwitchRowSelectClick(Sender: TObject);
-    procedure LabelRowSelectInfoClick(Sender: TObject);
-    procedure PopupMenuPopup(Sender: TObject);
-    procedure EditSQLFilterKeyPress(Sender: TObject; var Key: Char);
-    procedure TabSheetSQLEnter(Sender: TObject);
-    procedure ToggleSwitchUseToDateFunctionClick(Sender: TObject);
-    procedure DBGridFilterColumnMoved(Sender: TObject; FromIndex,
-      ToIndex: Integer);
-    procedure DBGridFilterColResize(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure SplitterMoved(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure SpinEditIntervalChange(Sender: TObject);
+    procedure ToggleSwitchShowBottomPanelClick(Sender: TObject);
+    procedure ToggleSwitchShowLineNumbersClick(Sender: TObject);
+    procedure ToggleSwitchShowOnlySQLClick(Sender: TObject);
     procedure ToggleSwitchStartMaximizedClick(Sender: TObject);
-    procedure LabelUseToDateFunctionInfoClick(Sender: TObject);
+    procedure ToggleSwitchStayOnTopClick(Sender: TObject);
+    procedure ToggleSwitchUseToDateFunctionClick(Sender: TObject);
   private
     // class fields
     FLoadingOptionsOnStartup: boolean;
@@ -491,7 +484,7 @@ begin
   if ToggleSwitchAutoFormatSQL.IsOn then
     SynMemoSQL.Lines.Text := FSQLFormatter.FormatSQL(LogViewer.GetSQL)
   else
-    SynMemoSQL.Lines.Text := LogViewer.GetSQL; //StringReplace(LogViewer.GetSQL, '  ', ' ', [rfReplaceAll]);
+    SynMemoSQL.Lines.Text := StringReplace(LogViewer.GetSQL, '  ', ' ', [rfReplaceAll]);
 end;
 
 procedure TfMonitor.LoadSQLTab;
@@ -722,7 +715,7 @@ begin
     lStringListLine.Delimiter := ';';
     lStringListLine.StrictDelimiter := True;
     lStringListLine.DelimitedText := lStringListFile[0];
-    result := lStringListLine.Count = 16;
+    result := lStringListLine.Count >= 16;
   finally
     lStringListLine.Free;
     lStringListFile.Free;
@@ -754,12 +747,18 @@ begin
 end;
 
 procedure TfMonitor.FormClose(Sender: TObject; var Action: TCloseAction);
+var
+  lOptions: TOptions;
 begin
-  SaveOption(nHEIGHT, Self.Height.ToString);
-  SaveOption(nWIDTH, Self.Width.ToString);
-  SaveOption(nLEFT, Self.Left.ToString);
-  SaveOption(nTOP, Self.Top.ToString);
-  SaveOption(nAUTO_UPDATE_INTERVAL, SpinEditInterval.Value.ToString);
+  lOptions := TOptions.Create;
+  try
+    lOptions.SaveOption(nHEIGHT, Self.Height.ToString);
+    lOptions.SaveOption(nWIDTH, Self.Width.ToString);
+    lOptions.SaveOption(nLEFT, Self.Left.ToString);
+    lOptions.SaveOption(nTOP, Self.Top.ToString);
+  finally
+    lOptions.Free;
+  end;
 end;
 
 procedure TfMonitor.FormCreate(Sender: TObject);
