@@ -118,6 +118,8 @@ type
     DBGridFilter: TDBGridLog;
     ToggleSwitchStartMaximized: TToggleSwitch;
     LabelUseToDateFunctionInfo: TLabel;
+    LabelF4: TLabel;
+    LabelClearFilters: TLabel;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
@@ -160,7 +162,7 @@ type
     procedure LabelUseToDateFunctionInfoClick(Sender: TObject);
   private
     // class fields
-    FLoadingOptionsAtStartup: boolean;
+    FLoadingOptionsOnStartup: boolean;
     FSQLFormatter: TSQLFormatter;
     FLastDirectory: string;
 
@@ -182,7 +184,7 @@ type
     procedure LoadLineDetails;
     procedure LoadLastDirectory(aOptions: TOptions);
     procedure LoadLog;
-    procedure LoadLogAtTimer;
+    procedure LoadLogOnTimer;
     procedure LoadOptions;
     procedure LoadPreferences(aOptions: TOptions);
     procedure LoadSelectedStyle(const aSelectedStyle: string);
@@ -204,8 +206,8 @@ var
 implementation
 
 uses
-  VCL.Themes, ClipBrd, Utils.Constants, Utils.Helpers,
-  View.Loading, System.UITypes;
+  VCL.Themes, ClipBrd, Utils.Constants, Utils.Helpers, View.Loading,
+  System.UITypes;
 
 {$R *.dfm}
 
@@ -266,7 +268,12 @@ procedure TfMonitor.BuildFilter;
 var
   lBuilderFilter: TStringBuilder;
   lField: TField;
-  lSQLFilter: string;
+
+  function GetFilterString(const aFilter: string): string;
+  begin
+    result := QuotedStr('%' + aFilter.Trim + '%');
+  end;
+
 begin
   if FDMemTableFilter.State in dsEditModes then
     FDMemTableFilter.Post;
@@ -281,15 +288,14 @@ begin
           .Append(' and ')
           .Append(lField.FieldName)
           .Append(' like ')
-          .Append(QuotedStr('%' + lField.AsString + '%'));
+          .Append(GetFilterString(lField.AsString));
       end;
     end;
 
     if not Trim(EditSQLFilter.Text).IsEmpty then
     begin
-      lSQLFilter := '%' + Trim(EditSQLFilter.Text) + '%';
-      lBuilderFilter.Append(Format(' and Type = %s and SQL like %s',
-        ['SQL'.QuotedString, lSQLFilter.QuotedString]));
+      lBuilderFilter.Append(Format(' and Type = ''SQL'' and SQL like %s',
+        [GetFilterString(EditSQLFilter.Text)]));
     end;
 
     LogViewer.SetLogFilter(lBuilderFilter.ToString);
@@ -417,7 +423,7 @@ begin
   LoadSQLBottomPanel;
 end;
 
-procedure TfMonitor.LoadLogAtTimer;
+procedure TfMonitor.LoadLogOnTimer;
 begin
   if not IsFileNameValid then
     Exit;
@@ -431,7 +437,7 @@ procedure TfMonitor.LoadOptions;
 var
   lOptions: TOptions;
 begin
-  FLoadingOptionsAtStartup := True;
+  FLoadingOptionsOnStartup := True;
   lOptions := TOptions.Create;
   try
     LoadPreferences(lOptions);
@@ -439,7 +445,7 @@ begin
     LoadLastDirectory(lOptions);
   finally
     lOptions.Free;
-    FLoadingOptionsAtStartup := False;
+    FLoadingOptionsOnStartup := False;
   end;
 end;
 
@@ -485,13 +491,13 @@ begin
   if ToggleSwitchAutoFormatSQL.IsOn then
     SynMemoSQL.Lines.Text := FSQLFormatter.FormatSQL(LogViewer.GetSQL)
   else
-    SynMemoSQL.Lines.Text := LogViewer.GetSQL;
+    SynMemoSQL.Lines.Text := LogViewer.GetSQL; //StringReplace(LogViewer.GetSQL, '  ', ' ', [rfReplaceAll]);
 end;
 
 procedure TfMonitor.LoadSQLTab;
 begin
   SynMemoTab.Lines.Clear;
-  
+
   if LogViewer.IsSQLEmpty then
   Exit;
 
@@ -578,10 +584,12 @@ var
   lField: TField;
 begin
   FDMemTableFilter.Edit;
-  
+
   for lField in FDMemTableFilter.Fields do
-  lField.Clear;
-  
+    lField.Clear;
+
+  EditSQLFilter.Clear;
+
   BuildFilter;
 end;
 
@@ -796,7 +804,7 @@ procedure TfMonitor.SaveOption(const aKey: string; const aValue: string);
 var
   lOptions: TOptions;
 begin
-  if FLoadingOptionsAtStartup then
+  if FLoadingOptionsOnStartup then
     Exit;
 
   lOptions := TOptions.Create;
@@ -834,7 +842,7 @@ begin
 
 procedure TfMonitor.TimerAutoUpdateTimer(Sender: TObject);
 begin
-  LoadLogAtTimer;
+  LoadLogOnTimer;
 end;
 
 procedure TfMonitor.ToggleSwitchAutoFormatSQLClick(Sender: TObject);

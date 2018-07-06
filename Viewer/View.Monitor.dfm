@@ -628,7 +628,7 @@ object fMonitor: TfMonitor
           Height = 21
           Style = csDropDownList
           DropDownCount = 20
-          TabOrder = 2
+          TabOrder = 3
           OnSelect = ComboBoxStylesSelect
         end
         object ToggleSwitchStayOnTop: TToggleSwitch
@@ -658,7 +658,7 @@ object fMonitor: TfMonitor
           Height = 20
           StateCaptions.CaptionOn = 'Iniciar sempre maximizado'
           StateCaptions.CaptionOff = 'Iniciar sempre maximizado'
-          TabOrder = 3
+          TabOrder = 2
           OnClick = ToggleSwitchStartMaximizedClick
         end
       end
@@ -666,7 +666,7 @@ object fMonitor: TfMonitor
         Left = 367
         Top = 16
         Width = 217
-        Height = 201
+        Height = 216
         Caption = 'Atalhos: '
         TabOrder = 2
         object LabelCtrlO: TLabel
@@ -736,7 +736,7 @@ object fMonitor: TfMonitor
         end
         object LabelAlt1: TLabel
           Left = 28
-          Top = 135
+          Top = 153
           Width = 38
           Height = 13
           Caption = 'Alt + 1'
@@ -749,7 +749,7 @@ object fMonitor: TfMonitor
         end
         object LabelAlt2: TLabel
           Left = 28
-          Top = 154
+          Top = 172
           Width = 38
           Height = 13
           Caption = 'Alt + 2'
@@ -762,7 +762,7 @@ object fMonitor: TfMonitor
         end
         object LabelAlt3: TLabel
           Left = 28
-          Top = 173
+          Top = 191
           Width = 38
           Height = 13
           Caption = 'Alt + 3'
@@ -810,21 +810,21 @@ object fMonitor: TfMonitor
         end
         object LabelShowLogTab: TLabel
           Left = 72
-          Top = 135
+          Top = 153
           Width = 83
           Height = 13
           Caption = ': Exibir Aba "Log"'
         end
         object LabelShowSQLTab: TLabel
           Left = 72
-          Top = 154
+          Top = 172
           Width = 85
           Height = 13
           Caption = ': Exibir Aba "SQL"'
         end
         object LabelShowOptionsTab: TLabel
           Left = 72
-          Top = 173
+          Top = 191
           Width = 102
           Height = 13
           Caption = ': Exibir Aba "Op'#231#245'es"'
@@ -838,10 +838,30 @@ object fMonitor: TfMonitor
         end
         object BevelSeparator2: TBevel
           Left = 13
-          Top = 127
+          Top = 145
           Width = 191
           Height = 10
           Shape = bsTopLine
+        end
+        object LabelF4: TLabel
+          Left = 53
+          Top = 126
+          Width = 13
+          Height = 13
+          Caption = 'F4'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object LabelClearFilters: TLabel
+          Left = 72
+          Top = 126
+          Width = 70
+          Height = 13
+          Caption = ': Limpar Filtros'
         end
       end
       object GroupBoxSQL: TGroupBox
@@ -894,7 +914,7 @@ object fMonitor: TfMonitor
           Height = 20
           StateCaptions.CaptionOn = 'Identar SQL automaticamente no painel inferior'
           StateCaptions.CaptionOff = 'Identar SQL automaticamente no painel inferior'
-          TabOrder = 0
+          TabOrder = 1
           OnClick = ToggleSwitchAutoFormatSQLClick
         end
         object ToggleSwitchShowLineNumbers: TToggleSwitch
@@ -904,7 +924,7 @@ object fMonitor: TfMonitor
           Height = 20
           StateCaptions.CaptionOn = 'Exibir n'#250'mero das linhas na SQL'
           StateCaptions.CaptionOff = 'Exibir n'#250'mero das linhas na SQL'
-          TabOrder = 1
+          TabOrder = 0
           OnClick = ToggleSwitchShowLineNumbersClick
         end
         object ToggleSwitchUseToDateFunction: TToggleSwitch
@@ -1645,7 +1665,7 @@ object fMonitor: TfMonitor
     Left = 1007
     Top = 344
     Content = {
-      414442530F00631A10030000FF00010001FF02FF03040020000000460044004D
+      414442530F003D0610030000FF00010001FF02FF03040020000000460044004D
       0065006D005400610062006C006500460069006C0074006500720005000A0000
       005400610062006C006500060000000000070000080032000000090000FF0AFF
       0B040008000000540079007000650005000800000054007900700065000C0001

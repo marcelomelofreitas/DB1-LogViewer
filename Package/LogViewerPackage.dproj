@@ -62,6 +62,7 @@
         <DCC_BplOutput>..\Lib</DCC_BplOutput>
         <VerInfo_Locale>1046</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <DesignOnlyPackage>true</DesignOnlyPackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
@@ -114,9 +115,9 @@
         <DCCReference Include="vclimg.dcp"/>
         <DCCReference Include="vclwinx.dcp"/>
         <DCCReference Include="vcldb.dcp"/>
-        <DCCReference Include="Component.FDLogViewer.pas"/>
         <DCCReference Include="..\Utils\Utils.Helpers.pas"/>
         <DCCReference Include="..\Utils\Utils.Constants.pas"/>
+        <DCCReference Include="Component.FDLogViewer.pas"/>
         <DCCReference Include="Component.DBGridLog.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
@@ -139,9 +140,7 @@
                     <Source Name="MainSource">LogViewerPackage.dpk</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="D:\Sistemas\LogViewer\Lib\LogViewerPackage.bpl">File D:\Sistemas\LogViewer\Lib\LogViewerPackage.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k250.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp250.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="D:\Sistemas\LogViewer\Lib\LogViewerPackage.bpl">(untitled)</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
