@@ -231,7 +231,6 @@ begin
   lFileStream := TFileStream.Create(FLogFileName, fmOpenRead or fmShareDenyNone);
   try
     FStringListFile.LoadFromStream(lFileStream);
-    FStringListFile.Text := StringReplace(FStringListFile.Text, #0, '', [rfReplaceAll]);
   finally
     lFileStream.Free;
   end;
@@ -239,7 +238,7 @@ end;
 
 procedure TFDLogViewer.LoadLog;
 var
-  lContador: integer;
+  lCounter: integer;
   lOriginalAfterScroll: TDataSetNotifyEvent;
 begin
   if FLogFileName.IsEmpty then
@@ -254,9 +253,9 @@ begin
   Self.AfterScroll := nil;
   Self.DisableControls;
   try
-    for lContador := FCounter to Pred(FStringListFile.Count) do
+    for lCounter := FCounter to Pred(FStringListFile.Count) do
     begin
-      FStringListLine.DelimitedText := FStringListFile[lContador];
+      FStringListLine.DelimitedText := FStringListFile[lCounter];
 
       if FShowOnlySQL and (not GetType.Equals('SQL')) then
         Continue;

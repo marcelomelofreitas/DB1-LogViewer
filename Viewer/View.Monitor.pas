@@ -114,6 +114,10 @@ type
     ToggleSwitchStartMaximized: TToggleSwitch;
     ToggleSwitchStayOnTop: TToggleSwitch;
     ToggleSwitchUseToDateFunction: TToggleSwitch;
+    FDMemTableFilterError: TStringField;
+    PanelUpdateReminder: TPanel;
+    LabelUpdateReminder: TLabel;
+    LabelURL: TLabel;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
@@ -153,6 +157,9 @@ type
     procedure ToggleSwitchStartMaximizedClick(Sender: TObject);
     procedure ToggleSwitchStayOnTopClick(Sender: TObject);
     procedure ToggleSwitchUseToDateFunctionClick(Sender: TObject);
+    procedure FDMemTableFilterTypeSetText(Sender: TField; const Text: string);
+    procedure FDMemTableFilterErrorSetText(Sender: TField; const Text: string);
+    procedure LabelURLClick(Sender: TObject);
   private
     // class fields
     FLoadingOptionsOnStartup: boolean;
@@ -162,6 +169,7 @@ type
     // event handlers
     procedure OnDrawColumnCellHighlight(Sender: TObject; const Rect: TRect; DataCol: Integer;
       Column: TColumn; State: TGridDrawState);
+    procedure OnBeforeInsertAbort(DataSet: TDataSet);
 
     // private functions
     function IsFileNameValid: boolean;
@@ -169,6 +177,7 @@ type
     function OpenFile: string;
 
     // private procedures
+    procedure AddFilterEmptyLine;
     procedure AssignGridDrawEvent;
     procedure BuildFilter;
     procedure ClearFilters;
@@ -184,7 +193,7 @@ type
     procedure LoadSQLBottomPanel;
     procedure LoadSQLTab;
     procedure LoadStylesList;
-    procedure LoadTypePickList;
+    procedure LoadPickLists;
     procedure LoadWindowParams(aOptions: TOptions);
     procedure ManageTimer;
     procedure OpenSQLTab;
@@ -199,7 +208,7 @@ var
 implementation
 
 uses
-  VCL.Themes, ClipBrd, Utils.Constants, Utils.Helpers, View.Loading,
+  VCL.Themes, ShellAPI, ClipBrd, Utils.Constants, Utils.Helpers, View.Loading,
   System.UITypes;
 
 {$R *.dfm}
@@ -236,11 +245,20 @@ begin
   LabelFileNameValue.Caption := lFileName.Trim;
   LogViewer.ResetCounter;
   LoadLog;
+  BuildFilter;
 end;
 
 procedure TfMonitor.ActionReloadLogExecute(Sender: TObject);
 begin
   LogViewer.ReloadLog;
+end;
+
+procedure TfMonitor.AddFilterEmptyLine;
+begin
+  FDMemTableFilter.Open;
+  FDMemTableFilter.Append;
+  FDMemTableFilter.Post;
+  FDMemTableFilter.BeforeInsert := OnBeforeInsertAbort;
 end;
 
 procedure TfMonitor.ActionClearLogExecute(Sender: TObject);
@@ -330,6 +348,12 @@ begin
   FindClose(lSearchRec);
   LabelFileNameValue.Caption := FLastDirectory + lFileName.Trim;
   LoadLog;
+end;
+
+procedure TfMonitor.LabelURLClick(Sender: TObject);
+begin
+  ShellExecute(self.WindowHandle, 'open',
+    'https://colabore.softplan.com.br/display/~andre.celestino/LogViewer', nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TfMonitor.LabelAutoFormatInfoClick(Sender: TObject);
@@ -422,8 +446,6 @@ begin
     Exit;
 
   LogViewer.LoadLog;
-  ShowRecordInfo;
-  LoadSQLBottomPanel;
 end;
 
 procedure TfMonitor.LoadOptions;
@@ -518,7 +540,7 @@ begin
   end;
 end;
 
-procedure TfMonitor.LoadTypePickList;
+procedure TfMonitor.LoadPickLists;
 begin
   with DBGridFilter.Columns[0].PickList do
   begin
@@ -526,6 +548,12 @@ begin
     Add('AVISO');
     Add('SAIDA');
     Add('SQL');
+  end;
+
+  with DBGridFilter.Columns[7].PickList do
+  begin
+    Add(EmptyStr);
+    Add('S');
   end;
 end;
 
@@ -612,8 +640,11 @@ begin
 end;
 
 procedure TfMonitor.DBGridFilterColEnter(Sender: TObject);
+var
+  lFieldName: string;
 begin
-  if DBGridFilter.SelectedField.FieldName.ToUpper.Equals('TYPE') then
+  lFieldName := DBGridFilter.SelectedField.FieldName.ToUpper;
+  if (lFieldName.Equals('TYPE')) or (lFieldName.Equals('ERROR')) then
     DBGridFilter.EditorMode := True;
 end;
 
@@ -662,6 +693,11 @@ begin
     Key := #0;
     BuildFilter;
   end;
+end;
+
+procedure TfMonitor.OnBeforeInsertAbort(DataSet: TDataSet);
+begin
+  Abort;
 end;
 
 procedure TfMonitor.OnDrawColumnCellHighlight(Sender: TObject; const Rect: TRect; DataCol: Integer;
@@ -746,6 +782,18 @@ begin
   result := True;
 end;
 
+procedure TfMonitor.FDMemTableFilterErrorSetText(Sender: TField; const Text: string);
+begin
+  Sender.AsString := Text;
+  BuildFilter;
+end;
+
+procedure TfMonitor.FDMemTableFilterTypeSetText(Sender: TField; const Text: string);
+begin
+  Sender.AsString := Text;
+  BuildFilter;
+end;
+
 procedure TfMonitor.FormClose(Sender: TObject; var Action: TCloseAction);
 var
   lOptions: TOptions;
@@ -766,9 +814,10 @@ begin
   FSQLFormatter := TSQLFormatter.Create;
   FDMemTableFilter.LogChanges := False;
 
+  AddFilterEmptyLine;
   LoadStylesList;
   LoadOptions;
-  LoadTypePickList;
+  LoadPickLists;
   AssignGridDrawEvent;
 end;
 

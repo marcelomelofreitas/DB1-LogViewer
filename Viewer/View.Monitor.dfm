@@ -1,7 +1,7 @@
 object fMonitor: TfMonitor
   Left = 488
   Top = 0
-  Caption = 'DB1 Log Viewer 1.2'
+  Caption = 'DB1 Log Viewer 1.3'
   ClientHeight = 567
   ClientWidth = 1344
   Color = clBtnFace
@@ -235,6 +235,13 @@ object fMonitor: TfMonitor
               Title.Caption = 'M'#233'todo'
               Width = 420
               Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'Error'
+              Title.Caption = 'Erro'
+              Width = 50
+              Visible = True
             end>
         end
         object PanelDBGridFilter: TPanel
@@ -312,6 +319,14 @@ object fMonitor: TfMonitor
                 FieldName = 'Method'
                 Title.Caption = 'M'#233'todo'
                 Width = 420
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'Error'
+                Title.Alignment = taCenter
+                Title.Caption = 'Erro'
+                Width = 50
                 Visible = True
               end>
           end
@@ -644,10 +659,10 @@ object fMonitor: TfMonitor
         object ToggleSwitchShowBottomPanel: TToggleSwitch
           Left = 8
           Top = 27
-          Width = 203
+          Width = 250
           Height = 20
-          StateCaptions.CaptionOn = 'Exibir painel inferior com a SQL'
-          StateCaptions.CaptionOff = 'Exibir painel inferior com a SQL'
+          StateCaptions.CaptionOn = 'Exibir painel inferior com a instru'#231#227'o SQL'
+          StateCaptions.CaptionOff = 'Exibir painel inferior com a instru'#231#227'o SQL'
           TabOrder = 0
           OnClick = ToggleSwitchShowBottomPanelClick
         end
@@ -920,10 +935,10 @@ object fMonitor: TfMonitor
         object ToggleSwitchShowLineNumbers: TToggleSwitch
           Left = 8
           Top = 23
-          Width = 208
+          Width = 255
           Height = 20
-          StateCaptions.CaptionOn = 'Exibir n'#250'mero das linhas na SQL'
-          StateCaptions.CaptionOff = 'Exibir n'#250'mero das linhas na SQL'
+          StateCaptions.CaptionOn = 'Exibir n'#250'mero das linhas na instru'#231#227'o SQL'
+          StateCaptions.CaptionOff = 'Exibir n'#250'mero das linhas na instru'#231#227'o SQL'
           TabOrder = 0
           OnClick = ToggleSwitchShowLineNumbersClick
         end
@@ -936,6 +951,45 @@ object fMonitor: TfMonitor
           StateCaptions.CaptionOff = 'Usar fun'#231#227'o "to_date" nos par'#226'metros de datas'
           TabOrder = 2
           OnClick = ToggleSwitchUseToDateFunctionClick
+        end
+      end
+      object PanelUpdateReminder: TPanel
+        Left = 0
+        Top = 512
+        Width = 1336
+        Height = 27
+        Align = alBottom
+        BevelOuter = bvNone
+        TabOrder = 4
+        object LabelUpdateReminder: TLabel
+          Left = 4
+          Top = 4
+          Width = 335
+          Height = 16
+          Caption = 'Verifique sempre novas atualiza'#231#245'es do LogViewer:'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object LabelURL: TLabel
+          Left = 343
+          Top = 4
+          Width = 395
+          Height = 16
+          Cursor = crHandPoint
+          Caption = 
+            'https://colabore.softplan.com.br/display/~andre.celestino/LogVie' +
+            'wer'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clHotLight
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = [fsUnderline]
+          ParentFont = False
+          OnClick = LabelURLClick
         end
       end
     end
@@ -1653,7 +1707,8 @@ object fMonitor: TfMonitor
     Top = 344
   end
   object FDMemTableFilter: TFDMemTable
-    Active = True
+    FieldDefs = <>
+    IndexDefs = <>
     FetchOptions.AssignedValues = [evMode]
     FetchOptions.Mode = fmAll
     ResourceOptions.AssignedValues = [rvPersistent, rvSilentMode]
@@ -1662,57 +1717,12 @@ object fMonitor: TfMonitor
     UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
     UpdateOptions.CheckRequired = False
     UpdateOptions.AutoCommitUpdates = True
+    StoreDefs = True
     Left = 1007
     Top = 344
-    Content = {
-      414442530F00BA1910030000FF00010001FF02FF03040020000000460044004D
-      0065006D005400610062006C006500460069006C0074006500720005000A0000
-      005400610062006C006500060000000000070000080032000000090000FF0AFF
-      0B040008000000540079007000650005000800000054007900700065000C0001
-      0000000E000D000F000A00000010000111000112000113000114000115000116
-      0008000000540079007000650017000A000000FEFF0B04001000000044006100
-      7400610062006100730065000500100000004400610074006100620061007300
-      65000C00020000000E000D000F00140000001000011100011200011300011400
-      0115000116001000000044006100740061006200610073006500170014000000
-      FEFF0B040008000000550073006500720005000800000055007300650072000C
-      00030000000E000D000F00320000001000011100011200011300011400011500
-      011600080000005500730065007200170032000000FEFF0B0400040000004900
-      5000050004000000490050000C00040000000E000D000F001400000010000111
-      000112000113000114000115000116000400000049005000170014000000FEFF
-      0B04000A00000043006C0061007300730005000A00000043006C006100730073
-      000C00050000000E000D000F0064000000100001110001120001130001140001
-      15000116000A00000043006C00610073007300170064000000FEFF0B04000C00
-      00004D006500740068006F00640005000C0000004D006500740068006F006400
-      0C00060000000E000D000F006400000010000111000112000113000114000115
-      000116000C0000004D006500740068006F006400170064000000FEFF0B040010
-      0000004400610074006500540069006D00650005001000000044006100740065
-      00540069006D0065000C00070000000E000D000F001400000010000111000112
-      00011300011400011500011600100000004400610074006500540069006D0065
-      00170014000000FEFEFF18FEFF19FEFF1AFF1B1C0000000000FF1DFEFEFEFEFE
-      FF1EFEFF1F200002000000FF21FEFEFE0E004D0061006E006100670065007200
-      1E00550070006400610074006500730052006500670069007300740072007900
-      12005400610062006C0065004C006900730074000A005400610062006C006500
-      08004E0061006D006500140053006F0075007200630065004E0061006D006500
-      0A0054006100620049004400240045006E0066006F0072006300650043006F00
-      6E00730074007200610069006E00740073001E004D0069006E0069006D007500
-      6D0043006100700061006300690074007900180043006800650063006B004E00
-      6F0074004E0075006C006C00140043006F006C0075006D006E004C0069007300
-      74000C0043006F006C0075006D006E00100053006F0075007200630065004900
-      440018006400740041006E007300690053007400720069006E00670010004400
-      61007400610054007900700065000800530069007A0065001400530065006100
-      720063006800610062006C006500120041006C006C006F0077004E0075006C00
-      6C000800420061007300650014004F0041006C006C006F0077004E0075006C00
-      6C0012004F0049006E0055007000640061007400650010004F0049006E005700
-      68006500720065001A004F0072006900670069006E0043006F006C004E006100
-      6D006500140053006F007500720063006500530069007A0065001C0043006F00
-      6E00730074007200610069006E0074004C006900730074001000560069006500
-      77004C006900730074000E0052006F0077004C00690073007400060052006F00
-      77000A0052006F0077004900440010004F0072006900670069006E0061006C00
-      1800520065006C006100740069006F006E004C006900730074001C0055007000
-      640061007400650073004A006F00750072006E0061006C001200530061007600
-      650050006F0069006E0074000E004300680061006E00670065007300}
     object FDMemTableFilterType: TStringField
       FieldName = 'Type'
+      OnSetText = FDMemTableFilterTypeSetText
       Size = 10
     end
     object FDMemTableFilterDatabase: TStringField
@@ -1735,6 +1745,11 @@ object fMonitor: TfMonitor
     end
     object FDMemTableFilterDateTime: TStringField
       FieldName = 'DateTime'
+    end
+    object FDMemTableFilterError: TStringField
+      FieldName = 'Error'
+      OnSetText = FDMemTableFilterErrorSetText
+      Size = 1
     end
   end
   object SynSQLSyn: TSynSQLSyn

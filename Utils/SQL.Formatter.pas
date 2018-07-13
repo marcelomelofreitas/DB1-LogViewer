@@ -276,9 +276,9 @@ begin
   for lParam in FStringListParameters do
   begin
     FStringListValues.DelimitedText := lParam;
-    lName := ':' + FStringListValues[0];
+    lName := ':' + FStringListValues[0] + sSPACE;
     lType := FStringListValues[1].ToUpper;
-    lValue := FStringListValues[2];
+    lValue := FStringListValues[2] + sSPACE;
 
     if FStringListValues.Count < 3 then
     begin
