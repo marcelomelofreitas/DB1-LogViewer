@@ -1,7 +1,7 @@
 object fMonitor: TfMonitor
   Left = 488
   Top = 0
-  Caption = 'DB1 Log Viewer 1.3'
+  Caption = 'DB1 Log Viewer 1.4'
   ClientHeight = 567
   ClientWidth = 1344
   Color = clBtnFace
@@ -261,7 +261,6 @@ object fMonitor: TfMonitor
             Align = alClient
             DataSource = DataSourceFilter
             Options = [dgEditing, dgAlwaysShowEditor, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-            PopupMenu = PopupMenu
             TabOrder = 0
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
@@ -580,6 +579,24 @@ object fMonitor: TfMonitor
           ParentFont = False
           StyleElements = [seClient, seBorder]
           OnClick = LabelRowSelectInfoClick
+        end
+        object LabelShowOnlySQLInfo: TLabel
+          Left = 228
+          Top = 26
+          Width = 19
+          Height = 13
+          Cursor = crHandPoint
+          Caption = '[ ? ]'
+          Color = clBlack
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clHotLight
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentColor = False
+          ParentFont = False
+          StyleElements = [seClient, seBorder]
+          OnClick = LabelShowOnlySQLInfoClick
         end
         object ToggleSwitchShowOnlySQL: TToggleSwitch
           Left = 8
@@ -964,19 +981,19 @@ object fMonitor: TfMonitor
         object LabelUpdateReminder: TLabel
           Left = 4
           Top = 4
-          Width = 335
-          Height = 16
+          Width = 312
+          Height = 14
           Caption = 'Verifique sempre novas atualiza'#231#245'es do LogViewer:'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
-          Font.Height = -13
+          Font.Height = -12
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
         end
         object LabelURL: TLabel
-          Left = 343
-          Top = 4
+          Left = 320
+          Top = 3
           Width = 395
           Height = 16
           Cursor = crHandPoint

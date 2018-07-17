@@ -27,8 +27,12 @@ const
   nTOP = 'Top';
 
   sSPACE = ' ';
-  nMARGIN = 2;
+  sDOUBLE_SPACE = '  ';
   sSUBSELECT = '(SELECT';
+  nTYPE_COLUMN = 0;
+  nERROR_COLUMN = 7;
+  nMARGIN = 2;
+
 
 implementation
 

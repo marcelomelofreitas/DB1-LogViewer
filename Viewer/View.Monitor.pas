@@ -118,6 +118,7 @@ type
     PanelUpdateReminder: TPanel;
     LabelUpdateReminder: TLabel;
     LabelURL: TLabel;
+    LabelShowOnlySQLInfo: TLabel;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
@@ -160,6 +161,7 @@ type
     procedure FDMemTableFilterTypeSetText(Sender: TField; const Text: string);
     procedure FDMemTableFilterErrorSetText(Sender: TField; const Text: string);
     procedure LabelURLClick(Sender: TObject);
+    procedure LabelShowOnlySQLInfoClick(Sender: TObject);
   private
     // class fields
     FLoadingOptionsOnStartup: boolean;
@@ -209,7 +211,7 @@ implementation
 
 uses
   VCL.Themes, ShellAPI, ClipBrd, Utils.Constants, Utils.Helpers, View.Loading,
-  System.UITypes;
+  System.UITypes, StrUtils;
 
 {$R *.dfm}
 
@@ -256,8 +258,7 @@ end;
 procedure TfMonitor.AddFilterEmptyLine;
 begin
   FDMemTableFilter.Open;
-  FDMemTableFilter.Append;
-  FDMemTableFilter.Post;
+  FDMemTableFilter.AppendRecord([]);
   FDMemTableFilter.BeforeInsert := OnBeforeInsertAbort;
 end;
 
@@ -352,7 +353,7 @@ end;
 
 procedure TfMonitor.LabelURLClick(Sender: TObject);
 begin
-  ShellExecute(self.WindowHandle, 'open',
+  ShellExecute(Self.WindowHandle, 'open',
     'https://colabore.softplan.com.br/display/~andre.celestino/LogViewer', nil, nil, SW_SHOWNORMAL);
 end;
 
@@ -386,10 +387,14 @@ begin
     'Ao habilitar essa opção, a cópia do valor da coluna (Ctrl + Q) ficará indisponível.');
 end;
 
+procedure TfMonitor.LabelShowOnlySQLInfoClick(Sender: TObject);
+begin
+  ShowInfoMessage('Ignora os logs do tipo "ENTRADA", "SAIDA" e "AVISO".');
+end;
+
 procedure TfMonitor.LabelUseToDateFunctionInfoClick(Sender: TObject);
 begin
-  ShowInfoMessage(
-    'A função "to_date" normalmente é utilizada em SQLs do banco de dados Oracle.');
+  ShowInfoMessage('A função "to_date" normalmente é utilizada em SQLs do banco de dados Oracle.');
 end;
 
 procedure TfMonitor.LoadLastDirectory(aOptions: TOptions);
@@ -483,10 +488,7 @@ procedure TfMonitor.LoadSelectedStyle(const aSelectedStyle: string);
 var
   lStyleName: string;
 begin
-  lStyleName := aSelectedStyle;
-  if lStyleName.IsEmpty then
-    lStyleName := sDEFAULT_STYLE;
-
+  lStyleName := IfThen(aSelectedStyle.IsEmpty, sDEFAULT_STYLE, aSelectedStyle);
   ComboBoxStyles.ItemIndex := ComboBoxStyles.Items.IndexOf(lStyleName);
   TStyleManager.SetStyle(lStyleName);
 end;
@@ -506,7 +508,7 @@ begin
   if ToggleSwitchAutoFormatSQL.IsOn then
     SynMemoSQL.Lines.Text := FSQLFormatter.FormatSQL(LogViewer.GetSQL)
   else
-    SynMemoSQL.Lines.Text := StringReplace(LogViewer.GetSQL, '  ', ' ', [rfReplaceAll]);
+    SynMemoSQL.Lines.Text := LogViewer.GetSQL.Replace('  ', sSPACE, [rfReplaceAll]);
 end;
 
 procedure TfMonitor.LoadSQLTab;
@@ -542,7 +544,7 @@ end;
 
 procedure TfMonitor.LoadPickLists;
 begin
-  with DBGridFilter.Columns[0].PickList do
+  with DBGridFilter.Columns[nTYPE_COLUMN].PickList do
   begin
     Add('ENTRADA');
     Add('AVISO');
@@ -550,7 +552,7 @@ begin
     Add('SQL');
   end;
 
-  with DBGridFilter.Columns[7].PickList do
+  with DBGridFilter.Columns[nERROR_COLUMN].PickList do
   begin
     Add(EmptyStr);
     Add('S');
