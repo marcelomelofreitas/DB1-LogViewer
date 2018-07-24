@@ -26,7 +26,6 @@ type
     BevelSeparator2: TBevel;
     BindingsList: TBindingsList;
     CheckBoxAutoUpdate: TCheckBox;
-    ComboBoxStyles: TComboBox;
     DataSource: TDataSource;
     DataSourceFilter: TDataSource;
     DBGrid: TDBGrid;
@@ -50,7 +49,6 @@ type
     LabelAlt1: TLabel;
     LabelAlt2: TLabel;
     LabelAlt3: TLabel;
-    LabelAutoFormatInfo: TLabel;
     LabelClearFilters: TLabel;
     LabelClearLog: TLabel;
     LabelCopyColumnValue: TLabel;
@@ -80,7 +78,6 @@ type
     LabelShowLogTab: TLabel;
     LabelShowOptionsTab: TLabel;
     LabelShowSQLTab: TLabel;
-    LabelStyle: TLabel;
     LabelUseToDateFunctionInfo: TLabel;
     LinkControlToPropertyLabel: TLinkControlToProperty;
     LinkControlToPropertySpinEdit: TLinkControlToProperty;
@@ -104,7 +101,6 @@ type
     TabSheetOptions: TTabSheet;
     TabSheetSQL: TTabSheet;
     TimerAutoUpdate: TTimer;
-    ToggleSwitchAutoFormatSQL: TToggleSwitch;
     ToggleSwitchHighlightErrors: TToggleSwitch;
     ToggleSwitchIgnoreBasicLog: TToggleSwitch;
     ToggleSwitchRowSelect: TToggleSwitch;
@@ -119,11 +115,11 @@ type
     LabelUpdateReminder: TLabel;
     LabelURL: TLabel;
     LabelShowOnlySQLInfo: TLabel;
+    RadioGroupStyles: TRadioGroup;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
     procedure CheckBoxAutoUpdateClick(Sender: TObject);
-    procedure ComboBoxStylesSelect(Sender: TObject);
     procedure DBGridDblClick(Sender: TObject);
     procedure DBGridFilterColEnter(Sender: TObject);
     procedure DBGridFilterColResize(Sender: TObject);
@@ -136,7 +132,6 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
-    procedure LabelAutoFormatInfoClick(Sender: TObject);
     procedure LabelIgnoreBasicLogInfoClick(Sender: TObject);
     procedure LabelRowSelectInfoClick(Sender: TObject);
     procedure LabelUseToDateFunctionInfoClick(Sender: TObject);
@@ -148,7 +143,6 @@ type
     procedure SplitterMoved(Sender: TObject);
     procedure TabSheetSQLEnter(Sender: TObject);
     procedure TimerAutoUpdateTimer(Sender: TObject);
-    procedure ToggleSwitchAutoFormatSQLClick(Sender: TObject);
     procedure ToggleSwitchHighlightErrorsClick(Sender: TObject);
     procedure ToggleSwitchIgnoreBasicLogClick(Sender: TObject);
     procedure ToggleSwitchRowSelectClick(Sender: TObject);
@@ -162,6 +156,7 @@ type
     procedure FDMemTableFilterErrorSetText(Sender: TField; const Text: string);
     procedure LabelURLClick(Sender: TObject);
     procedure LabelShowOnlySQLInfoClick(Sender: TObject);
+    procedure RadioGroupStylesClick(Sender: TObject);
   private
     // class fields
     FLoadingOptionsOnStartup: boolean;
@@ -194,7 +189,6 @@ type
     procedure LoadSelectedStyle(const aSelectedStyle: string);
     procedure LoadSQLBottomPanel;
     procedure LoadSQLTab;
-    procedure LoadStylesList;
     procedure LoadPickLists;
     procedure LoadWindowParams(aOptions: TOptions);
     procedure ManageTimer;
@@ -326,6 +320,15 @@ begin
   MenuItemCopyColumnValue.Visible := not ToggleSwitchRowSelect.IsOn;
 end;
 
+procedure TfMonitor.RadioGroupStylesClick(Sender: TObject);
+var
+  lStyleName: string;
+begin
+  lStyleName := RadioGroupStyles.Items[RadioGroupStyles.ItemIndex];
+  TStyleManager.SetStyle(lStyleName);
+  SaveOption(sSELECTED_STYLE, lStyleName);
+end;
+
 procedure TfMonitor.GetMostRecentLog;
 var
   lSearchRec: TSearchRec;
@@ -355,24 +358,6 @@ procedure TfMonitor.LabelURLClick(Sender: TObject);
 begin
   ShellExecute(Self.WindowHandle, 'open',
     'https://colabore.softplan.com.br/display/~andre.celestino/LogViewer', nil, nil, SW_SHOWNORMAL);
-end;
-
-procedure TfMonitor.LabelAutoFormatInfoClick(Sender: TObject);
-var
-  lStringBuilder: TStringBuilder;
-begin
-  lStringBuilder := TStringBuilder.Create;
-  try
-    lStringBuilder
-      .Append('Habilitar essa opção pode impactar na performance ao navegar entre os registros.')
-      .AppendLine.AppendLine
-      .Append('Obs: A opção se refere apenas ao painel inferior na aba "Log". ')
-      .Append('Na aba "SQL", a identação SEMPRE será aplicada.');
-
-    ShowInfoMessage(lStringBuilder.ToString);
-  finally
-    lStringBuilder.Free;
-  end;
 end;
 
 procedure TfMonitor.LabelIgnoreBasicLogInfoClick(Sender: TObject);
@@ -489,7 +474,7 @@ var
   lStyleName: string;
 begin
   lStyleName := IfThen(aSelectedStyle.IsEmpty, sDEFAULT_STYLE, aSelectedStyle);
-  ComboBoxStyles.ItemIndex := ComboBoxStyles.Items.IndexOf(lStyleName);
+  RadioGroupStyles.ItemIndex := RadioGroupStyles.Items.IndexOf(lStyleName);
   TStyleManager.SetStyle(lStyleName);
 end;
 
@@ -503,12 +488,7 @@ begin
   if LogViewer.IsSQLEmpty then
     Exit;
 
-  SynMemoSQL.Lines.Text := LogViewer.GetSQL;
-
-  if ToggleSwitchAutoFormatSQL.IsOn then
-    SynMemoSQL.Lines.Text := FSQLFormatter.FormatSQL(LogViewer.GetSQL)
-  else
-    SynMemoSQL.Lines.Text := LogViewer.GetSQL.Replace('  ', sSPACE, [rfReplaceAll]);
+  SynMemoSQL.Lines.Text := LogViewer.GetSQL.Replace('  ', sSPACE, [rfReplaceAll]);
 end;
 
 procedure TfMonitor.LoadSQLTab;
@@ -520,26 +500,6 @@ begin
 
   SynMemoTab.Lines.Text := FSQLFormatter.FormatSQL(LogViewer.GetSQL);
   LoadLineDetails;
-end;
-
-procedure TfMonitor.LoadStylesList;
-var
-  lStyle :String;
-  lStringListStyles: TStringList;
-begin
-  lStringListStyles := TStringList.Create;
-  try
-    for lStyle in TStyleManager.StyleNames do
-      lStringListStyles.Add(lStyle);
-
-    lStringListStyles.Sort;
-    ComboBoxStyles.Clear;
-
-    for lStyle in lStringListStyles do
-      ComboBoxStyles.Items.Add(lStyle);
-  finally
-    lStringListStyles.Free;
-  end;
 end;
 
 procedure TfMonitor.LoadPickLists;
@@ -614,12 +574,6 @@ begin
   EditSQLFilter.Clear;
 
   BuildFilter;
-end;
-
-procedure TfMonitor.ComboBoxStylesSelect(Sender: TObject);
-begin
-  TStyleManager.SetStyle(ComboBoxStyles.Text);
-  SaveOption(sSELECTED_STYLE, ComboBoxStyles.Text);
 end;
 
 procedure TfMonitor.ManageTimer;
@@ -817,7 +771,6 @@ begin
   FDMemTableFilter.LogChanges := False;
 
   AddFilterEmptyLine;
-  LoadStylesList;
   LoadOptions;
   LoadPickLists;
   AssignGridDrawEvent;
@@ -893,12 +846,6 @@ begin
 procedure TfMonitor.TimerAutoUpdateTimer(Sender: TObject);
 begin
   LoadLogOnTimer;
-end;
-
-procedure TfMonitor.ToggleSwitchAutoFormatSQLClick(Sender: TObject);
-begin
-  LoadSQLBottomPanel;
-  SaveOption(sAUTO_FORMAT_SQL, ToggleSwitchIgnoreBasicLog.IsOn.ToString);
 end;
 
 procedure TfMonitor.ToggleSwitchHighlightErrorsClick(Sender: TObject);

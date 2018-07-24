@@ -1,8 +1,8 @@
 object fMonitor: TfMonitor
   Left = 488
   Top = 0
-  Caption = 'DB1 Log Viewer 1.4'
-  ClientHeight = 567
+  Caption = 'DB1 Log Viewer 1.5'
+  ClientHeight = 629
   ClientWidth = 1344
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -24,7 +24,7 @@ object fMonitor: TfMonitor
     Left = 0
     Top = 0
     Width = 1344
-    Height = 567
+    Height = 629
     ActivePage = TabSheetLog
     Align = alClient
     TabOrder = 0
@@ -33,7 +33,7 @@ object fMonitor: TfMonitor
       Caption = 'Log'
       object Splitter: TSplitter
         Left = 0
-        Top = 381
+        Top = 443
         Width = 1336
         Height = 3
         Cursor = crVSplit
@@ -166,7 +166,7 @@ object fMonitor: TfMonitor
         Left = 0
         Top = 64
         Width = 1336
-        Height = 317
+        Height = 379
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
@@ -174,7 +174,7 @@ object fMonitor: TfMonitor
           Left = 0
           Top = 39
           Width = 1336
-          Height = 278
+          Height = 340
           Align = alClient
           DataSource = DataSource
           Options = [dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -333,7 +333,7 @@ object fMonitor: TfMonitor
       end
       object PanelSQL: TPanel
         Left = 0
-        Top = 384
+        Top = 446
         Width = 1336
         Height = 155
         Align = alBottom
@@ -414,7 +414,7 @@ object fMonitor: TfMonitor
         Left = 0
         Top = 45
         Width = 1336
-        Height = 494
+        Height = 556
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -641,28 +641,11 @@ object fMonitor: TfMonitor
       end
       object GroupBoxVisual: TGroupBox
         Left = 18
-        Top = 279
+        Top = 251
         Width = 327
-        Height = 163
+        Height = 112
         Caption = 'Visual: '
         TabOrder = 1
-        object LabelStyle: TLabel
-          Left = 8
-          Top = 116
-          Width = 30
-          Height = 13
-          Caption = 'Tema:'
-        end
-        object ComboBoxStyles: TComboBox
-          Left = 8
-          Top = 132
-          Width = 189
-          Height = 21
-          Style = csDropDownList
-          DropDownCount = 20
-          TabOrder = 3
-          OnSelect = ComboBoxStylesSelect
-        end
         object ToggleSwitchStayOnTop: TToggleSwitch
           Left = 8
           Top = 53
@@ -695,7 +678,7 @@ object fMonitor: TfMonitor
         end
       end
       object GroupBoxShortCuts: TGroupBox
-        Left = 367
+        Left = 563
         Top = 16
         Width = 217
         Height = 216
@@ -898,32 +881,14 @@ object fMonitor: TfMonitor
       end
       object GroupBoxSQL: TGroupBox
         Left = 18
-        Top = 159
+        Top = 157
         Width = 327
-        Height = 109
+        Height = 80
         Caption = 'SQL: '
         TabOrder = 3
-        object LabelAutoFormatInfo: TLabel
-          Left = 294
-          Top = 52
-          Width = 19
-          Height = 13
-          Cursor = crHandPoint
-          Caption = '[ ? ]'
-          Color = clBlack
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clHotLight
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentColor = False
-          ParentFont = False
-          StyleElements = [seClient, seBorder]
-          OnClick = LabelAutoFormatInfoClick
-        end
         object LabelUseToDateFunctionInfo: TLabel
-          Left = 298
-          Top = 78
+          Left = 300
+          Top = 52
           Width = 19
           Height = 13
           Cursor = crHandPoint
@@ -939,16 +904,6 @@ object fMonitor: TfMonitor
           StyleElements = [seClient, seBorder]
           OnClick = LabelUseToDateFunctionInfoClick
         end
-        object ToggleSwitchAutoFormatSQL: TToggleSwitch
-          Left = 8
-          Top = 49
-          Width = 283
-          Height = 20
-          StateCaptions.CaptionOn = 'Identar SQL automaticamente no painel inferior'
-          StateCaptions.CaptionOff = 'Identar SQL automaticamente no painel inferior'
-          TabOrder = 1
-          OnClick = ToggleSwitchAutoFormatSQLClick
-        end
         object ToggleSwitchShowLineNumbers: TToggleSwitch
           Left = 8
           Top = 23
@@ -961,18 +916,18 @@ object fMonitor: TfMonitor
         end
         object ToggleSwitchUseToDateFunction: TToggleSwitch
           Left = 8
-          Top = 75
+          Top = 49
           Width = 286
           Height = 20
           StateCaptions.CaptionOn = 'Usar fun'#231#227'o "to_date" nos par'#226'metros de datas'
           StateCaptions.CaptionOff = 'Usar fun'#231#227'o "to_date" nos par'#226'metros de datas'
-          TabOrder = 2
+          TabOrder = 1
           OnClick = ToggleSwitchUseToDateFunctionClick
         end
       end
       object PanelUpdateReminder: TPanel
         Left = 0
-        Top = 512
+        Top = 574
         Width = 1336
         Height = 27
         Align = alBottom
@@ -1008,6 +963,28 @@ object fMonitor: TfMonitor
           ParentFont = False
           OnClick = LabelURLClick
         end
+      end
+      object RadioGroupStyles: TRadioGroup
+        Left = 362
+        Top = 16
+        Width = 185
+        Height = 347
+        Caption = 'RadioGroupStyles'
+        Items.Strings = (
+          'Amethyst Kamri'
+          'Emerald Light Slate'
+          'Iceberg Classico'
+          'Light'
+          'Luna'
+          'Obsidian'
+          'Silver'
+          'Slate Classico'
+          'Smokey Quartz Kamri'
+          'Windows'
+          'Windows10'
+          'Windows10 SlateGray')
+        TabOrder = 5
+        OnClick = RadioGroupStylesClick
       end
     end
   end

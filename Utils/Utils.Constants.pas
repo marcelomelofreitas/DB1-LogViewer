@@ -11,7 +11,6 @@ const
   sIGNORE_BASIC_LOG = 'IgnoreBasicLog';
   sROW_SELECT = 'RowSelect';
   sSHOW_LINE_NUMBERS = 'ShowLineNumbers';
-  sAUTO_FORMAT_SQL = 'AutoFormatSQL';
   sUSE_TODATE_FUNCTION = 'UseToDateFunction';
   sSTART_MAXIMIZED = 'StartMaximized';
 
