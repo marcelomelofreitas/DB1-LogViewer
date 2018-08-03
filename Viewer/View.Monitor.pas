@@ -65,14 +65,10 @@ type
     LabeledEditUser: TLabeledEdit;
     LabelF4: TLabel;
     LabelF5: TLabel;
-    LabelFileName: TLabel;
-    LabelFileNameValue: TLabel;
     LabelFilterSQL: TLabel;
     LabelIgnoreBasicLogInfo: TLabel;
     LabelInterval: TLabel;
     LabelOpenFile: TLabel;
-    LabelRecordInfo: TLabel;
-    LabelRecordInfoValue: TLabel;
     LabelReloadLog: TLabel;
     LabelRowSelectInfo: TLabel;
     LabelShowLogTab: TLabel;
@@ -116,6 +112,13 @@ type
     LabelURL: TLabel;
     LabelShowOnlySQLInfo: TLabel;
     RadioGroupStyles: TRadioGroup;
+    StatusBarDetails: TStatusBar;
+    ActionOpenLast: TAction;
+    MenuItemCopyMethodName: TMenuItem;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
@@ -157,11 +160,14 @@ type
     procedure LabelURLClick(Sender: TObject);
     procedure LabelShowOnlySQLInfoClick(Sender: TObject);
     procedure RadioGroupStylesClick(Sender: TObject);
+    procedure ActionOpenLastExecute(Sender: TObject);
+    procedure MenuItemCopyMethodNameClick(Sender: TObject);
   private
     // class fields
     FLoadingOptionsOnStartup: boolean;
     FSQLFormatter: TSQLFormatter;
     FLastDirectory: string;
+    FCurrentFile: string;
 
     // event handlers
     procedure OnDrawColumnCellHighlight(Sender: TObject; const Rect: TRect; DataCol: Integer;
@@ -172,6 +178,7 @@ type
     function IsFileNameValid: boolean;
     function IsContentValid: boolean;
     function OpenFile: string;
+    function ExtractDateTimeFromFileName: string;
 
     // private procedures
     procedure AddFilterEmptyLine;
@@ -179,6 +186,7 @@ type
     procedure BuildFilter;
     procedure ClearFilters;
     procedure CopyColumnValue;
+    procedure CopyMethodName;
     procedure GetMostRecentLog;
     procedure LoadLineDetails;
     procedure LoadLastDirectory(aOptions: TOptions);
@@ -222,11 +230,17 @@ begin
     if not lOpenDialog.Execute then
       Exit;
 
-    LabelFileNameValue.Caption := Trim(lOpenDialog.FileName);
-    result := LabelFileNameValue.Caption;
+     result := Trim(lOpenDialog.FileName);
   finally
     lOpenDialog.Free;
   end;
+end;
+
+procedure TfMonitor.ActionOpenLastExecute(Sender: TObject);
+begin
+  LogViewer.ResetCounter;
+  GetMostRecentLog;
+  BuildFilter;
 end;
 
 procedure TfMonitor.ActionOpenFileExecute(Sender: TObject);
@@ -238,7 +252,13 @@ begin
   if lFileName.IsEmpty then
     Exit;
 
-  LabelFileNameValue.Caption := lFileName.Trim;
+  FCurrentFile := lFileName;
+  FLastDirectory := ExtractFilePath(FCurrentFile);
+  SaveOption(sLAST_DIRECTORY, FLastDirectory);
+
+  StatusBarDetails.Panels[0].Text := FCurrentFile;
+  StatusBarDetails.Panels[1].Text := ExtractDateTimeFromFileName;
+
   LogViewer.ResetCounter;
   LoadLog;
   BuildFilter;
@@ -259,7 +279,7 @@ end;
 procedure TfMonitor.ActionClearLogExecute(Sender: TObject);
 begin
   LogViewer.EmptyDataSet;
-  LabelRecordInfoValue.Caption := EmptyStr;
+  StatusBarDetails.Panels[2].Text := EmptyStr;
   SynMemoSQL.Lines.Clear;
 end;
 
@@ -350,7 +370,11 @@ begin
   until FindNext(lSearchRec) <> 0;
 
   FindClose(lSearchRec);
-  LabelFileNameValue.Caption := FLastDirectory + lFileName.Trim;
+
+  FCurrentFile := FLastDirectory + lFileName.Trim;
+  StatusBarDetails.Panels[0].Text := FCurrentFile;
+  StatusBarDetails.Panels[1].Text := ExtractDateTimeFromFileName;
+
   LoadLog;
 end;
 
@@ -410,8 +434,6 @@ begin
   if not IsContentValid then
     Exit;
 
-  SaveOption(sLAST_DIRECTORY, ExtractFilePath(LabelFileNameValue.Caption));
-
   TimerAutoUpdate.Enabled := False;
   LogViewer.EmptyDataSet;
 
@@ -419,7 +441,7 @@ begin
   try
     fLoading.Show;
     Application.ProcessMessages;
-    LogViewer.LogFileName := LabelFileNameValue.Caption;
+    LogViewer.LogFileName := FCurrentFile;
     LogViewer.LoadLog;
   finally
     fLoading.Free;
@@ -590,6 +612,25 @@ begin
   Clipboard.AsText := LogViewer.CopyValue(lFieldName);
 end;
 
+procedure TfMonitor.CopyMethodName;
+var
+  lMethodName: string;
+  lStartPosition: integer;
+  lEndPosition: integer;
+begin
+  lMethodName := LogViewer.FieldByName('Method').AsString;
+
+  if Pos('Consulta (', lMethodName) = 0 then
+  begin
+    CopyColumnValue;
+    Exit;
+  end;
+
+  lStartPosition := Pos('(', lMethodName);
+  lEndPosition := Pos(')', lMethodName);
+  Clipboard.AsText := Copy(lMethodName, Succ(lStartPosition), Pred(lEndPosition - lStartPosition));
+end;
+
 procedure TfMonitor.DBGridDblClick(Sender: TObject);
 begin
   OpenSQLTab;
@@ -651,6 +692,36 @@ begin
   end;
 end;
 
+function TfMonitor.ExtractDateTimeFromFileName: string;
+var
+  lDateTime: TStringBuilder;
+  lSplitPosition: integer;
+  lSubString: string;
+begin
+  lSplitPosition := Pos('spLogMetodoServidor', FCurrentFile);
+
+  if lSplitPosition = 0 then
+    Exit;
+
+  lSubString := Copy(FCurrentFile, lSplitPosition, FCurrentFile.Length);
+
+  lDateTime := TStringBuilder.Create;
+  try
+    lDateTime
+      .Append(Copy(lSubString, 29, 2)).Append('/')
+      .Append(Copy(lSubString, 26, 2)).Append('/')
+      .Append(Copy(lSubString, 21, 4))
+      .Append(sSPACE).Append(sSPACE)
+      .Append(Copy(lSubString, 32, 2)).Append(':')
+      .Append(Copy(lSubString, 35, 2)).Append(':')
+      .Append(Copy(lSubString, 38, 2));
+
+    result := lDateTime.ToString;
+  finally
+    lDateTime.Free;
+  end;
+end;
+
 procedure TfMonitor.OnBeforeInsertAbort(DataSet: TDataSet);
 begin
   Abort;
@@ -675,11 +746,11 @@ procedure TfMonitor.ShowRecordInfo;
 begin
   if LogViewer.IsEmpty then
   begin
-    LabelRecordInfoValue.Caption := EmptyStr;
+    StatusBarDetails.Panels[2].Text := EmptyStr;
     Exit;
   end;
 
-  LabelRecordInfoValue.Caption := LogViewer.GetRecordCounter;
+  StatusBarDetails.Panels[2].Text := LogViewer.GetRecordCounter;
 end;
 
 procedure TfMonitor.SpinEditIntervalChange(Sender: TObject);
@@ -698,7 +769,7 @@ var
   lStringListFile: TStringList;
   lStringListLine: TStringList;
 begin
-  lFileStream := TFileStream.Create(LabelFileNameValue.Caption, fmOpenRead or fmShareDenyNone);
+  lFileStream := TFileStream.Create(FCurrentFile, fmOpenRead or fmShareDenyNone);
   lStringListFile := TStringList.Create;
   lStringListLine := TStringList.Create;
   try
@@ -718,8 +789,8 @@ begin
   begin
     LogViewer.EmptyDataSet;
     SynMemoSQL.Lines.Clear;
-    LabelFileNameValue.Caption := EmptyStr;
-    LabelRecordInfoValue.Caption := EmptyStr;
+    StatusBarDetails.Panels[0].Text := EmptyStr;
+    StatusBarDetails.Panels[1].Text := EmptyStr;
 
     MessageDlg('Arquivo de log inválido.', mtWarning, [mbOK], 0);
   end;
@@ -729,10 +800,10 @@ function TfMonitor.IsFileNameValid: boolean;
 begin
   result := False;
 
-  if Trim(LabelFileNameValue.Caption).IsEmpty then
+  if FCurrentFile.Trim.IsEmpty then
     Exit;
 
-  if not FileExists(LabelFileNameValue.Caption) then
+  if not FileExists(FCurrentFile) then
     Exit;
 
   result := True;
@@ -832,6 +903,11 @@ begin
   CopyColumnValue;
 end;
 
+procedure TfMonitor.MenuItemCopyMethodNameClick(Sender: TObject);
+begin
+  CopyMethodName;
+end;
+
 procedure TfMonitor.MenuItemCopySQLClick(Sender: TObject);
 begin
   SynMemoTab.Lines.Text := FSQLFormatter.FormatSQL(LogViewer.GetSQL);
@@ -841,7 +917,7 @@ end;
 procedure TfMonitor.TabSheetSQLEnter(Sender: TObject);
 begin
   LoadSQLTab;
-  end;
+end;
 
 procedure TfMonitor.TimerAutoUpdateTimer(Sender: TObject);
 begin
@@ -864,6 +940,10 @@ begin
   lEnable := ToggleSwitchIgnoreBasicLog.IsOn;
   SaveOption(sIGNORE_BASIC_LOG, lEnable.ToString);
   LogViewer.IgnoreBasicLog := lEnable;
+
+  if FCurrentFile.Trim.IsEmpty then
+    Exit;
+
   LogViewer.ResetCounter;
   LoadLog;
 end;
@@ -913,6 +993,10 @@ begin
   lEnable := ToggleSwitchShowOnlySQL.IsOn;
   SaveOption(sSHOW_ONLY_SQL, lEnable.ToString);
   LogViewer.ShowOnlySQL := lEnable;
+
+  if FCurrentFile.Trim.IsEmpty then
+    Exit;
+
   LogViewer.ResetCounter;
   LoadLog;
 end;

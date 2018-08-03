@@ -493,6 +493,7 @@ begin
     if lParenthesesCount = 0 then
       Break;
   end;
+  result := result.Replace('_', sSPACE, [rfReplaceAll]);
 end;
 
 procedure TSQLFormatter.ExtractParamsList(const aSQL: string; const aParamsPosition: smallint);
