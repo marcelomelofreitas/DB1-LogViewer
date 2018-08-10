@@ -398,7 +398,9 @@ end;
 
 procedure TfMonitor.LabelShowOnlySQLInfoClick(Sender: TObject);
 begin
-  ShowInfoMessage('Ignora os logs do tipo "ENTRADA", "SAIDA" e "AVISO".');
+  ShowInfoMessage(
+    'Ignora os logs do tipo "ENTRADA", "SAIDA" e "AVISO".' + sLineBreak +
+    'Atenção: Ao habilitar essa opção, os erros em metadados não serão exibidos!');
 end;
 
 procedure TfMonitor.LabelUseToDateFunctionInfoClick(Sender: TObject);

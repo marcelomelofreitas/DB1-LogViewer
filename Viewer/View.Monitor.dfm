@@ -25,12 +25,14 @@ object fMonitor: TfMonitor
     Top = 0
     Width = 1344
     Height = 609
-    ActivePage = TabSheetLog
+    ActivePage = TabSheetOptions
     Align = alClient
     TabOrder = 0
     TabWidth = 110
+    ExplicitHeight = 610
     object TabSheetLog: TTabSheet
       Caption = 'Log'
+      ExplicitHeight = 582
       object Splitter: TSplitter
         Left = 0
         Top = 423
@@ -116,6 +118,7 @@ object fMonitor: TfMonitor
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitHeight = 360
         object DBGrid: TDBGrid
           Left = 0
           Top = 39
@@ -285,6 +288,7 @@ object fMonitor: TfMonitor
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 2
+        ExplicitTop = 427
         object SynMemoSQL: TSynMemo
           Left = 0
           Top = 29
@@ -356,6 +360,7 @@ object fMonitor: TfMonitor
       Caption = 'SQL'
       ImageIndex = 2
       OnEnter = TabSheetSQLEnter
+      ExplicitHeight = 582
       object SynMemoTab: TSynMemo
         Left = 0
         Top = 45
@@ -389,6 +394,7 @@ object fMonitor: TfMonitor
         ReadOnly = True
         RightEdge = 0
         FontSmoothing = fsmNone
+        ExplicitHeight = 537
       end
       object PanelSQLTab: TPanel
         Left = 0
@@ -483,6 +489,7 @@ object fMonitor: TfMonitor
     end
     object TabSheetOptions: TTabSheet
       Caption = 'Op'#231#245'es'
+      ExplicitHeight = 582
       object GroupBoxLog: TGroupBox
         Left = 18
         Top = 16
@@ -919,6 +926,7 @@ object fMonitor: TfMonitor
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 4
+        ExplicitTop = 555
         object LabelUpdateReminder: TLabel
           Left = 4
           Top = 4
@@ -982,20 +990,22 @@ object fMonitor: TfMonitor
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBtnText
     Font.Height = -12
-    Font.Name = 'Segoe UI'
+    Font.Name = 'Tahoma'
     Font.Style = []
     Panels = <
       item
-        Width = 600
+        Width = 800
       end
       item
         Alignment = taCenter
-        Width = 180
+        Width = 250
       end
       item
+        Alignment = taCenter
         Width = 50
       end>
     UseSystemFont = False
+    ExplicitTop = 610
   end
   object DataSource: TDataSource
     DataSet = LogViewer
