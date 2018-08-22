@@ -24,18 +24,16 @@ object fMonitor: TfMonitor
     Left = 0
     Top = 0
     Width = 1344
-    Height = 609
+    Height = 629
     ActivePage = TabSheetOptions
     Align = alClient
     TabOrder = 0
     TabWidth = 110
-    ExplicitHeight = 610
     object TabSheetLog: TTabSheet
       Caption = 'Log'
-      ExplicitHeight = 582
       object Splitter: TSplitter
         Left = 0
-        Top = 423
+        Top = 443
         Width = 1336
         Height = 3
         Cursor = crVSplit
@@ -81,7 +79,7 @@ object fMonitor: TfMonitor
           Caption = 'Atualiza'#231#227'o autom'#225'tica        '
           TabOrder = 1
           object LabelInterval: TLabel
-            Left = 9
+            Left = 16
             Top = 26
             Width = 81
             Height = 13
@@ -98,7 +96,7 @@ object fMonitor: TfMonitor
             OnClick = CheckBoxAutoUpdateClick
           end
           object SpinEditInterval: TSpinEdit
-            Left = 96
+            Left = 103
             Top = 22
             Width = 61
             Height = 22
@@ -114,16 +112,15 @@ object fMonitor: TfMonitor
         Left = 0
         Top = 64
         Width = 1336
-        Height = 359
+        Height = 379
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitHeight = 360
         object DBGrid: TDBGrid
           Left = 0
           Top = 39
           Width = 1336
-          Height = 320
+          Height = 340
           Align = alClient
           DataSource = DataSource
           Options = [dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -282,18 +279,17 @@ object fMonitor: TfMonitor
       end
       object PanelSQL: TPanel
         Left = 0
-        Top = 426
+        Top = 446
         Width = 1336
         Height = 155
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 2
-        ExplicitTop = 427
         object SynMemoSQL: TSynMemo
           Left = 0
           Top = 29
           Width = 1336
-          Height = 126
+          Height = 108
           Align = alClient
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -354,18 +350,41 @@ object fMonitor: TfMonitor
             OnKeyPress = EditSQLFilterKeyPress
           end
         end
+        object StatusBarDetails: TStatusBar
+          Left = 0
+          Top = 137
+          Width = 1336
+          Height = 18
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBtnText
+          Font.Height = -12
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Panels = <
+            item
+              Width = 800
+            end
+            item
+              Alignment = taCenter
+              Width = 250
+            end
+            item
+              Alignment = taCenter
+              Width = 50
+            end>
+          UseSystemFont = False
+        end
       end
     end
     object TabSheetSQL: TTabSheet
       Caption = 'SQL'
       ImageIndex = 2
-      OnEnter = TabSheetSQLEnter
-      ExplicitHeight = 582
+      OnShow = TabSheetSQLShow
       object SynMemoTab: TSynMemo
         Left = 0
         Top = 45
         Width = 1336
-        Height = 536
+        Height = 556
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -394,7 +413,6 @@ object fMonitor: TfMonitor
         ReadOnly = True
         RightEdge = 0
         FontSmoothing = fsmNone
-        ExplicitHeight = 537
       end
       object PanelSQLTab: TPanel
         Left = 0
@@ -489,7 +507,6 @@ object fMonitor: TfMonitor
     end
     object TabSheetOptions: TTabSheet
       Caption = 'Op'#231#245'es'
-      ExplicitHeight = 582
       object GroupBoxLog: TGroupBox
         Left = 18
         Top = 16
@@ -831,7 +848,7 @@ object fMonitor: TfMonitor
           Height = 13
           Caption = ': Limpar Filtros'
         end
-        object Label1: TLabel
+        object LabelCtrlU: TLabel
           Left = 23
           Top = 43
           Width = 43
@@ -844,14 +861,14 @@ object fMonitor: TfMonitor
           Font.Style = [fsBold]
           ParentFont = False
         end
-        object Label2: TLabel
+        object LabelOpenLast: TLabel
           Left = 72
           Top = 43
           Width = 82
           Height = 13
           Caption = ': Abrir '#218'ltimo Log'
         end
-        object Label3: TLabel
+        object LabelCtrlM: TLabel
           Left = 23
           Top = 126
           Width = 45
@@ -864,9 +881,9 @@ object fMonitor: TfMonitor
           Font.Style = [fsBold]
           ParentFont = False
         end
-        object Label4: TLabel
+        object LabelCopyMethodName: TLabel
           Left = 72
-          Top = 126
+          Top = 125
           Width = 122
           Height = 13
           Caption = ': Copiar Nome do M'#233'todo'
@@ -880,7 +897,7 @@ object fMonitor: TfMonitor
         Caption = 'SQL: '
         TabOrder = 3
         object LabelUseToDateFunctionInfo: TLabel
-          Left = 300
+          Left = 298
           Top = 52
           Width = 19
           Height = 13
@@ -920,13 +937,12 @@ object fMonitor: TfMonitor
       end
       object PanelUpdateReminder: TPanel
         Left = 0
-        Top = 554
+        Top = 574
         Width = 1336
         Height = 27
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 4
-        ExplicitTop = 555
         object LabelUpdateReminder: TLabel
           Left = 4
           Top = 4
@@ -981,31 +997,6 @@ object fMonitor: TfMonitor
         OnClick = RadioGroupStylesClick
       end
     end
-  end
-  object StatusBarDetails: TStatusBar
-    Left = 0
-    Top = 609
-    Width = 1344
-    Height = 20
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBtnText
-    Font.Height = -12
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    Panels = <
-      item
-        Width = 800
-      end
-      item
-        Alignment = taCenter
-        Width = 250
-      end
-      item
-        Alignment = taCenter
-        Width = 50
-      end>
-    UseSystemFont = False
-    ExplicitTop = 610
   end
   object DataSource: TDataSource
     DataSet = LogViewer

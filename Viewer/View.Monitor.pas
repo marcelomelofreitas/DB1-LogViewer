@@ -112,13 +112,13 @@ type
     LabelURL: TLabel;
     LabelShowOnlySQLInfo: TLabel;
     RadioGroupStyles: TRadioGroup;
-    StatusBarDetails: TStatusBar;
     ActionOpenLast: TAction;
     MenuItemCopyMethodName: TMenuItem;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
+    LabelCtrlU: TLabel;
+    LabelOpenLast: TLabel;
+    LabelCtrlM: TLabel;
+    LabelCopyMethodName: TLabel;
+    StatusBarDetails: TStatusBar;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
@@ -144,7 +144,6 @@ type
     procedure PopupMenuPopup(Sender: TObject);
     procedure SpinEditIntervalChange(Sender: TObject);
     procedure SplitterMoved(Sender: TObject);
-    procedure TabSheetSQLEnter(Sender: TObject);
     procedure TimerAutoUpdateTimer(Sender: TObject);
     procedure ToggleSwitchHighlightErrorsClick(Sender: TObject);
     procedure ToggleSwitchIgnoreBasicLogClick(Sender: TObject);
@@ -162,6 +161,7 @@ type
     procedure RadioGroupStylesClick(Sender: TObject);
     procedure ActionOpenLastExecute(Sender: TObject);
     procedure MenuItemCopyMethodNameClick(Sender: TObject);
+    procedure TabSheetSQLShow(Sender: TObject);
   private
     // class fields
     FLoadingOptionsOnStartup: boolean;
@@ -916,7 +916,7 @@ begin
   Clipboard.AsText := SynMemoTab.Lines.Text;
 end;
 
-procedure TfMonitor.TabSheetSQLEnter(Sender: TObject);
+procedure TfMonitor.TabSheetSQLShow(Sender: TObject);
 begin
   LoadSQLTab;
 end;
@@ -1027,6 +1027,11 @@ begin
   lEnable := ToggleSwitchUseToDateFunction.IsOn;
   FSQLFormatter.UseToDateFunction := lEnable;
   SaveOption(sUSE_TODATE_FUNCTION, lEnable.ToString);
+
+  if FCurrentFile.Trim.IsEmpty then
+    Exit;
+
+  LoadSQLTab;
 end;
 
 end.
