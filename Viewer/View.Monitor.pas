@@ -24,7 +24,6 @@ type
     ActionToolBar: TActionToolBar;
     BevelSeparator1: TBevel;
     BevelSeparator2: TBevel;
-    BindingsList: TBindingsList;
     CheckBoxAutoUpdate: TCheckBox;
     DataSource: TDataSource;
     DataSourceFilter: TDataSource;
@@ -74,9 +73,7 @@ type
     LabelShowLogTab: TLabel;
     LabelShowOptionsTab: TLabel;
     LabelShowSQLTab: TLabel;
-    LabelUseToDateFunctionInfo: TLabel;
-    LinkControlToPropertyLabel: TLinkControlToProperty;
-    LinkControlToPropertySpinEdit: TLinkControlToProperty;
+    LabelForceToDateFunctionInfo: TLabel;
     LogViewer: TFDLogViewer;
     MenuItemCopyColumnValue: TMenuItem;
     MenuItemCopySQL: TMenuItem;
@@ -105,7 +102,7 @@ type
     ToggleSwitchShowOnlySQL: TToggleSwitch;
     ToggleSwitchStartMaximized: TToggleSwitch;
     ToggleSwitchStayOnTop: TToggleSwitch;
-    ToggleSwitchUseToDateFunction: TToggleSwitch;
+    ToggleSwitchForceToDateFunction: TToggleSwitch;
     FDMemTableFilterError: TStringField;
     PanelUpdateReminder: TPanel;
     LabelUpdateReminder: TLabel;
@@ -119,13 +116,14 @@ type
     LabelCtrlM: TLabel;
     LabelCopyMethodName: TLabel;
     StatusBarDetails: TStatusBar;
+    LabelDateFormat: TLabel;
+    ComboBoxDateFormat: TComboBox;
     procedure ActionClearLogExecute(Sender: TObject);
     procedure ActionOpenFileExecute(Sender: TObject);
     procedure ActionReloadLogExecute(Sender: TObject);
     procedure CheckBoxAutoUpdateClick(Sender: TObject);
     procedure DBGridDblClick(Sender: TObject);
     procedure DBGridFilterColEnter(Sender: TObject);
-    procedure DBGridFilterColResize(Sender: TObject);
     procedure DBGridFilterColumnMoved(Sender: TObject; FromIndex, ToIndex: Integer);
     procedure DBGridFilterKeyPress(Sender: TObject; var Key: Char);
     procedure DBGridKeyPress(Sender: TObject; var Key: Char);
@@ -137,7 +135,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure LabelIgnoreBasicLogInfoClick(Sender: TObject);
     procedure LabelRowSelectInfoClick(Sender: TObject);
-    procedure LabelUseToDateFunctionInfoClick(Sender: TObject);
+    procedure LabelForceToDateFunctionInfoClick(Sender: TObject);
     procedure LogViewerAfterScroll(DataSet: TDataSet);
     procedure MenuItemCopyColumnValueClick(Sender: TObject);
     procedure MenuItemCopySQLClick(Sender: TObject);
@@ -153,7 +151,7 @@ type
     procedure ToggleSwitchShowOnlySQLClick(Sender: TObject);
     procedure ToggleSwitchStartMaximizedClick(Sender: TObject);
     procedure ToggleSwitchStayOnTopClick(Sender: TObject);
-    procedure ToggleSwitchUseToDateFunctionClick(Sender: TObject);
+    procedure ToggleSwitchForceToDateFunctionClick(Sender: TObject);
     procedure FDMemTableFilterTypeSetText(Sender: TField; const Text: string);
     procedure FDMemTableFilterErrorSetText(Sender: TField; const Text: string);
     procedure LabelURLClick(Sender: TObject);
@@ -162,7 +160,12 @@ type
     procedure ActionOpenLastExecute(Sender: TObject);
     procedure MenuItemCopyMethodNameClick(Sender: TObject);
     procedure TabSheetSQLShow(Sender: TObject);
+    procedure ComboBoxDateFormatChange(Sender: TObject);
   private
+    // grid sync
+    FGridWindowProc: Pointer;
+    FGridSaveWindowProc: Pointer;
+
     // class fields
     FLoadingOptionsOnStartup: boolean;
     FSQLFormatter: TSQLFormatter;
@@ -180,6 +183,10 @@ type
     function OpenFile: string;
     function ExtractDateTimeFromFileName: string;
 
+    // grid sync
+    procedure GetGridWindowProcData;
+    procedure GridCustomWindowProc(var Msg: TMessage);
+
     // private procedures
     procedure AddFilterEmptyLine;
     procedure AssignGridDrawEvent;
@@ -193,6 +200,7 @@ type
     procedure LoadLog;
     procedure LoadLogOnTimer;
     procedure LoadOptions;
+    procedure LoadDatePreferences(const aDateFormatFromINI: string);
     procedure LoadPreferences(aOptions: TOptions);
     procedure LoadSelectedStyle(const aSelectedStyle: string);
     procedure LoadSQLBottomPanel;
@@ -349,6 +357,13 @@ begin
   SaveOption(sSELECTED_STYLE, lStyleName);
 end;
 
+procedure TfMonitor.GetGridWindowProcData;
+begin
+  FGridWindowProc := MakeObjectInstance(GridCustomWindowProc);
+  FGridSaveWindowProc := Pointer(GetWindowLong(DBGrid.Handle, GWL_WNDPROC));
+  SetWindowLong(DBGrid.Handle, GWL_WNDPROC, LongInt(FGridWindowProc));
+end;
+
 procedure TfMonitor.GetMostRecentLog;
 var
   lSearchRec: TSearchRec;
@@ -378,6 +393,13 @@ begin
   LoadLog;
 end;
 
+procedure TfMonitor.GridCustomWindowProc(var Msg: TMessage);
+begin
+  Msg.Result := CallWindowProc(FGridSaveWindowProc, DBGrid.Handle, Msg.Msg, Msg.WParam, Msg.LParam);
+  if Msg.Msg = WM_HSCROLL then
+    DBGridFilter.Perform(Msg.Msg, Msg.WParam, Msg.LParam);
+end;
+
 procedure TfMonitor.LabelURLClick(Sender: TObject);
 begin
   ShellExecute(Self.WindowHandle, 'open',
@@ -400,12 +422,21 @@ procedure TfMonitor.LabelShowOnlySQLInfoClick(Sender: TObject);
 begin
   ShowInfoMessage(
     'Ignora os logs do tipo "ENTRADA", "SAIDA" e "AVISO".' + sLineBreak +
-    'Atenção: Ao habilitar essa opção, os erros em metadados não serão exibidos!');
+    'Atenção: Ao habilitar essa opção, os erros de metadados não serão exibidos!');
 end;
 
-procedure TfMonitor.LabelUseToDateFunctionInfoClick(Sender: TObject);
+procedure TfMonitor.LabelForceToDateFunctionInfoClick(Sender: TObject);
 begin
   ShowInfoMessage('A função "to_date" normalmente é utilizada em SQLs do banco de dados Oracle.');
+end;
+
+procedure TfMonitor.LoadDatePreferences(const aDateFormatFromINI: string);
+var
+  lDateFormat: string;
+begin
+  lDateFormat := IfThen(aDateFormatFromINI.IsEmpty, sDEFAULT_DATE_FORMAT, aDateFormatFromINI);
+  ComboBoxDateFormat.ItemIndex := ComboBoxDateFormat.Items.IndexOf(lDateFormat);
+  FSQLFormatter.DateFormat := lDateFormat;
 end;
 
 procedure TfMonitor.LoadLastDirectory(aOptions: TOptions);
@@ -489,8 +520,9 @@ begin
   ToggleSwitchRowSelect.Active := aOptions.ReadEnabled(sROW_SELECT);
   ToggleSwitchStayOnTop.Active := aOptions.ReadEnabled(sSTAY_ON_TOP);
   ToggleSwitchShowLineNumbers.Active := aOptions.ReadEnabled(sSHOW_LINE_NUMBERS);
-  ToggleSwitchUseToDateFunction.Active := aOptions.ReadEnabled(sUSE_TODATE_FUNCTION);
+  ToggleSwitchForceToDateFunction.Active := aOptions.ReadEnabled(sFORCE_TODATE_FUNCTION);
   LoadSelectedStyle(aOptions.ReadValue(sSELECTED_STYLE));
+  LoadDatePreferences(aOptions.ReadValue(sDATE_FORMAT));
 end;
 
 procedure TfMonitor.LoadSelectedStyle(const aSelectedStyle: string);
@@ -530,6 +562,7 @@ procedure TfMonitor.LoadPickLists;
 begin
   with DBGridFilter.Columns[nTYPE_COLUMN].PickList do
   begin
+    Add(EmptyStr);
     Add('ENTRADA');
     Add('AVISO');
     Add('SAIDA');
@@ -596,7 +629,6 @@ begin
     lField.Clear;
 
   EditSQLFilter.Clear;
-
   BuildFilter;
 end;
 
@@ -604,6 +636,12 @@ procedure TfMonitor.ManageTimer;
 begin
   TimerAutoUpdate.Interval := SpinEditInterval.Value * 1000;
   TimerAutoUpdate.Enabled := CheckBoxAutoUpdate.Checked;
+end;
+
+procedure TfMonitor.ComboBoxDateFormatChange(Sender: TObject);
+begin
+  FSQLFormatter.DateFormat := ComboBoxDateFormat.Text;
+  SaveOption(sDATE_FORMAT, ComboBoxDateFormat.Text);
 end;
 
 procedure TfMonitor.CopyColumnValue;
@@ -645,14 +683,6 @@ begin
   lFieldName := DBGridFilter.SelectedField.FieldName.ToUpper;
   if (lFieldName.Equals('TYPE')) or (lFieldName.Equals('ERROR')) then
     DBGridFilter.EditorMode := True;
-end;
-
-procedure TfMonitor.DBGridFilterColResize(Sender: TObject);
-var
-  Counter: integer;
-begin
-  for Counter := 0 to Pred(DBGridFilter.Columns.Count) do
-    DBGrid.Columns[Counter].Width := DBGridFilter.Columns[Counter].Width;
 end;
 
 procedure TfMonitor.DBGridFilterColumnMoved(Sender: TObject; FromIndex,
@@ -718,7 +748,7 @@ begin
       .Append(Copy(lSubString, 35, 2)).Append(':')
       .Append(Copy(lSubString, 38, 2));
 
-    result := lDateTime.ToString;
+    result := 'Data/Hora do Log:  ' + lDateTime.ToString;
   finally
     lDateTime.Free;
   end;
@@ -847,6 +877,7 @@ begin
   LoadOptions;
   LoadPickLists;
   AssignGridDrawEvent;
+  GetGridWindowProcData;
 end;
 
 procedure TfMonitor.FormDestroy(Sender: TObject);
@@ -1020,13 +1051,15 @@ begin
     Self.FormStyle := fsStayOnTop;
 end;
 
-procedure TfMonitor.ToggleSwitchUseToDateFunctionClick(Sender: TObject);
+procedure TfMonitor.ToggleSwitchForceToDateFunctionClick(Sender: TObject);
 var
   lEnable: boolean;
 begin
-  lEnable := ToggleSwitchUseToDateFunction.IsOn;
+  lEnable := ToggleSwitchForceToDateFunction.IsOn;
   FSQLFormatter.UseToDateFunction := lEnable;
-  SaveOption(sUSE_TODATE_FUNCTION, lEnable.ToString);
+  LabelDateFormat.Enabled := not lEnable;
+  ComboBoxDateFormat.Enabled := not lEnable;
+  SaveOption(sFORCE_TODATE_FUNCTION, lEnable.ToString);
 
   if FCurrentFile.Trim.IsEmpty then
     Exit;

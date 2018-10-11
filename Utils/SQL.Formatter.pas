@@ -20,6 +20,7 @@ type
     FSameLinePosition: smallint;
     FSingleCommand: boolean;
     FUseToDateFunction: boolean;
+    FDateFormat: string;
 
     // private functions
     function BreakLineNeeded(const aValue: string): boolean;
@@ -56,6 +57,7 @@ type
     function FormatSQL(const aSQL: string): string;
 
     property UseToDateFunction: boolean write FUseToDateFunction;
+    property DateFormat: string write FDateFormat;
   end;
 
 implementation
@@ -139,7 +141,7 @@ end;
 function TSQLFormatter.PrepareSQL(const aSQL: string): string;
 begin
   result := ReplaceAllStrings(aSQL, '  ', sSPACE);
-  result := ReplaceAllStrings(result, ',', ', ');
+  //result := ReplaceAllStrings(result, ',', ', ');
   result := ReplaceAllStrings(result, ' )', ')');
   result := ReplaceAllStrings(result, '( ', '(');
   result := ReplaceAllStrings(result, 'LEFT JOIN', 'LEFT_JOIN');
@@ -294,7 +296,7 @@ begin
       if FUseToDateFunction then
         lValue := FormatDateTimeWithToDateFunction(lDate)
       else
-        lValue := QuotedStr(FormatDateTime('dd/mm/yyyy hh:nn:ss', lDate));
+        lValue := QuotedStr(FormatDateTime(FDateFormat + ' hh:nn:ss', lDate));
     end;
 
     result := ReplaceAllStrings(result, lName, lValue);

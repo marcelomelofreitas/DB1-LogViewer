@@ -1,7 +1,7 @@
 object fMonitor: TfMonitor
   Left = 488
   Top = 0
-  Caption = 'DB1 Log Viewer 1.6'
+  Caption = 'DB1 Log Viewer 1.7'
   ClientHeight = 629
   ClientWidth = 1344
   Color = clBtnFace
@@ -25,7 +25,7 @@ object fMonitor: TfMonitor
     Top = 0
     Width = 1344
     Height = 629
-    ActivePage = TabSheetOptions
+    ActivePage = TabSheetLog
     Align = alClient
     TabOrder = 0
     TabWidth = 110
@@ -72,8 +72,8 @@ object fMonitor: TfMonitor
           Spacing = 0
         end
         object GroupBoxAutoUpdate: TGroupBox
-          Left = 449
-          Top = 4
+          Left = 450
+          Top = 3
           Width = 185
           Height = 54
           Caption = 'Atualiza'#231#227'o autom'#225'tica        '
@@ -216,7 +216,6 @@ object fMonitor: TfMonitor
             OnColEnter = DBGridFilterColEnter
             OnColumnMoved = DBGridFilterColumnMoved
             OnKeyPress = DBGridFilterKeyPress
-            OnColResize = DBGridFilterColResize
             Columns = <
               item
                 Expanded = False
@@ -362,11 +361,11 @@ object fMonitor: TfMonitor
           Font.Style = []
           Panels = <
             item
-              Width = 800
+              Width = 700
             end
             item
               Alignment = taCenter
-              Width = 250
+              Width = 300
             end
             item
               Alignment = taCenter
@@ -420,12 +419,13 @@ object fMonitor: TfMonitor
         Width = 1336
         Height = 45
         Align = alTop
+        BevelOuter = bvNone
         TabOrder = 1
         object DBNavigator: TDBNavigator
-          Left = 1215
-          Top = 1
+          Left = 1216
+          Top = 0
           Width = 120
-          Height = 43
+          Height = 45
           DataSource = DataSource
           VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast]
           Align = alRight
@@ -611,7 +611,7 @@ object fMonitor: TfMonitor
       end
       object GroupBoxVisual: TGroupBox
         Left = 18
-        Top = 251
+        Top = 281
         Width = 327
         Height = 112
         Caption = 'Visual: '
@@ -893,11 +893,11 @@ object fMonitor: TfMonitor
         Left = 18
         Top = 157
         Width = 327
-        Height = 80
+        Height = 113
         Caption = 'SQL: '
         TabOrder = 3
-        object LabelUseToDateFunctionInfo: TLabel
-          Left = 298
+        object LabelForceToDateFunctionInfo: TLabel
+          Left = 233
           Top = 52
           Width = 19
           Height = 13
@@ -912,7 +912,14 @@ object fMonitor: TfMonitor
           ParentColor = False
           ParentFont = False
           StyleElements = [seClient, seBorder]
-          OnClick = LabelUseToDateFunctionInfoClick
+          OnClick = LabelForceToDateFunctionInfoClick
+        end
+        object LabelDateFormat: TLabel
+          Left = 8
+          Top = 84
+          Width = 85
+          Height = 13
+          Caption = 'Formato da Data:'
         end
         object ToggleSwitchShowLineNumbers: TToggleSwitch
           Left = 8
@@ -924,15 +931,30 @@ object fMonitor: TfMonitor
           TabOrder = 0
           OnClick = ToggleSwitchShowLineNumbersClick
         end
-        object ToggleSwitchUseToDateFunction: TToggleSwitch
+        object ToggleSwitchForceToDateFunction: TToggleSwitch
           Left = 8
           Top = 49
-          Width = 286
+          Width = 219
           Height = 20
-          StateCaptions.CaptionOn = 'Usar fun'#231#227'o "to_date" nos par'#226'metros de datas'
-          StateCaptions.CaptionOff = 'Usar fun'#231#227'o "to_date" nos par'#226'metros de datas'
+          StateCaptions.CaptionOn = 'For'#231'ar fun'#231#227'o "to_date" em datas'
+          StateCaptions.CaptionOff = 'For'#231'ar fun'#231#227'o "to_date" em datas'
           TabOrder = 1
-          OnClick = ToggleSwitchUseToDateFunctionClick
+          OnClick = ToggleSwitchForceToDateFunctionClick
+        end
+        object ComboBoxDateFormat: TComboBox
+          Left = 99
+          Top = 80
+          Width = 94
+          Height = 21
+          Style = csDropDownList
+          ItemIndex = 0
+          TabOrder = 2
+          Text = 'dd/mm/yyyy'
+          OnChange = ComboBoxDateFormatChange
+          Items.Strings = (
+            'dd/mm/yyyy'
+            'mm/dd/yyyy'
+            'yyyy/mm/dd')
         end
       end
       object PanelUpdateReminder: TPanel
@@ -978,7 +1000,7 @@ object fMonitor: TfMonitor
         Left = 362
         Top = 16
         Width = 185
-        Height = 347
+        Height = 377
         Caption = 'Temas: '
         Items.Strings = (
           'Amethyst Kamri'
@@ -2166,27 +2188,6 @@ object fMonitor: TfMonitor
       ImageIndex = 3
       ShortCut = 16469
       OnExecute = ActionOpenLastExecute
-    end
-  end
-  object BindingsList: TBindingsList
-    Methods = <>
-    OutputConverters = <>
-    Left = 1063
-    Top = 344
-    object LinkControlToPropertyLabel: TLinkControlToProperty
-      Category = 'Quick Bindings'
-      Control = CheckBoxAutoUpdate
-      Track = True
-      Component = LabelInterval
-      ComponentProperty = 'Enabled'
-    end
-    object LinkControlToPropertySpinEdit: TLinkControlToProperty
-      Category = 'Quick Bindings'
-      Control = CheckBoxAutoUpdate
-      Track = True
-      Component = SpinEditInterval
-      ComponentProperty = 'Enabled'
-      InitializeControlValue = False
     end
   end
   object LogViewer: TFDLogViewer

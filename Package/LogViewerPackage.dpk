@@ -25,6 +25,7 @@ package LogViewerPackage;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'LogViewer Component Package'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 

@@ -11,8 +11,10 @@ const
   sIGNORE_BASIC_LOG = 'IgnoreBasicLog';
   sROW_SELECT = 'RowSelect';
   sSHOW_LINE_NUMBERS = 'ShowLineNumbers';
-  sUSE_TODATE_FUNCTION = 'UseToDateFunction';
+  sFORCE_TODATE_FUNCTION = 'UseToDateFunction';
   sSTART_MAXIMIZED = 'StartMaximized';
+  sDATE_FORMAT = 'DateFormat';
+  sDEFAULT_DATE_FORMAT = 'dd/mm/yyyy';
 
   sLAST_DIRECTORY = 'LastDirectory';
   sDEFAULT_DIRECTORY = 'Q:\bin\';

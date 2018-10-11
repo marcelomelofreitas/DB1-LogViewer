@@ -148,7 +148,7 @@ begin
     Add('IP', ftString, 20);
     Add('Class', ftString, 100);
     Add('Method', ftString, 100);
-    Add('SQL', ftString, 20000);
+    Add('SQL', ftString, 30000);
     Add('DateTime', ftString, 20);
     Add('Error', ftString, 1);
   end;
